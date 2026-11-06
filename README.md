@@ -2,7 +2,7 @@
 
 Prepared for aware-by-design. This repository contains only the files delivered by the public website and this deployment note. This publication repository excludes development history, tests, credentials and internal reports. Development-repository access is managed separately. Repository visibility is controlled by its owner.
 
-Publish the public/ directory through the organisation's approved static website host. There is no install or build command and no application backend. Do not publish the repository root. Website visitors can inspect all HTML, CSS, JavaScript, images and lesson content delivered to their browsers.
+Publish this repository root through the organisation's approved static website host. GitHub Pages is configured to use main and /(root). There is no install or build command and no application backend. Website visitors can inspect all HTML, CSS, JavaScript, images and lesson content delivered to their browsers.
 
 The calendar has no accounts, analytics or saved learner progress. Progress resets on reload. Verify the hosting provider's own visitor logging, cookies, retention and delivered security headers before publication. The _headers file applies only to hosts that support that format; it is not a portable guarantee of response headers.
 
