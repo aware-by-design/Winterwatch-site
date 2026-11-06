@@ -1,0 +1,26 @@
+/* Winterwatch country map (drop-in). Pairs with country-map.js. */
+.country-map{margin:18px 0 14px;padding:16px 18px;border:1px solid #d7dfcb;border-radius:6px;background:#f3f4ec}
+.cm-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.cm-title{font:20px/1.2 var(--serif);color:#213b33}
+.cm-hint{font-size:12px;color:#5a6156}
+.cm-grid{display:grid;grid-template-columns:repeat(7,minmax(30px,1fr));grid-template-rows:repeat(7,auto);gap:5px;max-width:380px}
+.cm-tile{aspect-ratio:1;display:grid;place-items:center;border-radius:4px;font:600 14px/1 var(--sans);letter-spacing:.6px;border:1px solid transparent;padding:0;min-width:30px;min-height:30px}
+button.cm-tile{cursor:pointer;transition:transform .15s}
+button.cm-tile:hover{transform:translateY(-1px)}
+button.cm-tile[aria-pressed="true"]{outline:3px solid #bf8d3b;outline-offset:2px}
+button.cm-tile:focus-visible{outline:3px solid #213b33;outline-offset:2px}
+.country-map .cm-enacted{background:#21493d;color:#fff}
+.country-map .cm-staged{background:#3d6b57;color:#fff;border:2px dashed #e6efe2}
+.country-map .cm-pending{background:#f1dfb5;color:#3d3010;border-color:#b98a3e}
+.country-map .cm-unverified{background:#ffffff;color:#3d3f37;border:2px dotted #6b6f63}
+.country-map .cm-none{background:#e7e9df;color:#53614f;border-color:#d9ddce}
+.cm-c0{grid-column:1}.cm-c1{grid-column:2}.cm-c2{grid-column:3}.cm-c3{grid-column:4}.cm-c4{grid-column:5}.cm-c5{grid-column:6}.cm-c6{grid-column:7}
+.cm-r0{grid-row:1}.cm-r1{grid-row:2}.cm-r2{grid-row:3}.cm-r3{grid-row:4}.cm-r4{grid-row:5}.cm-r5{grid-row:6}.cm-r6{grid-row:7}
+.cm-legend{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:#3d4a3f}
+.cm-legend li{display:flex;align-items:center;gap:7px}
+.cm-swatch{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid transparent}
+@media(max-width:520px){.country-map{padding:14px}.cm-head{display:block}.cm-hint{display:block;margin-top:4px}.cm-grid{gap:4px}}
+@media(prefers-reduced-motion:reduce){button.cm-tile{transition:none}button.cm-tile:hover{transform:none}}
+@media(forced-colors:active){.cm-tile{border:1px solid CanvasText}button.cm-tile[aria-pressed="true"]{outline-color:Highlight}}
+
+.cm-head .cm-title{color:#213b33}.cm-head .cm-hint{color:#455943}.cm-legend li{color:#344e3d}.cm-grid{overflow:visible}.cm-tile[aria-pressed="true"]{box-shadow:inset 0 0 0 2px currentColor}
