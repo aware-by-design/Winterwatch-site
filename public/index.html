@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#163d35">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Unwrap 24 practical cyber and AI lessons. An animated festive advent calendar for technical, business and operations teams, grounded in real incidents.">
+  <meta property="og:title" content="Winterwatch — A Cyber & AI Advent">
+  <meta property="og:description" content="24 festive daily quests. Real cyber, AI and privacy lessons for every team.">
+  <title>Winterwatch — A Cyber & AI Advent</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="gameplay.css">
+  <script src="lessons.js" defer></script>
+  <script src="lesson-images.js" defer></script>
+  <script src="learning-content.js" defer></script>
+  <script src="learning-content-more.js" defer></script>
+  <script src="country-guidance.js" defer></script>
+  <script src="game-engine.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#calendar">Skip to calendar</a>
+  <header class="site-header">
+    <a href="#" class="brand" aria-label="Winterwatch home"><span class="brand-symbol" aria-hidden="true">✳</span><span>WINTERWATCH<small>A CYBER & AI ADVENT</small></span></a>
+    <nav aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">↗</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
+    <button class="progress-button" id="progressButton" aria-label="Show your learning progress"><span class="progress-ring" id="progressRing">✦</span><span><b id="navCount">0 of 24</b><small>Resets on reload</small></span></button>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-image" role="img" aria-label="A cosy Christmas lodge with a glowing fireplace, pine garlands, Christmas tree and a sleigh beside a snowy window"></div>
+      <div class="hero-shade"></div><div class="fire-glow" aria-hidden="true"></div>
+      <div class="snow" id="snow" aria-hidden="true"></div>
+      <div class="sleigh-flight" aria-hidden="true"><svg viewBox="0 0 190 60"><path d="M6 40q15 14 43 1l13-6m-52 7v9q27 7 49-4M17 39l-6-17 32 2 7 15m7-7 23-9m6-3 7-8 10 4 6-4m-15 4-1 17m10-17 10 15m2-17 14-7 12 4m-11-3-3-10m12 12 8 14m-5-13 14-8 12 3m-10-3 1-9m8 14 6 12"/></svg></div>
+      <div class="hero-content"><div class="eyebrow"><span class="tiny-star">✦</span> THE 2026 ADVENT COLLECTION</div><h1 id="heroTitle">A little wonder.<br>A wiser <em>tomorrow.</em></h1><p>24 doors. Real incidents. Small lessons that make<br class="desktop-br"> a big difference to your cyber & AI resilience.</p><a class="button button-cream" href="#calendar">Play the calendar <span aria-hidden="true">↘</span></a><div class="hero-note"><span aria-hidden="true">✧</span> For the people who build, lead, and keep things running.</div></div>
+      <button class="ambience" id="ambienceButton" aria-pressed="true"><span id="ambienceIcon" aria-hidden="true">❄</span><span id="ambienceText">Snow is falling</span></button>
+      <button class="hero-feature" data-open="1"><span class="feature-kicker"><i></i> IN THE REAL WORLD · NOV 2026</span><strong>Even the fridge<br>needs a firewall.</strong><span class="feature-bottom">Explore the cold-chain attacks <span aria-hidden="true">↗</span></span></button>
+      <div class="hero-caption">A season for giving. A habit of protecting.</div>
+    </section>
+
+    <div class="intro-strip"><span><b>24</b> daily discoveries</span><i></i><span><b>2,400 XP</b> to earn, one stronger team</span><i></i><span><span class="strip-star">✧</span> Cyber. AI. Privacy. Practice.</span><span class="source-date">REVIEWED 06 NOV 2026</span></div>
+
+    <section class="calendar-section" id="calendar" aria-labelledby="calendarTitle">
+      <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle">Good habits. <em>Great presence.</em></h2><p>Open a pair of doors. Make the decisions. Discover why they matter.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
+      <div class="calendar-toolbar"><div class="category-tabs" role="group" aria-label="Filter lessons by theme"><button data-category="all" class="active" aria-pressed="true">All doors <span>24</span></button><button data-category="cyber" aria-pressed="false">Cyber</button><button data-category="ai" aria-pressed="false">AI & agents</button><button data-category="privacy" aria-pressed="false">Privacy</button><button data-category="governance" aria-pressed="false">Rules & standards</button><button data-category="ot" aria-pressed="false">Connected world</button></div><label class="context-filter">Your world <select id="contextFilter"><option value="all">Everyday life & every team</option><option value="customer">As a customer</option><option value="supplier">As a supplier</option><option value="work">At work</option><option value="home">At home</option><option value="finance">Financial services</option></select></label></div>
+      <div class="calendar-notice"><span><i class="status-dot"></i> <b id="modeLabel">A little early? Explore freely.</b> <span id="modeDetail">All 24 doors are open for discovery.</span></span><label class="release-toggle"><input id="releaseMode" type="checkbox"><span class="switch"></span>Follow December dates</label></div>
+      <div class="doors-grid" id="doorsGrid" aria-label="24 advent calendar doors"></div>
+      <div class="empty-state" id="emptyState" hidden>No doors match these filters. Try All doors or Everyday life &amp; every team.</div>
+      <div class="calendar-bottom"><span class="legend"><i class="legend-dot cyber"></i> Open · 10 XP <i class="legend-dot ai"></i> Decisions · 60 XP <i class="legend-dot ot"></i> Day reward · 10 XP <i class="legend-dot privacy"></i> Reading · 20 XP</span><span>Two doors. One daily discovery. <span class="tiny-star">✦</span></span></div>
+    </section>
+
+    <section class="field-banner" aria-labelledby="fieldTitle"><div class="banner-art" aria-hidden="true"><span>✧</span><svg width="64" height="70" viewBox="0 0 64 70" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M32 6 54 15v18c0 16-22 30-22 30S10 49 10 33V15L32 6Z"/><path d="m23 33 6 6 13-16"/></svg><span>✦</span></div><div><div class="eyebrow">FROM INTELLIGENCE TO ACTION</div><h2 id="fieldTitle">Make the lesson last beyond December.</h2><p>Turn the headlines into an exposure check, a detection, and a rehearsed response.</p></div><button class="button button-outline" data-guide>Open the field guide <span aria-hidden="true">↗</span></button></section>
+    <section class="how-it-works" aria-label="How to use the calendar"><article><span>01 / UNWRAP</span><h3>Take a role.</h3><p>Follow a real incident or everyday situation as a customer, supplier, colleague or person at home.</p></article><article><span>02 / CONNECT</span><h3>Make the decisions.</h3><p>Choose an action, sort the story or spot the evidence. See the consequence and try again.</p></article><article><span>03 / PUT IT TO WORK</span><h3>Celebrate and explore.</h3><p>Complete the day, earn its celebration, then unlock a source-reading bonus and a practical habit.</p></article></section>
+  </main>
+  <footer><a href="#" class="footer-brand">✳ WINTERWATCH</a><p>A thoughtful December. A more resilient year.</p><button class="text-button" data-sources>Research & sources ↗</button><button class="text-button" data-about>About &amp; privacy ↗</button><span>2026 EDITION</span></footer>
+
+  <dialog id="lessonDialog" class="lesson-dialog" aria-labelledby="lessonTitle"><div id="lessonContent"></div></dialog>
+  <dialog id="infoDialog" class="info-dialog" aria-labelledby="infoTitle"><div id="infoContent"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+</body>
+</html>
