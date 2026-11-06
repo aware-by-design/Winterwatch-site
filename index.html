@@ -12,6 +12,8 @@
   <title>Winterwatch — A Cyber & AI Advent</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="gameplay.css">
+  <link rel="stylesheet" href="accessibility.css">
+  <link rel="icon" href="assets/winterwatch-mark.svg" type="image/svg+xml">
   <script src="lessons.js" defer></script>
   <script src="lesson-images.js" defer></script>
   <script src="learning-content.js" defer></script>
@@ -24,7 +26,7 @@
   <a class="skip-link" href="#calendar">Skip to calendar</a>
   <header class="site-header">
     <a href="#" class="brand" aria-label="Winterwatch home"><span class="brand-symbol" aria-hidden="true">✳</span><span>WINTERWATCH<small>A CYBER & AI ADVENT</small></span></a>
-    <nav aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">↗</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
+    <button class="menu-toggle" id="menuToggle" aria-controls="mainNav" aria-expanded="false">Menu</button><nav id="mainNav" aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">↗</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
     <button class="progress-button" id="progressButton" aria-label="Show your learning progress"><span class="progress-ring" id="progressRing">✦</span><span><b id="navCount">0 of 24</b><small>Resets on reload</small></span></button>
   </header>
 
@@ -36,14 +38,14 @@
       <div class="sleigh-flight" aria-hidden="true"><svg viewBox="0 0 190 60"><path d="M6 40q15 14 43 1l13-6m-52 7v9q27 7 49-4M17 39l-6-17 32 2 7 15m7-7 23-9m6-3 7-8 10 4 6-4m-15 4-1 17m10-17 10 15m2-17 14-7 12 4m-11-3-3-10m12 12 8 14m-5-13 14-8 12 3m-10-3 1-9m8 14 6 12"/></svg></div>
       <div class="hero-content"><div class="eyebrow"><span class="tiny-star">✦</span> THE 2026 ADVENT COLLECTION</div><h1 id="heroTitle">A little wonder.<br>A wiser <em>tomorrow.</em></h1><p>24 doors. Real incidents. Small lessons that make<br class="desktop-br"> a big difference to your cyber & AI resilience.</p><a class="button button-cream" href="#calendar">Play the calendar <span aria-hidden="true">↘</span></a><div class="hero-note"><span aria-hidden="true">✧</span> For the people who build, lead, and keep things running.</div></div>
       <button class="ambience" id="ambienceButton" aria-pressed="true"><span id="ambienceIcon" aria-hidden="true">❄</span><span id="ambienceText">Snow is falling</span></button>
-      <button class="hero-feature" data-open="1"><span class="feature-kicker"><i></i> IN THE REAL WORLD · NOV 2026</span><strong>Even the fridge<br>needs a firewall.</strong><span class="feature-bottom">Explore the cold-chain attacks <span aria-hidden="true">↗</span></span></button>
+      <button class="hero-feature" data-open="1"><span class="feature-kicker"><i></i> IN THE REAL WORLD · NOV 2026</span><strong>Even the fridge <br>needs a firewall.</strong><span class="feature-bottom">Explore the cold-chain attacks <span aria-hidden="true">↗</span></span></button>
       <div class="hero-caption">A season for giving. A habit of protecting.</div>
     </section>
 
     <div class="intro-strip"><span><b>24</b> daily discoveries</span><i></i><span><b>2,400 XP</b> to earn, one stronger team</span><i></i><span><span class="strip-star">✧</span> Cyber. AI. Privacy. Practice.</span><span class="source-date">REVIEWED 06 NOV 2026</span></div>
 
     <section class="calendar-section" id="calendar" aria-labelledby="calendarTitle">
-      <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle">Good habits. <em>Great presence.</em></h2><p>Open a pair of doors. Make the decisions. Discover why they matter.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
+      <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle" tabindex="-1">Good habits. <em>Great presence.</em></h2><p>Open a pair of doors. Make the decisions. Discover why they matter.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
       <div class="calendar-toolbar"><div class="category-tabs" role="group" aria-label="Filter lessons by theme"><button data-category="all" class="active" aria-pressed="true">All doors <span>24</span></button><button data-category="cyber" aria-pressed="false">Cyber</button><button data-category="ai" aria-pressed="false">AI & agents</button><button data-category="privacy" aria-pressed="false">Privacy</button><button data-category="governance" aria-pressed="false">Rules & standards</button><button data-category="ot" aria-pressed="false">Connected world</button></div><label class="context-filter">Your world <select id="contextFilter"><option value="all">Everyday life & every team</option><option value="customer">As a customer</option><option value="supplier">As a supplier</option><option value="work">At work</option><option value="home">At home</option><option value="finance">Financial services</option></select></label></div>
       <div class="calendar-notice"><span><i class="status-dot"></i> <b id="modeLabel">A little early? Explore freely.</b> <span id="modeDetail">All 24 doors are open for discovery.</span></span><label class="release-toggle"><input id="releaseMode" type="checkbox"><span class="switch"></span>Follow December dates</label></div>
       <div class="doors-grid" id="doorsGrid" aria-label="24 advent calendar doors"></div>
