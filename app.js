@@ -63,6 +63,16 @@
     if(today>end)return {phase:'after',day:24,remaining:0,untilStart:0};
     const day=Number(d.day);return {phase:'during',day,remaining:24-day,untilStart:0};
   }
+  // A learning day runs 09:00–08:59 CET, independent of the visitor's timezone.
+  const releaseWindowTime=(now=new Date())=>new Date(now.getTime()-9*3600000);
+  const releaseWindowKey=(now=new Date())=>todayKey(releaseWindowTime(now));
+  const releaseWindowStatus=(now=new Date())=>adventStatus(releaseWindowTime(now));
+  function nextReleaseTime(now=new Date()){
+    const key=releaseWindowKey(now);return new Date(Date.parse(key+'T08:00:00Z')+86400000);
+  }
+  function returnPrompt(at,now=new Date()){
+    return todayKey(at)===todayKey(now)?'Come back at 09:00 CET.':'Come back tomorrow at 09:00 CET.';
+  }
   function upcomingAdventLessons(now=new Date()){
     // All 2026 Advent sessions are in CET: 09:00 CET is 08:00 UTC.
     const time=now.getTime();return lessons.filter(l=>Date.UTC(2026,11,l.id,8)>=time);
@@ -101,7 +111,7 @@
     24:'Bring the season’s habits together in everyday decisions about family payments, work assistants and supplier alerts. Choose one habit to carry forward.'
   });
   function adventReminderModel(now=new Date()){
-    const status=adventStatus(now),lesson=status.phase==='during'?lessons.find(l=>l.id===status.day):null;
+    const status=releaseWindowStatus(now),lesson=status.phase==='during'?lessons.find(l=>l.id===status.day):null;
     return {...status,lesson,host:lesson?adventNestorHosts[(lesson.id-1)%adventNestorHosts.length]:adventNestorFamily,brief:lesson?adventBriefs[lesson.id]:''};
   }
   function updateAdventReminder(now=new Date()){
@@ -111,7 +121,7 @@
     set('#adventTitleMain',l?l.title:model.phase==='after'?'Keep your good habits.':'A little reminder.');
     const accent=$('#adventTitleAccent');if(accent)accent.hidden=!!l;
     set('#adventTitleAccent',model.phase==='after'?'A wiser year ahead.':'A wiser December.');
-    set('#adventReminderBrief',l?model.brief:model.phase==='after'?'The Nestor family is here for a refresher. Revisit any of the 24 lessons and keep one useful habit going.':'Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.');
+    set('#adventReminderBrief',l?model.brief:model.phase==='after'?'The Nestor family is here for a refresher. Revisit completed days or catch up on one missed door each day.':'Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.');
     set('#nestorRibbonKicker',l?`DAY ${l.id} WITH NESTOR`:'THE NESTOR FAMILY');
     set('#nestorRibbonDate',l?`${l.id} December 2026`:'1–24 December 2026');
     const image=$('#adventHostImage');if(image){image.setAttribute('src',model.host.src);image.setAttribute('alt',model.host.alt);image.setAttribute('width',String(model.host.width));image.setAttribute('height',String(model.host.height));}
@@ -123,11 +133,11 @@
     const day=current.phase==='before'?'Starts 1 December':current.phase==='after'?'Advent complete':`Day ${current.day} of 24`;
     const remainingLabel=current.phase==='before'?'Advent days ahead':current.phase==='during'?'Days remaining after today':'Advent days remaining';
     set('#adventCurrentDay',day);set('#adventDaysRemaining',current.remaining);set('#adventRemainingLabel',remainingLabel);set('#adventQuestsRemaining',left);
-    set('#adventTiming',current.phase==='before'?`${current.untilStart} ${current.untilStart===1?'day':'days'} until Day 1 · 1–24 December 2026 · CET.`:current.phase==='after'?'The 2026 Advent calendar has ended. Revisit completed days or catch up on one missed door each day.':`${current.day===24?'The final Advent day is here.':`Today is Day ${current.day}.`} Dates follow CET; quest progress is separate.`);
+    set('#adventTiming',current.phase==='before'?`${current.untilStart} ${current.untilStart===1?'day':'days'} until Day 1 · 1–24 December 2026 · CET.`:current.phase==='after'?(releaseWindowStatus(now).phase==='during'?'The final door remains available until 25 December at 08:59 CET.':'Revisit completed days or catch up on one missed door per 09:00–08:59 CET window.'):`${current.day===24?'The final Advent day is here.':`Today is Day ${current.day}.`} Doors unlock at 09:00 CET; quest progress is separate.`);
     const button=$('[data-download-advent-reminders]');if(button){button.disabled=reminderExportPending||upcoming.length===0;button.setAttribute('aria-disabled',String(button.disabled));button.setAttribute('aria-busy',String(reminderExportPending));button.textContent=reminderExportPending?'Preparing reminders…':upcoming.length?`Add ${upcoming.length} daily ${upcoming.length===1?'reminder':'reminders'}`:'2026 reminders have ended';}
     set('#adventStatusAnnouncement',`${day}. ${current.remaining} Advent ${current.remaining===1?'day':'days'} remaining${current.phase==='during'?' after today':''}. ${left} ${left===1?'quest':'quests'} left to complete.`);
   }
-  function tickAdventTracker(){updateAdventTracker();syncDailyDoors();clearTimeout(adventTimer);adventTimer=setTimeout(tickAdventTracker,60000);}
+  function tickAdventTracker(){const now=new Date();updateAdventTracker(now);syncDailyDoors();clearTimeout(adventTimer);adventTimer=setTimeout(tickAdventTracker,60000-now.getTime()%60000);}
 
   function refreshProgress(){
     saveProgress();updateProgress();
@@ -139,8 +149,8 @@
   function points(){return engine.xp(state);}
   function toast(msg){$('#toast').textContent=msg;const status=$('dialog[open] [data-dialog-status]');if(status)status.textContent=msg;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3200);}
   function dailyAccess(now=new Date()){
-    const status=adventStatus(now),pending=lessons.find(l=>!state.completed.includes(l.id))?.id||0;
-    const next=status.phase==='during'?(state.completed.includes(status.day)?0:status.day):status.phase==='after'&&state.streak.lastDay!==todayKey(now)?pending:0;
+    const status=releaseWindowStatus(now),pending=lessons.find(l=>!state.completed.includes(l.id))?.id||0;
+    const next=status.phase==='during'?(state.completed.includes(status.day)?0:status.day):status.phase==='after'&&(!state.streak.lastDay||state.streak.lastDay<releaseWindowKey(now))?pending:0;
     return {...status,availableDay:next,pending};
   }
   function available(id,now=new Date()){
@@ -148,33 +158,45 @@
     return state.completed.includes(id)||dailyAccess(now).availableDay===id;
   }
   function nestorDoorMessage(now=new Date()){
-    const a=dailyAccess(now);
+    const a=dailyAccess(now),wait=returnPrompt(nextReleaseTime(now),now);
     if(state.completed.length===24)return 'You did it! All 24 days are complete. Your completed doors stay open whenever you want a refresher.';
-    if(a.phase==='before')return 'Our first door opens on 1 December 2026 at 00:00 CET. See you then! Your completed days stay open.';
+    if(a.phase==='before')return 'Our first door opens on 1 December 2026 at 09:00 CET. See you then! Your completed days stay open.';
     if(a.phase==='during'){
-      if(a.availableDay)return `Day ${a.day} is ready! One new door today; completed days stay open.${a.day<24?` Come back tomorrow for Day ${a.day+1}.`:' This is our final Advent door.'}`;
-      return a.day<24?`Well done! Come back tomorrow for Day ${a.day+1}. The next door stays locked until ${a.day+1} December at 00:00 CET.`:'Well done! Your completed doors stay open. You can catch up on a missed door each day from 25 December.';
+      if(a.availableDay)return `Day ${a.day} is open until 08:59 CET on ${a.day+1} December. Your completed days stay open.${a.day<24?' '+wait:' This is our final Advent door.'}`;
+      return a.day<24?`Well done! ${wait} Day ${a.day+1} stays locked until ${a.day+1} December at 09:00 CET.`:'Well done! Your completed doors stay open. Catch up on one missed door per day from 25 December at 09:00 CET.';
     }
-    if(a.availableDay)return `Missed a day? Day ${a.availableDay} is ready for you. Complete one catch-up door today, then come back tomorrow for the next.`;
-    return `Well done! Come back tomorrow for Day ${a.pending}. One catch-up door a day; your completed days stay open.`;
+    if(a.availableDay)return `Missed a day? Day ${a.availableDay} is ready for you. Complete one catch-up door in this 09:00–08:59 CET window, then return after the next 09:00 unlock.`;
+    return `Well done! ${wait} Day ${a.pending} will be your next catch-up door. Your completed days stay open.`;
   }
   function lockedDoorMessage(id,now=new Date()){
     const a=dailyAccess(now);
-    if(a.phase==='before'||!a.availableDay)return 'Nestor says: '+nestorDoorMessage(now);
-    if(a.phase==='during'&&id>a.day)return `Nestor says: ${id===a.day+1?'Come back tomorrow! ':''}Day ${id} stays locked until ${id} December 2026 at 00:00 CET. Completed days stay open.`;
-    if(a.phase==='during')return `Nestor says: Today’s door is Day ${a.day}. Missed doors return for catch-up after 24 December, one a day. Completed days stay open.`;
-    return `Nestor says: Day ${a.availableDay} is your catch-up door today. Come back tomorrow for the next unfinished door.`;
+    if(a.phase==='before'||!a.availableDay)return nestorDoorMessage(now);
+    if(a.phase==='during'&&id>a.day)return `${id===a.day+1?returnPrompt(new Date(Date.UTC(2026,11,id,8)),now)+' ':''}Day ${id} stays locked until ${id} December 2026 at 09:00 CET. Completed days stay open.`;
+    if(a.phase==='during')return `The open door is Day ${a.day}, until 08:59 CET on ${a.day+1} December. Missed doors return for catch-up after Advent, one a day. Completed days stay open.`;
+    return `Day ${a.availableDay} is your catch-up door in this 09:00–08:59 CET window. Return after the next 09:00 unlock for the next unfinished door.`;
+  }
+  let lockReturnFocus=null,lockedDoorId=null;
+  function showDoorLock(id){
+    const dialog=$('#doorLockDialog');lockedDoorId=id;
+    if(!dialog.open){const el=document.activeElement,day=Number(el?.dataset?.door);lockReturnFocus=Number.isInteger(day)&&day>=1&&day<=24?{selector:`[data-door="${day}"]`}:{element:el};}
+    $('#doorLockMessage').textContent=lockedDoorMessage(id);
+    if(!dialog.open)dialog.showModal();$('#doorLockAcknowledge').focus({preventScroll:true});
+  }
+  function restoreDoorLockFocus(){
+    if($('#lessonDialog').open){const el=lockReturnFocus?.element;if(el?.isConnected!==false&&el?.closest?.('#lessonDialog'))el.focus({preventScroll:true});else $('#lessonDialog [data-close]')?.focus({preventScroll:true});}
+    else if($('#infoDialog').open)$('#infoDialog [data-close-info]')?.focus({preventScroll:true});
+    else restoreFocus(lockReturnFocus);
   }
   let renderedDoorDay='';
   function syncDailyDoors(){
-    if(renderedDoorDay===todayKey())return;
-    const focusedDay=Number(document.activeElement?.dataset?.door);renderDoors();
-    if($('#lessonDialog').open&&!available(activeId)){$('#lessonDialog').close();toast(lockedDoorMessage(activeId));}
+    if(renderedDoorDay===releaseWindowKey())return;
+    const focusedDay=Number(document.activeElement?.dataset?.door);renderDoors();if($('#doorLockDialog').open)$('#doorLockMessage').textContent=available(lockedDoorId)?`Day ${lockedDoorId} is now open. Close this note to explore it.`:lockedDoorMessage(lockedDoorId);
+    if($('#lessonDialog').open&&!available(activeId)){$('#lessonDialog').close();showDoorLock(activeId);}
     else if(Number.isInteger(focusedDay)&&focusedDay>=1&&focusedDay<=24)$(`[data-door="${focusedDay}"]`)?.focus({preventScroll:true});
   }
   function activeDoorAllowed(){
     if(available(activeId))return true;
-    if($('#lessonDialog').open)$('#lessonDialog').close();toast(lockedDoorMessage(activeId));return false;
+    if($('#lessonDialog').open)$('#lessonDialog').close();showDoorLock(activeId);return false;
   }
   function updateProgress(){
     $('#navCount').textContent=`${points().toLocaleString()} XP`;
@@ -208,15 +230,15 @@
     $('#emptyState').hidden=visible.length>0;
     $('#announcer').textContent=`${visible.length} lessons shown`;
     const access=dailyAccess();
-    $('#modeLabel').textContent=access.phase==='before'?'A daily December tradition.':access.phase==='during'?`Day ${access.day} of 24 · one new door today.`:'One catch-up door a day.';
-    $('#modeDetail').textContent='Completed days stay open. New doors unlock at midnight in CET.';
+    $('#modeLabel').textContent=access.phase==='before'?'A daily December tradition.':access.phase==='during'?`Day ${access.day} of 24 · daily unlock at 09:00 CET.`:'One catch-up door a day.';
+    $('#modeDetail').textContent='Completed days stay open. New doors unlock at 09:00 CET and stay open until 08:59 CET the following day.';
     $('#nestorDoorMessage').textContent=nestorDoorMessage();
-    $('#contextFilter').value=state.context;renderedDoorDay=todayKey();
+    $('#contextFilter').value=state.context;renderedDoorDay=releaseWindowKey();
     $$('[data-audience]').forEach(b=>{const on=b.dataset.audience===state.audience;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   }
   function openLesson(id){
     const l=lessons.find(x=>x.id===id);if(!l)return;
-    if(!available(id)){toast(lockedDoorMessage(id));if(!$('#lessonDialog').open&&/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');return;}
+    if(!available(id)){showDoorLock(id);if(!$('#lessonDialog').open&&/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');return;}
     if(!$('#lessonDialog').open)lessonReturnFocus=focusTarget();
     setMenu(false);
     const already=state.opened.includes(id);
@@ -281,7 +303,7 @@
     if(step.kind==='choice'&&(!Number.isInteger(response)||response<0||response>=step.options.length))return;
     if(step.kind==='habits'&&response.some(x=>typeof x!=='boolean')){toast('Classify each habit before checking.');return;}
     if(step.kind==='select'&&!response.length){toast('Choose the evidence you would use.');return;}
-    d.response=Array.isArray(response)?[...response]:response;d.result=engine.awardStep(state,l.id,currentStage,step,response);if(d.result.completed)engine.recordLearningDay(state,todayKey());
+    d.response=Array.isArray(response)?[...response]:response;d.result=engine.awardStep(state,l.id,currentStage,step,response);if(d.result.completed)engine.recordLearningDay(state,releaseWindowKey());
     refreshProgress();renderLesson();renderDoors();
     $('.decision-feedback')?.focus({preventScroll:true});
     if(d.result.completed)celebrate('day');else if(d.result.earned)toast(`+${d.result.earned} XP · Decision unlocked.`);
@@ -450,10 +472,10 @@
     layer.append(reward);$$('.celebration-layer').forEach(x=>x.remove());($('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document.body).append(layer);setTimeout(()=>layer.remove(),2600);
   }
   function progress(){
-    showInfo('Your winter quest.',storageLabel(),`<div class="progress-stats"><div class="progress-stat"><strong>${points().toLocaleString()}</strong><span>of 2,400 XP</span></div><div class="progress-stat"><strong>${state.completed.length}<small>/24</small></strong><span>quests complete</span></div><div class="progress-stat"><strong>${state.readings.length}<small>/24</small></strong><span>source bonuses earned</span></div><div class="progress-stat"><strong>${engine.streakCount(state,todayKey())}</strong><span>day learning streak</span></div></div><p class="streak-note">Complete a new quest on consecutive days to build your streak (CET). Best streak: <b>${state.streak.best} day${state.streak.best===1?'':'s'}</b>. Saved streaks survive reloads.</p><div class="xp-track"><span style="width:${points()/24}%"></span></div><p class="reading-progress">${Object.values(state.solved).reduce((n,a)=>n+a.length,0)} / 72 decision rounds resolved</p><h3>A mantelpiece of milestones.</h3><p>${badges().filter(b=>b.earned).length} of ${badges().length} badges unlocked. ${storageStatus==='unavailable'?'Browser storage must be available to keep earned badges.':'Milestones stay earned when you return.'}</p><div class="badges-grid">${badges().map(b=>`<article class="badge ${b.earned?'earned':''}"><span class="badge-art" aria-hidden="true">${icon(b.art)}</span><b>${esc(b.name)}</b><small>${b.earned?'Unlocked · ':'Not yet earned · '}${esc(b.desc)}</small>${b.earned?`<button class="subtle-button" data-badge-celebrate="${b.id}" aria-label="Replay celebration for ${esc(b.name)}">Celebrate again ✦</button>`:''}</article>`).join('')}</div><h3>Choose your next discovery.</h3><div class="completion-list">${lessons.map(l=>`<button class="${state.completed.includes(l.id)?'done':''}" data-open="${l.id}"><span>${String(l.id).padStart(2,'0')}</span>${esc(l.short)}<small>${lessonPoints(l.id)} XP</small></button>`).join('')}</div><p class="source-note">${esc(storageNotice())} Progress is not uploaded or included in shared lessons. Browser settings control retention; clearing site data or using another browser starts a fresh journey.</p><div class="guide-actions"><button class="subtle-button" data-reset-progress>Clear saved progress</button></div>`);infoView='progress';
+    showInfo('Your winter quest.',storageLabel(),`<div class="progress-stats"><div class="progress-stat"><strong>${points().toLocaleString()}</strong><span>of 2,400 XP</span></div><div class="progress-stat"><strong>${state.completed.length}<small>/24</small></strong><span>quests complete</span></div><div class="progress-stat"><strong>${state.readings.length}<small>/24</small></strong><span>source bonuses earned</span></div><div class="progress-stat"><strong>${engine.streakCount(state,releaseWindowKey())}</strong><span>day learning streak</span></div></div><p class="streak-note">Complete a new quest in consecutive 09:00–08:59 CET windows to build your streak. Best streak: <b>${state.streak.best} day${state.streak.best===1?'':'s'}</b>. Saved streaks survive reloads.</p><div class="xp-track"><span style="width:${points()/24}%"></span></div><p class="reading-progress">${Object.values(state.solved).reduce((n,a)=>n+a.length,0)} / 72 decision rounds resolved</p><h3>A mantelpiece of milestones.</h3><p>${badges().filter(b=>b.earned).length} of ${badges().length} badges unlocked. ${storageStatus==='unavailable'?'Browser storage must be available to keep earned badges.':'Milestones stay earned when you return.'}</p><div class="badges-grid">${badges().map(b=>`<article class="badge ${b.earned?'earned':''}"><span class="badge-art" aria-hidden="true">${icon(b.art)}</span><b>${esc(b.name)}</b><small>${b.earned?'Unlocked · ':'Not yet earned · '}${esc(b.desc)}</small>${b.earned?`<button class="subtle-button" data-badge-celebrate="${b.id}" aria-label="Replay celebration for ${esc(b.name)}">Celebrate again ✦</button>`:''}</article>`).join('')}</div><h3>Choose your next discovery.</h3><div class="completion-list">${lessons.map(l=>`<button class="${state.completed.includes(l.id)?'done':''}" data-open="${l.id}"><span>${String(l.id).padStart(2,'0')}</span>${esc(l.short)}<small>${lessonPoints(l.id)} XP</small></button>`).join('')}</div><p class="source-note">${esc(storageNotice())} Progress is not uploaded or included in shared lessons. Browser settings control retention; clearing site data or using another browser starts a fresh journey.</p><div class="guide-actions"><button class="subtle-button" data-reset-progress>Clear saved progress</button></div>`);infoView='progress';
   }
   function about(){
-    showInfo('A little wonder. A useful habit.','Cybersecurity, AI and privacy belong to everyone who builds, leads or keeps things running.',`<h3>Contact and feedback</h3><p>For content corrections and accessibility feedback, <a href="https://github.com/aware-by-design/Winterwatch-site/issues" target="_blank" rel="noopener noreferrer">contact the calendar maintainers through public GitHub issues ↗</a>. GitHub is an external service and handles submissions under its own terms.</p><h3>AI assistance and editorial review</h3><p>AI tools assisted with drafting, code, illustrations and review. Illustrations are labelled AI-generated. Claims are linked to sources and dated; mistakes can remain. Operational use needs current source checks and qualified review.</p><h3>24 doors. Three perspectives.</h3><p>Winterwatch pairs a quiet festive setting with practical learning. Explore recent incidents, everyday hygiene, customer–supplier dependencies, response playbooks and EU-first regulatory milestones. Each lesson includes technical, business and operations perspectives. The collection connects awareness raising with practical cyber-hygiene habits.</p><h3>Evidence, with the labels left on.</h3><p>Primary-source incidents, provider assessments, disclosed vulnerabilities, legal duties and fictional exercises are labelled separately. Operational recipes are authored training examples, not vendor-certified rules. The calendar does not update itself. Check current cases, reporting routes and country guidance at their official sources.</p><h3>Learn without an account.</h3><p>The calendar asks for no name, email, account or personal details. It has no analytics, advertising trackers, third-party scripts, remote fonts or learner-data server. When browser storage is available, the calendar saves minimal progress in this browser: which lessons and decisions you finished, reading bonuses, and your last learning day with streak counts. XP and milestone badges are reconstructed from that progress. Raw answers, personal details and display preferences are not saved. No progress is uploaded or exported. Use Clear saved progress in Your progress to remove it.</p><h3>When you follow a link.</h3><p>Sources and social platforms open only when you choose them. Social posts and cards use public lesson content. Those services handle visits under their own terms. This site is hosted on GitHub Pages, which logs and stores visitors’ IP addresses for security purposes. <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection" target="_blank" rel="noopener noreferrer">GitHub Pages data collection ↗</a> · <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub privacy statement ↗</a>. The calendar has no access to those visitor logs.</p><h3>A calm, accessible December.</h3><p>During Advent, today’s door and your completed days are available. New doors unlock at midnight in CET. After 24 December, missed doors return one per day for catch-up. Keyboard navigation, reduced-motion support, and a snow toggle help you choose the atmosphere. There is no sound by default.</p><div class="guide-actions"><button class="button button-green" data-sources>Research & sources →</button><button class="subtle-button" data-guide>Field guide →</button></div>${initiativeHtml()}`);
+    showInfo('A little wonder. A useful habit.','Cybersecurity, AI and privacy belong to everyone who builds, leads or keeps things running.',`<h3>Contact and feedback</h3><p>For content corrections and accessibility feedback, <a href="https://github.com/aware-by-design/Winterwatch-site/issues" target="_blank" rel="noopener noreferrer">contact the calendar maintainers through public GitHub issues ↗</a>. GitHub is an external service and handles submissions under its own terms.</p><h3>AI assistance and editorial review</h3><p>AI tools assisted with drafting, code, illustrations and review. Illustrations are labelled AI-generated. Claims are linked to sources and dated; mistakes can remain. Operational use needs current source checks and qualified review.</p><h3>24 doors. Three perspectives.</h3><p>Winterwatch pairs a quiet festive setting with practical learning. Explore recent incidents, everyday hygiene, customer–supplier dependencies, response playbooks and EU-first regulatory milestones. Each lesson includes technical, business and operations perspectives. The collection connects awareness raising with practical cyber-hygiene habits.</p><h3>Evidence, with the labels left on.</h3><p>Primary-source incidents, provider assessments, disclosed vulnerabilities, legal duties and fictional exercises are labelled separately. Operational recipes are authored training examples, not vendor-certified rules. The calendar does not update itself. Check current cases, reporting routes and country guidance at their official sources.</p><h3>Learn without an account.</h3><p>The calendar asks for no name, email, account or personal details. It has no analytics, advertising trackers, third-party scripts, remote fonts or learner-data server. When browser storage is available, the calendar saves minimal progress in this browser: which lessons and decisions you finished, reading bonuses, and your last learning-window date with streak counts. XP and milestone badges are reconstructed from that progress. Raw answers, personal details and display preferences are not saved. No progress is uploaded or exported. Use Clear saved progress in Your progress to remove it.</p><h3>When you follow a link.</h3><p>Sources and social platforms open only when you choose them. Social posts and cards use public lesson content. Those services handle visits under their own terms. This site is hosted on GitHub Pages, which logs and stores visitors’ IP addresses for security purposes. <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection" target="_blank" rel="noopener noreferrer">GitHub Pages data collection ↗</a> · <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub privacy statement ↗</a>. The calendar has no access to those visitor logs.</p><h3>A calm, accessible December.</h3><p>During Advent, today’s door and your completed days are available. New doors unlock at 09:00 CET and stay open until 08:59 CET the following day. After the final door closes on 25 December at 09:00 CET, missed doors return one per release window for catch-up. Keyboard navigation, reduced-motion support, and a snow toggle help you choose the atmosphere. There is no sound by default.</p><div class="guide-actions"><button class="button button-green" data-sources>Research & sources →</button><button class="subtle-button" data-guide>Field guide →</button></div>${initiativeHtml()}`);
   }
   function allSources(){showInfo('Follow the evidence.','Primary research, public authorities, legal texts and standards bodies.',`<p>Some source sites can restrict automated retrieval; corroborating official guidance is linked where available. A historical patch version or deadline is not a recommendation to use obsolete software or law.</p><div class="fact-callout">Follow each claim back to its source. Check the publication date, current legal text and relevant national authority before applying it. Case findings and defensive training recommendations are labelled separately.</div><ul class="source-list">${Object.entries(sources).map(([id,s])=>`<li>${sourceLink(id)}<small>${esc(s.org)} · ${esc(s.kind)}</small></li>`).join('')}</ul><div class="guide-actions"><button class="button button-green" data-export-sources>Download source register ↓</button><button class="subtle-button" data-about>About this collection</button></div>${initiativeHtml()}`);}
   function milestoneCalendar(){
@@ -520,7 +542,7 @@
     try{
       const pairs=await Promise.all(upcoming.map(async l=>[l.id,await embeddedReminderImage(l)])),images=new Map(pairs.filter(([,image])=>image));
       download(adventReminderCalendar(now,images),'winterwatch-advent-2026-reminders.ics','text/calendar;charset=utf-8');
-      const missing=upcoming.some(l=>!images.has(l.id));toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded.${missing?' Some illustrations could not be included; the titles and briefs are complete.':' Import the .ics file into your calendar.'}`);
+      const missing=upcoming.some(l=>!images.has(l.id));toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded.${missing?' Some images could not be included.':''}`);
     }finally{reminderExportPending=false;updateAdventTracker();}
   }
   function exportDates(){if(!jurisdictions.some(c=>c.id===state.country)){toast('Choose a country first.');return;}download(milestoneCalendar(),`winterwatch-eu-${state.country}-milestones.ics`,'text/calendar;charset=utf-8');toast(countries.some(c=>c.id===state.country)?'EU and selected-country milestones downloaded. Review applicability before adding them.':'EU milestones downloaded. This country has no detailed national milestone profile in this edition.');}
@@ -530,6 +552,7 @@
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button,a');if(!b)return;if(b.closest?.('#lessonDialog')&&!b.hasAttribute('data-close')&&!activeDoorAllowed()){e.preventDefault();return;}
     if(b.closest?.('#mainNav')&&b.getAttribute('href')==='#calendar'){e.preventDefault();setMenu(false);location.hash='#calendar';$('#calendarTitle').scrollIntoView?.({block:'start'});$('#calendarTitle').focus({preventScroll:true});return;}
+    if(b.hasAttribute('data-close-door-lock')){$('#doorLockDialog').close();return;}
     if(b.id==='menuToggle'){setMenu($('#menuToggle').getAttribute('aria-expanded')!=='true');return;}
     if(b.hasAttribute('data-game-choice')){submitStep(Number(b.dataset.gameChoice));return;}
     if(b.hasAttribute('data-evidence-option')){const step=games[activeId]?.steps[currentStage],i=Number(b.dataset.evidenceOption);if(step?.kind!=='select'||!Number.isInteger(i)||i<0||i>=step.options.length)return;const d=draftFor(activeId,currentStage);if(d.result)return;d.selected=d.selected.includes(i)?d.selected.filter(n=>n!==i):[...d.selected,i];renderLesson();$(`[data-evidence-option="${i}"]`)?.focus({preventScroll:true});return;}
@@ -580,9 +603,10 @@
   });
   function chooseCountry(id,fromSelect=false){if(!jurisdictions.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
   document.addEventListener('change',e=>{if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}});
+  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open)restoreDoorLockFocus();});
   $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);});
   $('#infoDialog').addEventListener('close',()=>{if(!$('#infoDialog').open&&!$('#lessonDialog').open)restoreFocus(infoReturnFocus);});
-  for(const dialog of [$('#lessonDialog'),$('#infoDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+  for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#menuToggle').getAttribute('aria-expanded')==='true'){setMenu(false,true);return;}if(e.target.matches('[role="tab"]')&&['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const tabs=$$('[role="tab"]');let i=tabs.indexOf(e.target);i=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;const id=tabs[i].dataset.tab;setTab(id);$(`[role="tab"][data-tab="${id}"]`).focus();}});
   window.addEventListener('storage',e=>{
     if(e.key!==progressKey&&e.key!==null)return;
