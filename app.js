@@ -77,12 +77,12 @@
     // All 2026 Advent sessions are in CET: 09:00 CET is 08:00 UTC.
     const time=now.getTime();return lessons.filter(l=>Date.UTC(2026,11,l.id,8)>=time);
   }
-  const adventNestorFamily=Object.freeze({src:'assets/nestor-advent-reminder.webp',width:768,height:512,alt:'The Nestor family in Christmas sweaters and winter boots, sharing a calendar marked 1–24 December 2026.'});
+  const adventNestorFamily=Object.freeze({src:'assets/nestor-advent-reminder.webp',width:768,height:512,alt:'NESTOR shown in adult and child forms, in Christmas sweaters and winter boots, holding a calendar marked 1–24 December 2026.'});
   const adventNestorHosts=Object.freeze([
-    {src:'assets/nestor-burgundy.webp',width:512,height:640,alt:'Nestor in a burgundy Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-green.webp',width:480,height:640,alt:'Nestor in a green Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-red.webp',width:512,height:640,alt:'Nestor with a pink flower, red Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-blue.webp',width:512,height:640,alt:'Nestor in a blue Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'}
+    {src:'assets/nestor-burgundy.webp',width:512,height:640,alt:'NESTOR in an adult form, wearing a burgundy Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-green.webp',width:480,height:640,alt:'NESTOR in an adult form, wearing a green Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-red.webp',width:512,height:640,alt:'NESTOR in a child form, with a pink flower, red Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-blue.webp',width:512,height:640,alt:'NESTOR in a child form, wearing a blue Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'}
   ]);
   const adventBriefs=Object.freeze({
     1:'Explore how exposed refrigeration controls can affect everyday services. Choose the first response, useful warning signs and safer supplier access.',
@@ -117,12 +117,12 @@
   function updateAdventReminder(now=new Date()){
     const model=adventReminderModel(now),l=model.lesson;
     const set=(selector,value)=>{const node=$(selector);if(node&&node.textContent!==value)node.textContent=value;};
-    set('#adventReminderKicker',l?`DAY ${l.id} · LEARN WITH NESTOR`:model.phase==='after'?'KEEP LEARNING WITH NESTOR':'A DAILY HELLO FROM THE NESTOR FAMILY');
+    set('#adventReminderKicker',l?`DAY ${l.id} · LEARN WITH NESTOR`:model.phase==='after'?'KEEP LEARNING WITH NESTOR':'A DAILY HELLO FROM NESTOR');
     set('#adventTitleMain',l?l.title:model.phase==='after'?'Keep your good habits.':'A little reminder.');
     const accent=$('#adventTitleAccent');if(accent)accent.hidden=!!l;
     set('#adventTitleAccent',model.phase==='after'?'A wiser year ahead.':'A wiser December.');
-    set('#adventReminderBrief',l?model.brief:model.phase==='after'?'The Nestor family is here for a refresher. Revisit completed days or catch up on one missed door each day.':'Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.');
-    set('#nestorRibbonKicker',l?`DAY ${l.id} WITH NESTOR`:'THE NESTOR FAMILY');
+    set('#adventReminderBrief',l?model.brief:model.phase==='after'?'NESTOR is here for a refresher. Revisit completed days or catch up on one missed door each day.':'Meet NESTOR in different forms. One guide, one useful habit and ten minutes of festive learning each day.');
+    set('#nestorRibbonKicker',l?`DAY ${l.id} WITH NESTOR`:'ONE NESTOR. MANY FORMS.');
     set('#nestorRibbonDate',l?`${l.id} December 2026`:'1–24 December 2026');
     const image=$('#adventHostImage');if(image){image.setAttribute('src',model.host.src);image.setAttribute('alt',model.host.alt);image.setAttribute('width',String(model.host.width));image.setAttribute('height',String(model.host.height));}
   }
@@ -269,7 +269,7 @@
     if(!holidayGreetingAllowed(mode))return;
     const dialog=$('#holidayDialog');if(!dialog.open)holidayReturnFocus=document.activeElement;
     holidayMode=mode;holidayGreetingShown=true;if(todayKey()==='2026-12-25')christmasGreetingShown=true;
-    $('#holidayKicker').textContent=mode==='christmas'?'25 DECEMBER · A FESTIVE HELLO FROM THE NESTOR FAMILY':'DAY 24 · A FESTIVE HELLO FROM THE NESTOR FAMILY';
+    $('#holidayKicker').textContent=mode==='christmas'?'25 DECEMBER · A FESTIVE HELLO FROM NESTOR':'DAY 24 · A FESTIVE HELLO FROM NESTOR';
     $('#holidayAcknowledge').textContent=mode==='christmas'?'Continue the calendar':'Back to Day 24';
     if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#holidayClose').focus({preventScroll:true});
   }
