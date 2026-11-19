@@ -1,7 +1,7 @@
 'use strict';
 // Winterwatch country map (drop-in). Load after app.js.
 // Renders an accessible EU-27 tile map next to every "Training jurisdiction" select.
-// Choosing a profiled country sets that select and fires the same `change` event the
+// Choosing any EU country sets that select and fires the same `change` event the
 // app already handles. A distinct data attribute avoids its older map-button handler. Built with DOM APIs only: no
 // innerHTML, no inline styles, no network requests (works under the existing CSP).
 (() => {
@@ -22,9 +22,9 @@
   const STATUS = [
     { key: 'enacted', label: 'NIS2 law enacted', test: s => /^enacted$/i.test(s) },
     { key: 'staged', label: 'Enacted, staged cohorts', test: s => /^enacted/i.test(s) && /staged/i.test(s) },
-    { key: 'pending', label: 'Pending in reviewed sources', test: s => /pending/i.test(s) },
+    { key: 'pending', label: 'Pending in linked official material', test: s => /pending/i.test(s) },
     { key: 'unverified', label: 'Enactment not verified', test: s => /not verified/i.test(s) },
-    { key: 'none', label: 'Not profiled in this edition', test: () => false }
+    { key: 'none', label: 'Official directories available', test: () => false }
   ];
   const statusOf = c => (c ? (STATUS.find(s => s.test(String(c.status || ''))) || STATUS[3]) : STATUS[4]);
 
@@ -46,9 +46,9 @@
     wrap.setAttribute('aria-labelledby', id);
 
     const head = el('div', 'cm-head');
-    head.append(el('span', 'cm-title', 'Choose a country on the map'));
+    head.append(el('span', 'cm-title', 'Select your country to see contact routes'));
     head.firstChild.id = id;
-    head.append(el('span', 'cm-hint', `${profiled.size} of 27 EU countries profiled · schematic positions`));
+    head.append(el('span', 'cm-hint', `All 27 EU countries selectable · ${profiled.size} detailed NIS2 profiles · schematic positions`));
     wrap.append(head);
 
     const grid = el('div', 'cm-grid');
@@ -56,20 +56,15 @@
       const c = profiled.get(code);
       const st = statusOf(c);
       const pos = ` cm-c${col} cm-r${row}`;
-      if (c) {
+      {
         const b = el('button', `cm-tile cm-${st.key}${pos}`, code.toUpperCase());
         b.type = 'button';
         b.dataset.mapCountry = code;
         b.setAttribute('aria-pressed', String(code === current));
-        b.setAttribute('aria-label', `${c.name}: ${st.label}`);
-        b.title = `${c.name} · ${c.status}`;
+        b.setAttribute('aria-label', `${name}: ${st.label}. Show contact routes`);
+        b.title = `${name} · ${c?.status || 'Find current authorities in official directories'}`;
         b.addEventListener('click', () => choose(select, code));
         grid.append(b);
-      } else {
-        const t = el('span', `cm-tile cm-none${pos}`, code.toUpperCase());
-        t.title = `${name} · not profiled in this edition`;
-        t.setAttribute('aria-hidden', 'true');
-        grid.append(t);
       }
     }
     wrap.append(grid);
@@ -87,7 +82,7 @@
   }
 
   function choose(select, code) {
-    if (!profiled.has(code) || select.value === code) return;
+    if (!TILES.some(([id]) => id === code) || select.value === code) return;
     pendingFocus = { code, scope: select.closest('dialog') || document };
     select.value = code;
     // The app re-renders the panel on this event; the observer then rebuilds the map.

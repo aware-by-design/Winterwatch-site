@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const empty=()=>({opened:[],solved:{},readings:[],completed:[],streak:{lastDay:null,current:0,best:0},audience:'everyone',country:'de',context:'all',release:false,ambience:true});
+  const empty=()=>({opened:[],solved:{},readings:[],completed:[],streak:{lastDay:null,current:0,best:0},audience:'everyone',country:'',context:'all',release:false,ambience:true});
   const isDay=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T00:00:00Z'))&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
   const dayGap=(first,last)=>(Date.parse(first+'T00:00:00Z')-Date.parse(last+'T00:00:00Z'))/86400000;
   function restore(record){
@@ -38,7 +38,7 @@
     s.streak.lastDay=today;s.streak.best=Math.max(s.streak.best,s.streak.current);
   }
   function streakCount(s,today){
-    return s.streak&&isDay(s.streak.lastDay)&&isDay(today)&&dayGap(today,s.streak.lastDay)<=1?s.streak.current:0;
+    const gap=s.streak&&isDay(s.streak.lastDay)&&isDay(today)?dayGap(today,s.streak.lastDay):NaN;return gap>=0&&gap<=1?s.streak.current:0;
   }
   function evaluate(step,response){
     if(!step)return false;

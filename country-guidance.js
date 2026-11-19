@@ -1,5 +1,9 @@
 'use strict';
 (() => {
+  // Country choice is separate from the eight detailed NIS2 profiles.
+  window.WINTERWATCH_JURISDICTIONS=Object.freeze([
+    ['at','Austria'],['be','Belgium'],['bg','Bulgaria'],['hr','Croatia'],['cy','Cyprus'],['cz','Czechia'],['dk','Denmark'],['ee','Estonia'],['fi','Finland'],['fr','France'],['de','Germany'],['gr','Greece'],['hu','Hungary'],['ie','Ireland'],['it','Italy'],['lv','Latvia'],['lt','Lithuania'],['lu','Luxembourg'],['mt','Malta'],['nl','Netherlands'],['pl','Poland'],['pt','Portugal'],['ro','Romania'],['sk','Slovakia'],['si','Slovenia'],['es','Spain'],['se','Sweden']
+  ].map(([id,name])=>Object.freeze({id,name})));
   const s=window.WINTERWATCH_SOURCES;
   Object.assign(s,{
     countryDe:{title:'Germany: current BSIG and NIS2 commencement',org:'Federal German statute · amended 22 Oct 2026',url:'https://www.gesetze-im-internet.de/bsig_2025/BJNR12D0B0025.html',kind:'National enacted law · sections 32–33',activity:'Read registration and reporting triggers, scope exclusions and the current BSI route.'},
