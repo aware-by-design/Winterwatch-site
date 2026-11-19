@@ -55,6 +55,30 @@
   function initiativeHtml(){return `<div class="publisher-card"><img src="assets/winterwatch-mark.svg" alt="" width="40" height="40"><p><b>${esc(initiative)}</b><br><a href="${arInABoxUrl}" target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></p></div>`;}
   const localDate=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());return Object.fromEntries(p.map(x=>[x.type,x.value]));};
   const todayKey=()=>{const d=localDate();return `${d.year}-${d.month}-${d.day}`;};
+  let adventTimer=null;
+  function adventStatus(now=new Date()){
+    const d=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now).map(x=>[x.type,x.value]));
+    const today=Date.UTC(Number(d.year),Number(d.month)-1,Number(d.day)),start=Date.UTC(2026,11,1),end=Date.UTC(2026,11,24);
+    if(today<start)return {phase:'before',day:0,remaining:24,untilStart:Math.round((start-today)/86400000)};
+    if(today>end)return {phase:'after',day:24,remaining:0,untilStart:0};
+    const day=Number(d.day);return {phase:'during',day,remaining:24-day,untilStart:0};
+  }
+  function upcomingAdventLessons(now=new Date()){
+    // All 2026 Advent sessions are in CET: 09:00 Berlin is 08:00 UTC.
+    const time=now.getTime();return lessons.filter(l=>Date.UTC(2026,11,l.id,8)>=time);
+  }
+  function updateAdventTracker(now=new Date()){
+    const current=adventStatus(now),left=Math.max(0,24-state.completed.length),upcoming=upcomingAdventLessons(now);
+    const set=(selector,value)=>{const node=$(selector),text=String(value);if(node&&node.textContent!==text)node.textContent=text;};
+    const day=current.phase==='before'?'Starts 1 December':current.phase==='after'?'All 24 days released':`Day ${current.day} of 24`;
+    const remainingLabel=current.phase==='before'?'Advent days ahead':current.phase==='during'?'Days remaining after today':'Advent days remaining';
+    set('#adventCurrentDay',day);set('#adventDaysRemaining',current.remaining);set('#adventRemainingLabel',remainingLabel);set('#adventQuestsRemaining',left);
+    set('#adventTiming',current.phase==='before'?`${current.untilStart} ${current.untilStart===1?'day':'days'} until Day 1 · 1–24 December 2026 · Europe/Berlin.`:current.phase==='after'?'The 2026 Advent calendar has ended. All 24 lessons remain available.':`${current.day===24?'The final Advent day is here.':`Today is Day ${current.day}.`} Dates follow Europe/Berlin; quest progress is separate.`);
+    const button=$('[data-download-advent-reminders]');if(button){button.disabled=upcoming.length===0;button.setAttribute('aria-disabled',String(!upcoming.length));button.textContent=upcoming.length?`Add ${upcoming.length} daily ${upcoming.length===1?'reminder':'reminders'} ↓`:'2026 reminders have ended';}
+    set('#adventStatusAnnouncement',`${day}. ${current.remaining} Advent ${current.remaining===1?'day':'days'} remaining${current.phase==='during'?' after today':''}. ${left} ${left===1?'quest':'quests'} left to complete.`);
+  }
+  function tickAdventTracker(){updateAdventTracker();clearTimeout(adventTimer);adventTimer=setTimeout(tickAdventTracker,60000);}
+
   function refreshProgress(){
     saveProgress();updateProgress();
     const unlocked=badges().filter(b=>b.earned&&!knownBadgeIds.has(b.id));
@@ -70,6 +94,7 @@
     $('.progress-button small').textContent=`${state.completed.length} of 24 quests · ${storageLabel()}`;
     $('#progressRing').style.setProperty('--progress',`${points()/24}%`);
     $('#progressButton').setAttribute('aria-label',`Show progress: ${points()} XP, ${state.completed.length} of 24 quests complete`);
+    updateAdventTracker();
   }
   const icon = name => {
     const paths={
@@ -345,9 +370,29 @@
     const country=countries.find(c=>c.id===state.country)||countries[0];
     const milestones=[...dates.map(d=>({...d,scope:'EU'})),...country.milestones.map(d=>({...d,scope:country.name}))];
     for(const [i,d] of milestones.entries()){const next=new Date(d.date+'T12:00:00Z');next.setUTCDate(next.getUTCDate()+1);lines.push('BEGIN:VEVENT',`UID:winterwatch-${state.country}-${d.date}-${i}@calendar.local`,'DTSTAMP:20261106T000000Z',`DTSTART;VALUE=DATE:${d.date.replaceAll('-','')}`,`DTEND;VALUE=DATE:${next.toISOString().slice(0,10).replaceAll('-','')}`,`SUMMARY:${e(d.scope+' · '+d.name)}`,`DESCRIPTION:${e(d.detail+' Confirm the applicable entity, cohort, role and current law. This is a learning milestone, not an organisation-specific deadline. Reviewed 6 November 2026. '+sources[d.source].url)}`,'END:VEVENT');}lines.push('END:VCALENDAR');
+    return foldCalendarLines(lines);
+  }
+  function foldCalendarLines(lines){
     // Fold long iCalendar lines by UTF-8 octets, as required by RFC 5545.
     const enc=new TextEncoder();const folded=lines.map(line=>{let out='',part='',bytes=0;for(const ch of line){const n=enc.encode(ch).length;if(bytes+n>74){out+=part+'\r\n ';part='';bytes=1;}part+=ch;bytes+=n;}return out+part;}).join('\r\n')+'\r\n';
     return folded;
+  }
+  function adventReminderCalendar(now=new Date()){
+    const e=value=>String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+    const upcoming=upcomingAdventLessons(now);if(!upcoming.length)return '';
+    const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ENISA ARCH AHWG//Winterwatch Advent 2026//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Winterwatch Advent 2026','X-WR-TIMEZONE:Europe/Berlin'];
+    for(const l of upcoming){
+      const date=`202612${String(l.id).padStart(2,'0')}`,url=lessonUrl(l.id);
+      const description=`${initiative}\n\n${l.title}\n${l.takeaway}\n\nPlay this lesson: ${url}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n\nDaily learning session at 09:00 Europe/Berlin. Check your calendar application's notification settings after importing.`;
+      lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261119T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`,`URL:${url}`,'TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:0','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Winterwatch Day ${l.id}: ${l.title}`)}`,'END:VALARM','END:VEVENT');
+    }
+    lines.push('END:VCALENDAR');return foldCalendarLines(lines);
+  }
+  function exportAdventReminders(){
+    const now=new Date(),calendar=adventReminderCalendar(now),count=upcomingAdventLessons(now).length;
+    if(!calendar){toast('The 2026 reminder schedule has ended. All lessons remain available.');return;}
+    download(calendar,'winterwatch-advent-2026-reminders.ics','text/calendar;charset=utf-8');
+    toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded. Import the .ics file into your calendar.`);
   }
   function exportDates(){download(milestoneCalendar(),`winterwatch-eu-${state.country}-milestones.ics`,'text/calendar;charset=utf-8');toast('EU and selected-country milestones downloaded. Review applicability before adding them.');}
   function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('.sleigh-flight').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow is falling':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
@@ -395,6 +440,7 @@
     if(b.hasAttribute('data-progress')||b.id==='progressButton'){progress();return;}
     if(b.hasAttribute('data-about')){about();return;}
     if(b.hasAttribute('data-sources')){allSources();return;}
+    if(b.hasAttribute('data-download-advent-reminders')){exportAdventReminders();return;}
     if(b.hasAttribute('data-export-dates')){exportDates();return;}
     if(b.hasAttribute('data-export-sources')){download(JSON.stringify({reviewed:'2026-11-06',sources},null,2),'winterwatch-source-register.json','application/json');toast('Source register downloaded.');return;}
     if(b.hasAttribute('data-reset-progress')){$('.guide-actions').innerHTML='<p>This clears saved quests, XP, reading bonuses, badges and streaks from this browser.</p><button class="button button-green" data-confirm-reset>Reset my progress</button><button class="subtle-button" data-progress>Keep playing</button>';return;}
@@ -419,6 +465,7 @@
   });
   window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#day=(\d{1,2})$/);if(m)openLesson(Number(m[1]),false);});
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',setAmbience);
-  renderDoors();updateProgress();setAmbience();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateAdventTracker();renderDoors();}});
+  renderDoors();updateProgress();setAmbience();tickAdventTracker();
   const deepLink=location.hash.match(/^#day=(\d{1,2})$/);if(deepLink)openLesson(Number(deepLink[1]),false);
 })();
