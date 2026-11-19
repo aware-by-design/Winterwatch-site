@@ -192,13 +192,15 @@
   }
   let renderedDoorDay='';
   function syncDailyDoors(){
-    if($('#holidayDialog').open&&!available(24))$('#holidayDialog').close();
+    if($('#holidayDialog').open&&!holidayGreetingAllowed())$('#holidayDialog').close();
+    if($('#welcomeDialog').open&&!welcomeGreetingAllowed())$('#welcomeDialog').close();
     if($('#doorLockDialog').open)$('#doorLockMessage').textContent=available(lockedDoorId)?`Day ${lockedDoorId} is now open. Close this note to explore it.`:lockedDoorMessage(lockedDoorId);
     $('#nestorDoorMessage').textContent=nestorDoorMessage();
-    if(renderedDoorDay===releaseWindowKey())return;
+    if(renderedDoorDay===releaseWindowKey()){syncCalendarGreetings();return;}
     const focusedDay=Number(document.activeElement?.dataset?.door);renderDoors();
     if($('#lessonDialog').open&&!available(activeId)){$('#lessonDialog').close();showDoorLock(activeId);}
     else if(Number.isInteger(focusedDay)&&focusedDay>=1&&focusedDay<=24)$(`[data-door="${focusedDay}"]`)?.focus({preventScroll:true});
+    syncCalendarGreetings();
   }
   function activeDoorAllowed(){
     if(available(activeId))return true;
@@ -230,9 +232,9 @@
     const access=dailyAccess();
     const visible=lessons.filter(l=>(category==='all'||l.category===category)&&(state.context==='all'||games[l.id].contexts.includes(state.context)));
     $('#doorsGrid').innerHTML=visible.map(l=>{
-      const locked=!available(l.id),opened=!locked&&state.opened.includes(l.id),completed=!locked&&state.completed.includes(l.id);
+      const locked=!available(l.id),upcoming=!doorReleased(l.id),opened=!locked&&state.opened.includes(l.id),completed=!locked&&state.completed.includes(l.id);
       const lens=state.audience==='everyone'?games[l.id].role:`${state.audience} perspective`;
-      return `<button class="advent-door tone-${(l.id-1)%8}${completed||!locked?' is-unwrapped':''}${access.availableDay===l.id&&!completed?' is-today':''}${locked?' locked':''}" data-door="${l.id}" data-door-status="${completed?'completed':locked?'locked':access.availableDay===l.id?'today':'opened'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${locked?'Locked. '+lockedDoorMessage(l.id):completed?'Completed. Revisit this day':opened?'Resume this day’s game':'Today’s door. Open lesson'}." ${locked?'aria-disabled="true"':''}><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span>${completed?state.readings.includes(l.id)?'100 XP · fully explored ✓':'Day won · reading bonus ↗':'Play the day →'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star">${locked?'⌑':'✦'}</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${esc(label[l.category])}</span></span></button>`;
+      return `<button class="advent-door tone-${(l.id-1)%8}${completed||!locked?' is-unwrapped':''}${access.availableDay===l.id&&!completed?' is-today':''}${locked?' locked':''}${upcoming?' is-upcoming':''}" data-door="${l.id}" data-door-status="${completed?'completed':locked?'locked':access.availableDay===l.id?'today':'opened'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${locked?'Locked. '+lockedDoorMessage(l.id):completed?'Completed. Revisit this day':opened?'Resume this day’s game':'Today’s door. Open lesson'}." ${locked?'aria-disabled="true"':''}><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span>${completed?state.readings.includes(l.id)?'100 XP · fully explored ✓':'Day won · reading bonus ↗':'Play the day →'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star" aria-hidden="true">${locked?'<svg class="door-lock-symbol" viewBox="0 0 20 24" width="14" height="17" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 10V6a5 5 0 0 1 10 0v4"/><rect x="2" y="10" width="16" height="12" rx="2"/><path d="M10 14v4"/></svg>':'✦'}</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${upcoming?`Opens ${l.id} Dec · 09:00 CET`:esc(label[l.category])}</span></span></button>`;
     }).join('');
     $('#emptyState').hidden=visible.length>0;
     $('#announcer').textContent=`${visible.length} lessons shown`;
@@ -246,23 +248,49 @@
     const l=lessons.find(x=>x.id===id);if(!l)return;
     if(!available(id)){showDoorLock(id);if(!$('#lessonDialog').open&&/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');return;}
     if(!$('#lessonDialog').open)lessonReturnFocus=focusTarget();
+    if($('#welcomeDialog').open)$('#welcomeDialog').close();
+    if($('#holidayDialog').open&&holidayMode==='christmas')$('#holidayDialog').close();
     setMenu(false);
     const already=state.opened.includes(id);
     if(!already){state.opened.push(id);refreshProgress();toast('+10 XP · A little wiser already.');}
     if($('#infoDialog').open)$('#infoDialog').close();
-    const show=()=>{activeId=id;activeTab='play';currentStage=engine.firstUnsolved(state,id);readingFeedback=null;modalLens=state.audience==='everyone'?'technical':state.audience;renderLesson();if(!$('#lessonDialog').open)$('#lessonDialog').showModal();history.replaceState(null,'',`#day=${id}`);renderDoors();if(id===24&&!holidayGreetingShown)showHolidayGreeting();};
+    const show=()=>{activeId=id;activeTab='play';currentStage=engine.firstUnsolved(state,id);readingFeedback=null;modalLens=state.audience==='everyone'?'technical':state.audience;renderLesson();if(!$('#lessonDialog').open)$('#lessonDialog').showModal();history.replaceState(null,'',`#day=${id}`);renderDoors();if(id===24&&!holidayGreetingShown)showHolidayGreeting();else if(id===1&&!already&&!welcomeGreetingShown&&welcomeGreetingAllowed())showWelcomeGreeting();};
     show();
   }
-  let holidayGreetingShown=false,holidayReturnFocus=null;
-  function showHolidayGreeting(){
-    if(activeId!==24||!$('#lessonDialog').open||!available(24))return;
+  let holidayGreetingShown=false,christmasGreetingShown=false,holidayReturnFocus=null,holidayMode='lesson';
+  let welcomeGreetingShown=false,welcomeReturnFocus=null,greetingsReady=false;
+  function welcomeGreetingAllowed(now=new Date()){
+    const status=releaseWindowStatus(now);return status.phase==='during'&&status.day===1&&doorReleased(1,now);
+  }
+  function holidayGreetingAllowed(mode=holidayMode,now=new Date()){
+    return mode==='christmas'?todayKey(now)==='2026-12-25'&&doorReleased(24,now):mode==='lesson'&&activeId===24&&$('#lessonDialog').open&&available(24,now);
+  }
+  function showHolidayGreeting(mode='lesson'){
+    if(!holidayGreetingAllowed(mode))return;
     const dialog=$('#holidayDialog');if(!dialog.open)holidayReturnFocus=document.activeElement;
-    holidayGreetingShown=true;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#holidayClose').focus({preventScroll:true});
+    holidayMode=mode;holidayGreetingShown=true;if(todayKey()==='2026-12-25')christmasGreetingShown=true;
+    $('#holidayKicker').textContent=mode==='christmas'?'25 DECEMBER · A FESTIVE HELLO FROM THE NESTOR FAMILY':'DAY 24 · A FESTIVE HELLO FROM THE NESTOR FAMILY';
+    $('#holidayAcknowledge').textContent=mode==='christmas'?'Continue the calendar':'Back to Day 24';
+    if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#holidayClose').focus({preventScroll:true});
   }
   function restoreHolidayFocus(){
     if($('#lessonDialog').open){if(holidayReturnFocus?.isConnected!==false&&holidayReturnFocus?.closest?.('#lessonDialog'))holidayReturnFocus.focus({preventScroll:true});else $('#lessonDialog [data-holiday-greeting]')?.focus({preventScroll:true});}
-    else restoreFocus(lessonReturnFocus);
+    else restoreFocus({element:holidayReturnFocus});
   }
+  function showWelcomeGreeting(){
+    if(!welcomeGreetingAllowed())return;
+    const dialog=$('#welcomeDialog');if(!dialog.open)welcomeReturnFocus=document.activeElement;
+    welcomeGreetingShown=true;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#welcomeClose').focus({preventScroll:true});
+  }
+  function restoreWelcomeFocus(){
+    if($('#lessonDialog').open)$('#lessonDialog [data-close]')?.focus({preventScroll:true});else restoreFocus({element:welcomeReturnFocus});
+  }
+  function syncCalendarGreetings(){
+    if(!greetingsReady||['#lessonDialog','#infoDialog','#doorLockDialog','#holidayDialog','#welcomeDialog'].some(selector=>$(selector).open))return;
+    if(todayKey()==='2026-12-25'&&!christmasGreetingShown){showHolidayGreeting('christmas');return;}
+    if(welcomeGreetingAllowed()&&!welcomeGreetingShown&&!state.opened.includes(1)&&!state.completed.includes(1))showWelcomeGreeting();
+  }
+  function scheduleCalendarGreetings(){queueMicrotask(syncCalendarGreetings);}
   function safeArtworkPath(path){return typeof path==='string'&&/^assets\/lessons\/[a-z0-9-]+\.webp$/.test(path)?path:'';}
   function visualFor(l){
     const visual=lessonVisuals[l.id],art=visual&&artworks[visual.artwork];
@@ -573,6 +601,8 @@
     if(b.closest?.('#mainNav')&&b.getAttribute('href')==='#calendar'){e.preventDefault();setMenu(false);location.hash='#calendar';$('#calendarTitle').scrollIntoView?.({block:'start'});$('#calendarTitle').focus({preventScroll:true});return;}
     if(b.hasAttribute('data-close-door-lock')){$('#doorLockDialog').close();return;}
     if(b.hasAttribute('data-close-holiday')){$('#holidayDialog').close();return;}
+    if(b.hasAttribute('data-close-welcome')){$('#welcomeDialog').close();return;}
+    if(b.hasAttribute('data-welcome-start')){$('#welcomeDialog').close();openLesson(1);return;}
     if(b.hasAttribute('data-holiday-greeting')){showHolidayGreeting();return;}
     if(b.id==='menuToggle'){setMenu($('#menuToggle').getAttribute('aria-expanded')!=='true');return;}
     if(b.hasAttribute('data-game-choice')){submitStep(Number(b.dataset.gameChoice));return;}
@@ -625,11 +655,12 @@
   });
   function chooseCountry(id,fromSelect=false){if(!jurisdictions.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
   document.addEventListener('change',e=>{if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}});
-  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open)restoreDoorLockFocus();});
-  $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open)restoreHolidayFocus();});
-  $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);});
-  $('#infoDialog').addEventListener('close',()=>{if(!$('#infoDialog').open&&!$('#lessonDialog').open)restoreFocus(infoReturnFocus);});
-  for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog'),$('#holidayDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){restoreDoorLockFocus();scheduleCalendarGreetings();}});
+  $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open){restoreHolidayFocus();scheduleCalendarGreetings();}});
+  $('#welcomeDialog').addEventListener('close',()=>{if(!$('#welcomeDialog').open){restoreWelcomeFocus();scheduleCalendarGreetings();}});
+  $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);scheduleCalendarGreetings();});
+  $('#infoDialog').addEventListener('close',()=>{if(!$('#infoDialog').open&&!$('#lessonDialog').open)restoreFocus(infoReturnFocus);scheduleCalendarGreetings();});
+  for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog'),$('#holidayDialog'),$('#welcomeDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#menuToggle').getAttribute('aria-expanded')==='true'){setMenu(false,true);return;}if(e.target.matches('[role="tab"]')&&['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const tabs=$$('[role="tab"]');let i=tabs.indexOf(e.target);i=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;const id=tabs[i].dataset.tab;setTab(id);$(`[role="tab"][data-tab="${id}"]`).focus();}});
   window.addEventListener('storage',e=>{
     if(e.key!==progressKey&&e.key!==null)return;
@@ -647,4 +678,5 @@
   renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();
   if(typeof window.ResizeObserver==='function'){const observer=new window.ResizeObserver(syncAtmosphereLayout);observer.observe($('.hero'));}
   const deepLink=location.hash.match(/^#day=(\d{1,2})$/);if(deepLink)openLesson(Number(deepLink[1]),false);
+  greetingsReady=true;syncCalendarGreetings();
 })();
