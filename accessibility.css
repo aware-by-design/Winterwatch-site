@@ -51,6 +51,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .nestor-illustration{height:320px;display:flex;align-items:center;justify-content:center}.nestor-illustration img{width:100%;height:100%;object-fit:contain}
 .nestor-day-ribbon{max-width:290px;margin:10px auto 14px;padding:11px 16px;text-align:center;border-radius:6px;background:#e8ca8e;color:#173d31;box-shadow:0 4px 12px #071f1b1a}.nestor-day-ribbon span{display:block;font-size:.75rem;font-weight:600;letter-spacing:.08em;line-height:1.5}.nestor-day-ribbon strong{display:block;font:400 1.25rem/1.3 var(--serif);margin-top:3px}
 .advent-reminder-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.advent-reset-button{min-height:48px;padding:11px 16px;border:1px solid #96af98;border-radius:8px;background:#173d31;color:#fff8e6;font-size:.875rem;line-height:1.5}.advent-reset-button:hover{background:#234f3e}.advent-reset-button:focus-visible{outline-color:#fff8e6;outline-offset:5px}
+.progress-actions{display:flex;justify-content:flex-end;margin:0 0 20px}.progress-actions .button,.reset-confirm-actions .button{min-height:48px;font-size:.875rem}.reset-confirm-actions{flex-wrap:wrap}.reset-confirm-actions .button{white-space:normal}
 @media(max-width:600px){.nestor-illustration{height:228px}.nestor-day-ribbon{max-width:230px;margin:8px auto 12px}.advent-reminder-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.advent-reset-button{width:100%}}
 
 /* Still calendar cards and Nestor artwork, with optional snowfall in the lodge. */
