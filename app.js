@@ -55,7 +55,7 @@
   function initiativeHtml(){return `<div class="publisher-card"><img src="assets/winterwatch-mark.svg" alt="" width="40" height="40"><p><b>${esc(initiative)}</b><br><a href="${arInABoxUrl}" target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></p></div>`;}
   const localDate=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());return Object.fromEntries(p.map(x=>[x.type,x.value]));};
   const todayKey=()=>{const d=localDate();return `${d.year}-${d.month}-${d.day}`;};
-  let adventTimer=null;
+  let adventTimer=null,reminderExportPending=false;
   function adventStatus(now=new Date()){
     const d=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now).map(x=>[x.type,x.value]));
     const today=Date.UTC(Number(d.year),Number(d.month)-1,Number(d.day)),start=Date.UTC(2026,11,1),end=Date.UTC(2026,11,24);
@@ -67,14 +67,64 @@
     // All 2026 Advent sessions are in CET: 09:00 Berlin is 08:00 UTC.
     const time=now.getTime();return lessons.filter(l=>Date.UTC(2026,11,l.id,8)>=time);
   }
+  const adventNestorFamily=Object.freeze({src:'assets/nestor-advent-reminder.webp',width:768,height:512,alt:'The Nestor family in Christmas sweaters and winter boots, sharing a calendar marked 1–24 December 2026.'});
+  const adventNestorHosts=Object.freeze([
+    {src:'assets/nestor-burgundy.webp',width:512,height:640,alt:'Nestor in a burgundy Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-green.webp',width:480,height:640,alt:'Nestor in a green Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-red.webp',width:512,height:640,alt:'Nestor with a pink flower, red Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
+    {src:'assets/nestor-blue.webp',width:512,height:640,alt:'Nestor in a blue Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'}
+  ]);
+  const adventBriefs=Object.freeze({
+    1:'Explore how exposed refrigeration controls can affect everyday services. Choose the first response, useful warning signs and safer supplier access.',
+    2:'Practise choosing an AI supplier. Ask about data, security evidence, responsibilities, incident support and a usable exit.',
+    3:'Follow a stolen integration token across connected services. Decide what to revoke, what to investigate and what to ask a supplier.',
+    4:'Discover how a dependency can expose build secrets. Practise reducing access, reconstructing the chain and responding to an affected release.',
+    5:'Learn why a patch is only part of recovery. Look for persistence and choose the steps needed before returning a service to use.',
+    6:'Investigate an unusual successful login. Practise protecting identities, spotting suspicious data access and asking your provider useful questions.',
+    7:'Trace the reported Binance attack across several handoffs. Find opportunities to interrupt the chain and check whether containment is complete.',
+    8:'Examine an impersonation attempt involving a CFO on screen. Choose an independent way to verify the action and apply the habit at home.',
+    9:'Explore how AI assistance can connect attack steps. Separate evidence from assessment, join warning signals and choose a proportionate response.',
+    10:'See how untrusted instructions can reach an assistant’s tools. Practise limiting permissions and protecting the boundary around sensitive actions.',
+    11:'Explore an identity story that looks convincing. Compare independent evidence and choose fair checks that protect people and their data.',
+    12:'Practise pausing before sharing information with AI. Minimise sensitive inputs, check outputs and choose a safer family-photo habit.',
+    13:'Work through a suspected personal-data breach. Identify who needs to know, record awareness and prepare useful notification information.',
+    14:'Explore NIS2 scope, national reporting routes and incident decisions. Practise finding the right authority and keeping reporting responsibilities clear.',
+    15:'Turn supplier promises into practical resilience. Explore contract responsibilities, continuity evidence and distinct incident-reporting timestamps.',
+    16:'Ask how connected products stay secure after purchase. Explore support, updates, manufacturer practices and the calendar used in the lesson.',
+    17:'Practise classifying an AI use case before assigning a deadline. Work through the lesson’s dated timeline and distinguish different milestones.',
+    18:'Practise recognising when a person should step in. Explore useful AI learning, human decision boundaries and how to recheck a changed assistant.',
+    19:'Investigate a fictional invoice-access problem. Distinguish signing in from permission to view a record and choose a responsible reporting route.',
+    20:'Work through a fictional bank assistant reading a poisoned document. Separate information from instructions and limit what the assistant can do.',
+    21:'Connect warning signs around sensitive data. Explore a published case and practise choosing an accountable escalation and a useful provider update.',
+    22:'Prepare an incident handoff before it is needed. Match stakeholders to their roles and choose a rehearsal with clear scope and authorisation.',
+    23:'Turn an advisory into a practical coverage check. Connect it to your assets, suppliers, controls and the person responsible for action.',
+    24:'Bring the season’s habits together in everyday decisions about family payments, work assistants and supplier alerts. Choose one habit to carry forward.'
+  });
+  function adventReminderModel(now=new Date()){
+    const status=adventStatus(now),lesson=status.phase==='during'?lessons.find(l=>l.id===status.day):null;
+    return {...status,lesson,host:lesson?adventNestorHosts[(lesson.id-1)%adventNestorHosts.length]:adventNestorFamily,brief:lesson?adventBriefs[lesson.id]:''};
+  }
+  function updateAdventReminder(now=new Date()){
+    const model=adventReminderModel(now),l=model.lesson;
+    const set=(selector,value)=>{const node=$(selector);if(node&&node.textContent!==value)node.textContent=value;};
+    set('#adventReminderKicker',l?`DAY ${l.id} · LEARN WITH NESTOR`:model.phase==='after'?'KEEP LEARNING WITH NESTOR':'A DAILY HELLO FROM THE NESTOR FAMILY');
+    set('#adventTitleMain',l?l.title:model.phase==='after'?'Keep your good habits.':'A little reminder.');
+    const accent=$('#adventTitleAccent');if(accent)accent.hidden=!!l;
+    set('#adventTitleAccent',model.phase==='after'?'A wiser year ahead.':'A wiser December.');
+    set('#adventReminderBrief',l?model.brief:model.phase==='after'?'The Nestor family is here for a refresher. Revisit any of the 24 lessons and keep one useful habit going.':'Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.');
+    set('#nestorRibbonKicker',l?`DAY ${l.id} WITH NESTOR`:'THE NESTOR FAMILY');
+    set('#nestorRibbonDate',l?`${l.id} December 2026`:'1–24 December 2026');
+    const image=$('#adventHostImage');if(image){image.setAttribute('src',model.host.src);image.setAttribute('alt',model.host.alt);image.setAttribute('width',String(model.host.width));image.setAttribute('height',String(model.host.height));}
+  }
   function updateAdventTracker(now=new Date()){
+    updateAdventReminder(now);
     const current=adventStatus(now),left=Math.max(0,24-state.completed.length),upcoming=upcomingAdventLessons(now);
     const set=(selector,value)=>{const node=$(selector),text=String(value);if(node&&node.textContent!==text)node.textContent=text;};
     const day=current.phase==='before'?'Starts 1 December':current.phase==='after'?'All 24 days released':`Day ${current.day} of 24`;
     const remainingLabel=current.phase==='before'?'Advent days ahead':current.phase==='during'?'Days remaining after today':'Advent days remaining';
     set('#adventCurrentDay',day);set('#adventDaysRemaining',current.remaining);set('#adventRemainingLabel',remainingLabel);set('#adventQuestsRemaining',left);
     set('#adventTiming',current.phase==='before'?`${current.untilStart} ${current.untilStart===1?'day':'days'} until Day 1 · 1–24 December 2026 · Europe/Berlin.`:current.phase==='after'?'The 2026 Advent calendar has ended. All 24 lessons remain available.':`${current.day===24?'The final Advent day is here.':`Today is Day ${current.day}.`} Dates follow Europe/Berlin; quest progress is separate.`);
-    const button=$('[data-download-advent-reminders]');if(button){button.disabled=upcoming.length===0;button.setAttribute('aria-disabled',String(!upcoming.length));button.textContent=upcoming.length?`Add ${upcoming.length} daily ${upcoming.length===1?'reminder':'reminders'} ↓`:'2026 reminders have ended';}
+    const button=$('[data-download-advent-reminders]');if(button){button.disabled=reminderExportPending||upcoming.length===0;button.setAttribute('aria-disabled',String(button.disabled));button.setAttribute('aria-busy',String(reminderExportPending));button.textContent=reminderExportPending?'Preparing reminders…':upcoming.length?`Add ${upcoming.length} daily ${upcoming.length===1?'reminder':'reminders'}`:'2026 reminders have ended';}
     set('#adventStatusAnnouncement',`${day}. ${current.remaining} Advent ${current.remaining===1?'day':'days'} remaining${current.phase==='during'?' after today':''}. ${left} ${left===1?'quest':'quests'} left to complete.`);
   }
   function tickAdventTracker(){updateAdventTracker();clearTimeout(adventTimer);adventTimer=setTimeout(tickAdventTracker,60000);}
@@ -374,28 +424,54 @@
   }
   function foldCalendarLines(lines){
     // Fold long iCalendar lines by UTF-8 octets, as required by RFC 5545.
-    const enc=new TextEncoder();const folded=lines.map(line=>{let out='',part='',bytes=0;for(const ch of line){const n=enc.encode(ch).length;if(bytes+n>74){out+=part+'\r\n ';part='';bytes=1;}part+=ch;bytes+=n;}return out+part;}).join('\r\n')+'\r\n';
+    const enc=new TextEncoder();const folded=lines.map(line=>{if(/^[\x20-\x7e]*$/.test(line)){const parts=[line.slice(0,74)];for(let i=74;i<line.length;i+=73)parts.push(' '+line.slice(i,i+73));return parts.join('\r\n');}let out='',part='',bytes=0;for(const ch of line){const n=enc.encode(ch).length;if(bytes+n>74){out+=part+'\r\n ';part='';bytes=1;}part+=ch;bytes+=n;}return out+part;}).join('\r\n')+'\r\n';
     return folded;
   }
-  function adventReminderCalendar(now=new Date()){
+  function adventReminderCalendar(now=new Date(),images=new Map()){
     const e=value=>String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
     const upcoming=upcomingAdventLessons(now);if(!upcoming.length)return '';
     const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ENISA ARCH AHWG//Winterwatch Advent 2026//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Winterwatch Advent 2026','X-WR-TIMEZONE:Europe/Berlin'];
     for(const l of upcoming){
-      const date=`202612${String(l.id).padStart(2,'0')}`,url=lessonUrl(l.id);
-      const description=`${initiative}\n\n${l.title}\n${l.takeaway}\n\nPlay this lesson: ${url}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n\nDaily learning session at 09:00 Europe/Berlin. Check your calendar application's notification settings after importing.`;
-      lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261119T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`,`URL:${url}`,'TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:0','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Winterwatch Day ${l.id}: ${l.title}`)}`,'END:VALARM','END:VEVENT');
+      const date=`202612${String(l.id).padStart(2,'0')}`,visual=visualFor(l),image=visual&&images.get(visual.src),brief=adventBriefs[l.id]||l.takeaway;
+      const description=`Day ${l.id} with Nestor: ${l.title}\n\nWHAT TO EXPECT\n${brief}\n\nTODAY’S TAKEAWAY\n${l.takeaway}\n\n10 minutes at 09:00 Europe/Berlin. Make three practical decisions, then explore the briefing and sources in the Winterwatch calendar.\n\n${initiative}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n\nThe illustration is conceptual AI-assisted learning artwork, not incident evidence. Image display and alerts depend on your calendar application.`;
+      lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261119T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch with Nestor · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`);
+      if(image?.type==='image/jpeg'&&typeof image.data==='string'&&image.data.length>0&&image.data.length<=30000&&image.data.length%4===0&&/^[A-Za-z0-9+/]+={0,2}$/.test(image.data))lines.push(`IMAGE;DISPLAY=FULLSIZE;FMTTYPE=image/jpeg;ENCODING=BASE64;VALUE=BINARY:${image.data}`);
+      lines.push('TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:1','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Day ${l.id} with Nestor: ${l.title}. What to expect: ${brief}`)}`,'END:VALARM','END:VEVENT');
     }
     lines.push('END:VCALENDAR');return foldCalendarLines(lines);
   }
-  function exportAdventReminders(){
-    const now=new Date(),calendar=adventReminderCalendar(now),count=upcomingAdventLessons(now).length;
-    if(!calendar){toast('The 2026 reminder schedule has ended. All lessons remain available.');return;}
-    download(calendar,'winterwatch-advent-2026-reminders.ics','text/calendar;charset=utf-8');
-    toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded. Import the .ics file into your calendar.`);
+  const reminderImageCache=new Map();
+  async function embeddedReminderImage(l){
+    const visual=visualFor(l);if(!visual)return null;
+    if(!reminderImageCache.has(visual.src))reminderImageCache.set(visual.src,(async()=>{
+      let timeout;try{
+        const image=await Promise.race([loadArtwork(l),new Promise(resolve=>{timeout=setTimeout(()=>resolve(null),8000);})]);if(!image)return null;
+        const canvas=document.createElement('canvas');
+        for(const width of [480,360]){
+          const scale=Math.min(1,width/image.naturalWidth,360/image.naturalHeight);canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+          const ctx=canvas.getContext('2d');if(!ctx)return null;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
+          for(const quality of [.78,.62,.46]){const data=canvas.toDataURL('image/jpeg',quality);if(data.startsWith('data:image/jpeg;base64,')&&data.length-23<=30000)return {type:'image/jpeg',data:data.slice(23)};}
+        }
+        return null;
+      }catch{return null;}finally{clearTimeout(timeout);}
+    })());
+    const result=await reminderImageCache.get(visual.src);if(!result)reminderImageCache.delete(visual.src);return result;
+  }
+  async function exportAdventReminders(){
+    if(reminderExportPending)return;
+    const now=new Date(),upcoming=upcomingAdventLessons(now),count=upcoming.length;
+    if(!count){toast('The 2026 reminder schedule has ended. All lessons remain available.');return;}
+    reminderExportPending=true;updateAdventTracker(now);
+    try{
+      const pairs=await Promise.all(upcoming.map(async l=>[visualFor(l)?.src,await embeddedReminderImage(l)])),images=new Map(pairs.filter(([src,image])=>src&&image));
+      download(adventReminderCalendar(now,images),'winterwatch-advent-2026-reminders.ics','text/calendar;charset=utf-8');
+      const missing=upcoming.some(l=>!images.has(visualFor(l)?.src));toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded.${missing?' Some illustrations could not be included; the titles and briefs are complete.':' Import the .ics file into your calendar.'}`);
+    }finally{reminderExportPending=false;updateAdventTracker();}
   }
   function exportDates(){download(milestoneCalendar(),`winterwatch-eu-${state.country}-milestones.ics`,'text/calendar;charset=utf-8');toast('EU and selected-country milestones downloaded. Review applicability before adding them.');}
-  function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('.sleigh-flight').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow is falling':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
+  let nestorMotionEnabled=state.ambience;
+  function setNestorMotion(){const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches,on=nestorMotionEnabled&&!reduced;$('#nestorIllustration')?.classList.toggle('is-animated',on);const button=$('[data-toggle-nestor-motion]');if(button){button.disabled=reduced;button.setAttribute('aria-pressed',String(on));button.textContent=reduced?'Reduced motion enabled':on?'Pause animation':'Play animation';}}
+  function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('.sleigh-flight').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow is falling':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';setNestorMotion();}
   $('#snow').innerHTML=Array.from({length:42},(_,i)=>`<span style="--x:${(i*37)%100}%;--s:${i%4+1}px;--o:${.15+(i%5)*.1};--d:${12+i%13}s;--delay:-${i%23}s"></span>`).join('');
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button,a');if(!b)return;
@@ -440,13 +516,14 @@
     if(b.hasAttribute('data-progress')||b.id==='progressButton'){progress();return;}
     if(b.hasAttribute('data-about')){about();return;}
     if(b.hasAttribute('data-sources')){allSources();return;}
-    if(b.hasAttribute('data-download-advent-reminders')){exportAdventReminders();return;}
+    if(b.hasAttribute('data-download-advent-reminders')){await exportAdventReminders();return;}
+    if(b.hasAttribute('data-toggle-nestor-motion')){if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){nestorMotionEnabled=!nestorMotionEnabled;setNestorMotion();}return;}
     if(b.hasAttribute('data-export-dates')){exportDates();return;}
     if(b.hasAttribute('data-export-sources')){download(JSON.stringify({reviewed:'2026-11-06',sources},null,2),'winterwatch-source-register.json','application/json');toast('Source register downloaded.');return;}
-    if(b.hasAttribute('data-reset-progress')){$('.guide-actions').innerHTML='<p>This clears saved quests, XP, reading bonuses, badges and streaks from this browser.</p><button class="button button-green" data-confirm-reset>Reset my progress</button><button class="subtle-button" data-progress>Keep playing</button>';return;}
+    if(b.hasAttribute('data-reset-progress')){if(!$('#infoDialog').open||infoView!=='progress')progress();$('.guide-actions').innerHTML='<p>This clears saved quests, XP, reading bonuses, badges and streaks from this browser.</p><button class="button button-green" data-confirm-reset>Reset my progress</button><button class="subtle-button" data-progress>Keep playing</button>';$('#infoDialog [data-confirm-reset]')?.focus({preventScroll:true});return;}
     if(b.hasAttribute('data-confirm-reset')){const {audience,country,context,release,ambience}=state;state={...emptyState(),audience,country,context,release,ambience};stageDrafts={};readingFeedback=null;clearTimeout(badgeTimer);pendingBadges=[];knownBadgeIds=new Set();clearSavedProgress();updateProgress();renderDoors();setAmbience();progress();toast(storageStatus==='unavailable'?'Progress reset in this page; check browser storage to clear the saved record.':'Saved progress cleared. A fresh December awaits.');return;}
     if(b.dataset.clockAnswer){$('#clockFeedback').textContent=b.dataset.clockAnswer==='right'?'✓ Correct: 9 November 2026 at 10:00 Berlin time. Assess and report without undue delay; do not wait for the reference limit.':'Try again. Add 72 hours to the awareness time; the forensic report does not start this clock.';return;}
-    if(b.id==='ambienceButton'){state.ambience=!state.ambience;refreshProgress();setAmbience();}
+    if(b.id==='ambienceButton'){state.ambience=!state.ambience;nestorMotionEnabled=state.ambience;refreshProgress();setAmbience();}
   });
   function chooseCountry(id,fromSelect=false){if(!countries.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
   document.addEventListener('change',e=>{if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}if(e.target.id==='releaseMode'){state.release=e.target.checked;refreshProgress();renderDoors();toast(state.release?'Daily December release enabled.':'Explore mode enabled. All 24 doors are available.');}});

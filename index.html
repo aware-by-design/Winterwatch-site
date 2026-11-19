@@ -12,7 +12,7 @@
   <title>Winterwatch — A Cyber & AI Advent</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="gameplay.css">
-  <link rel="stylesheet" href="accessibility.css">
+  <link rel="stylesheet" href="accessibility.css?v=20261119-daily-nestor">
   <link rel="stylesheet" href="country-map.css">
   <link rel="icon" type="image/png" sizes="96x96" href="assets/aware-by-design-mark.png">
   <link rel="apple-touch-icon" href="assets/aware-by-design-mark@2x.png">
@@ -22,7 +22,7 @@
   <script src="learning-content-more.js" defer></script>
   <script src="country-guidance.js" defer></script>
   <script src="game-engine.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=20261119-daily-nestor" defer></script>
   <script src="country-map.js" defer></script>
 </head>
 <body>
@@ -50,9 +50,22 @@
     <section class="calendar-section" id="calendar" aria-labelledby="calendarTitle">
       <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle" tabindex="-1">Good habits. <em>Great presence.</em></h2><p>Open a pair of doors. Make the decisions. Discover why they matter.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
       <section class="advent-tracker" aria-labelledby="adventTrackerTitle">
-        <div class="advent-tracker-heading"><div><div class="eyebrow green">ONE DAY. ONE USEFUL HABIT.</div><h3 id="adventTrackerTitle">Your Advent countdown</h3><p id="adventTiming">1–24 December 2026 · Europe/Berlin.</p></div></div>
-        <dl class="advent-stats"><div><dt>Calendar day</dt><dd id="adventCurrentDay">Starts 1 December</dd></div><div><dt id="adventRemainingLabel">Advent days ahead</dt><dd id="adventDaysRemaining">24</dd></div><div><dt>Quests left to complete</dt><dd id="adventQuestsRemaining">24</dd></div></dl>
-        <div class="advent-reminders"><button class="button button-green" data-download-advent-reminders aria-describedby="adventReminderHelp">Add 24 daily reminders ↓</button><p id="adventReminderHelp">Calendar file (.ics) · 1–24 December, 09:00 Berlin time · 10 minutes a day. Only upcoming sessions are included. Import this file once into your calendar, then check its notification settings.</p></div>
+        <div class="advent-banner-main">
+          <div class="advent-tracker-heading">
+            <p class="advent-kicker" id="adventReminderKicker">A DAILY HELLO FROM THE NESTOR FAMILY</p>
+            <h3 id="adventTrackerTitle"><span id="adventTitleMain">A little reminder.</span><em id="adventTitleAccent">A wiser December.</em></h3>
+            <p class="advent-intro" id="adventReminderBrief">Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.</p>
+            <p class="advent-schedule">1–24 December 2026 <span aria-hidden="true">·</span> 09:00 Berlin time</p>
+            <div class="advent-reminders"><div class="advent-reminder-actions"><button class="button button-green" data-download-advent-reminders aria-describedby="adventReminderHelp">Add 24 daily reminders</button><button type="button" class="advent-reset-button" data-reset-progress>Reset progress</button></div><p id="adventReminderHelp">Your calendar file (.ics) includes each day’s title, a short brief and an embedded lesson image where supported. Only upcoming sessions are included. Import once, then check notification settings.</p></div>
+          </div>
+          <figure class="advent-nestor">
+            <div id="nestorIllustration" class="nestor-illustration"><img id="adventHostImage" src="assets/nestor-advent-reminder.webp" alt="The Nestor family in Christmas sweaters and winter boots, sharing a calendar marked 1–24 December 2026." width="768" height="512" loading="lazy" decoding="async"></div>
+            <div class="nestor-day-ribbon"><span id="nestorRibbonKicker">THE NESTOR FAMILY</span><strong id="nestorRibbonDate">1–24 December 2026</strong></div>
+            <figcaption><span>AI-assisted illustration</span><button type="button" class="nestor-motion-button" data-toggle-nestor-motion aria-controls="nestorIllustration" aria-pressed="false">Play animation</button></figcaption>
+          </figure>
+        </div>
+        <dl class="advent-stats"><div class="advent-current-stat"><dt>Calendar day</dt><dd id="adventCurrentDay">Starts 1 December</dd></div><div><dt id="adventRemainingLabel">Advent days ahead</dt><dd id="adventDaysRemaining">24</dd></div><div><dt>Quests left to complete</dt><dd id="adventQuestsRemaining">24</dd></div></dl>
+        <p id="adventTiming" class="advent-timing">1–24 December 2026 · Europe/Berlin.</p>
         <p class="sr-only" id="adventStatusAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
       </section>
       <div class="calendar-toolbar"><div class="category-tabs" role="group" aria-label="Filter lessons by theme"><button data-category="all" class="active" aria-pressed="true">All doors <span>24</span></button><button data-category="cyber" aria-pressed="false">Cyber</button><button data-category="ai" aria-pressed="false">AI & agents</button><button data-category="privacy" aria-pressed="false">Privacy</button><button data-category="governance" aria-pressed="false">Rules & standards</button><button data-category="ot" aria-pressed="false">Connected world</button></div><label class="context-filter">Your world <select id="contextFilter"><option value="all">Everyday life & every team</option><option value="customer">As a customer</option><option value="supplier">As a supplier</option><option value="work">At work</option><option value="home">At home</option><option value="finance">Financial services</option></select></label></div>
