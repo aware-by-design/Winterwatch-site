@@ -48,7 +48,7 @@
   function setMenu(open,returnFocus=false){$('.site-header').classList.toggle('menu-open',open);$('#menuToggle').setAttribute('aria-expanded',String(open));if(returnFocus)$('#menuToggle').focus();}
   let category='all', activeId=null, activeTab='play', modalLens=state.audience==='everyone'?'technical':state.audience;
   let currentStage=0,stageDrafts={},readingFeedback=null,infoView='';
-  let openTimer=null, toastTimer=null, clockTimer=null;
+  let toastTimer=null, clockTimer=null;
   const label={cyber:'Cybersecurity',ai:'AI & agents',privacy:'Privacy',governance:'Rules & standards',ot:'Connected world'};
   const initiative="An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Group";
   const arInABoxUrl="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box";
@@ -175,18 +175,16 @@
     $('#releaseMode').checked=state.release;$('#contextFilter').value=state.context;
     $$('[data-audience]').forEach(b=>{const on=b.dataset.audience===state.audience;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   }
-  function openLesson(id,animate=true){
+  function openLesson(id){
     const l=lessons.find(x=>x.id===id);if(!l)return;
     if(!available(id)){toast(`Day ${id} unlocks on ${id} December. Turn off December dates to explore now.`);return;}
     if(!$('#lessonDialog').open)lessonReturnFocus=focusTarget();
-    setMenu(false);clearTimeout(openTimer);
+    setMenu(false);
     const already=state.opened.includes(id);
     if(!already){state.opened.push(id);refreshProgress();toast('+10 XP · A little wiser already.');}
     if($('#infoDialog').open)$('#infoDialog').close();
-    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const door=$(`[data-door="${id}"]`);if(door)door.classList.add('is-opening');
     const show=()=>{activeId=id;activeTab='play';currentStage=engine.firstUnsolved(state,id);readingFeedback=null;modalLens=state.audience==='everyone'?'technical':state.audience;renderLesson();if(!$('#lessonDialog').open)$('#lessonDialog').showModal();history.replaceState(null,'',`#day=${id}`);renderDoors();};
-    if(animate&&!already&&door&&!reduced)openTimer=setTimeout(show,650);else show();
+    show();
   }
   function safeArtworkPath(path){return typeof path==='string'&&/^assets\/lessons\/[a-z0-9-]+\.webp$/.test(path)?path:'';}
   function visualFor(l){
@@ -370,7 +368,7 @@
   }
   async function exportCard(shape,native=false){const l=lessons.find(x=>x.id===activeId);if(!l)return;const blob=await makeCard(l,shape);if(!blob){toast('Card export could not complete. Copy the post instead.');return;}const file=new File([blob],`winterwatch-day-${String(l.id).padStart(2,'0')}-${shape}.png`,{type:'image/png'});if(native&&navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:l.title,text:shareText(l)});return;}catch(e){if(e.name==='AbortError')return;}}download(blob,file.name);toast(shape==='status'?'1080 × 1920 status card downloaded.':'1080 × 1080 social card downloaded.');}
 
-  function showInfo(title,subtitle,body){if(!$('#infoDialog').open)infoReturnFocus=focusTarget();setMenu(false);clearTimeout(openTimer);openTimer=null;infoView='';if($('#lessonDialog').open)$('#lessonDialog').close();$('#infoContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close-info aria-label="Close panel">×</button><div class="eyebrow">THE WINTERWATCH FIELD NOTES</div><h2 id="infoTitle">${esc(title)}</h2><p>${esc(subtitle)}</p></div><div class="guide-content">${body}</div>`;$('#infoDialog').showModal();$('#infoDialog').scrollTop=0;}
+  function showInfo(title,subtitle,body){if(!$('#infoDialog').open)infoReturnFocus=focusTarget();setMenu(false);infoView='';if($('#lessonDialog').open)$('#lessonDialog').close();$('#infoContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close-info aria-label="Close panel">×</button><div class="eyebrow">THE WINTERWATCH FIELD NOTES</div><h2 id="infoTitle">${esc(title)}</h2><p>${esc(subtitle)}</p></div><div class="guide-content">${body}</div>`;$('#infoDialog').showModal();$('#infoDialog').scrollTop=0;}
   function guide(){showInfo('Learn by making the decision.','Three decisions, one useful habit, and an evidence bonus behind every pair of doors.',`<div class="guide-game-loop"><article><span>01 · ENTER THE STORY</span><h3>Take a role.</h3><p>Become a customer, supplier, employee, responder or person at home. Read the situation and what is at stake.</p></article><article><span>02 · MAKE THE MOVES</span><h3>See the consequence.</h3><p>Choose actions, sort an attack sequence, select evidence or classify habits. Feedback explains why a decision helps or fails. You can try again.</p></article><article><span>03 · GO TO THE SOURCE</span><h3>Earn a little more wisdom.</h3><p>Answer a source question, explore the relevant article or framework, and take a practical habit into everyday life.</p></article></div><h3>Choose a place to start.</h3><div class="starter-games"><button data-open="2">I buy or manage a service <span>Customer–supplier decisions →</span></button><button data-open="7">I want to follow a real attack <span>The Binance chain →</span></button><button data-open="8">I work with money or approvals <span>The DNB impersonation attempt →</span></button><button data-open="12">I use AI in everyday life <span>Privacy and reliable answers →</span></button><button data-open="20">I build or deploy AI <span>An OWASP financial-assistant case →</span></button></div><h3>How the points work.</h3><p>Open a day for 10 XP. Resolve each of its three decision rounds for 20 XP. Completing the day adds 10 XP and a celebration: 80 XP for the day’s work. Answer the source question for another 20 XP and a reading celebration. There are 2,400 XP to explore.</p><p>Wrong answers explain the risk and let you retry. Replaying a won round never adds duplicate points. Progress, XP, badges and your learning streak stay on this device across reloads when browser storage is available. They are learning rewards, not proof of compliance or professional certification.</p><div class="guide-actions"><button class="button button-green" data-progress>See my journey →</button><button class="button button-soft" data-dates>Countries, dates & duties →</button></div>`);}
   function showDates(){showInfo('Dates and duties, in context.','EU milestones and eight national NIS2 profiles · source review 6 November 2026.',`<p>Choose a country, then check the entity, sector, role and current source. Enacted law, phased duty, proposal and voluntary framework are different kinds of information.</p>${countrySelect(true)}${countryCard()}<h3>The EU milestones.</h3><div class="milestone-list">${dates.map(d=>`<article><time>${formatDate(d.date)}</time><div><b>${esc(d.name)}</b><p>${esc(d.detail)} ${sourceLink(d.source,'Official source')}</p></div></article>`).join('')}</div><p class="source-note">The AI dates follow the current amended Commission timeline. GDPR, DORA and applicable national cyber duties can already apply; a later AI or product milestone is not a general grace period.</p><h3>Match the instrument to the decision.</h3><div class="duty-cards"><article><b>${sourceLink('gdpr','GDPR · Articles 5, 28, 32–34')}</b><p>Purpose, roles, processor arrangements, security, breach assessment and people’s risk.</p></article><article><b>${sourceLink('nis','NIS2 · Articles 21 and 23')}</b><p>Applicable entity risk management, direct suppliers, significance and national reporting routes.</p></article><article><b>${sourceLink('dora','DORA · Articles 28–30')}</b><p>Covered financial entities, ICT providers, evidence, incident assistance and exit arrangements.</p></article><article><b>${sourceLink('craLaw','CRA · reporting and Annex I')}</b><p>Product role, vulnerability handling, lifecycle support and phased requirements.</p></article><article><b>${sourceLink('aiLaw','AI Act · current text and Article 50')}</b><p>Provider / deployer role, intended use, risk category, transparency and current transitions.</p></article></div><h3>Frameworks help organise the work.</h3><p>${sourceLink('nistIR','NIST incident response')}, ${sourceLink('csf','CSF 2.0')}, ${sourceLink('rmf','AI RMF')}, ${sourceLink('owaspApi','OWASP API Security')}, ${sourceLink('owaspPrompt','OWASP GenAI')} and ${sourceLink('enisaGuide','ENISA guidance')} support different parts of the decisions. ISO management standards remain linked in the case sources.</p><div class="guide-actions"><button class="button button-green" data-export-dates>Download EU + selected-country milestones ↓</button><button class="subtle-button" data-open="17">Play the dates challenge →</button></div>`);infoView='dates';}
   function formatDate(d){return new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',day:'2-digit',month:'short',year:'numeric'}).format(new Date(d+'T12:00:00Z'));}
@@ -427,35 +425,48 @@
     const enc=new TextEncoder();const folded=lines.map(line=>{if(/^[\x20-\x7e]*$/.test(line)){const parts=[line.slice(0,74)];for(let i=74;i<line.length;i+=73)parts.push(' '+line.slice(i,i+73));return parts.join('\r\n');}let out='',part='',bytes=0;for(const ch of line){const n=enc.encode(ch).length;if(bytes+n>74){out+=part+'\r\n ';part='';bytes=1;}part+=ch;bytes+=n;}return out+part;}).join('\r\n')+'\r\n';
     return folded;
   }
+  function validInviteImage(image){return image?.type==='image/jpeg'&&typeof image.data==='string'&&image.data.length>0&&image.data.length<=14000&&image.data.length%4===0&&/^[A-Za-z0-9+/]+={0,2}$/.test(image.data);}
+  function adventInviteHtml(l,image=null){
+    const banner=validInviteImage(image)?`<img src="data:image/jpeg;base64,${image.data}" alt="Day ${l.id} with Nestor: ${esc(l.title)}" width="600" height="225" style="display:block;width:100%;height:auto;border:0;border-radius:14px 14px 0 0">`:`<div style="background:#173d31;color:#fff8e6;padding:28px;border-radius:14px 14px 0 0"><p style="margin:0 0 10px;color:#e8ca8e;font-size:14px">DAY ${l.id} WITH NESTOR</p><h1 style="font:30px/1.2 Georgia,serif;margin:0">${esc(l.title)}</h1></div>`;
+    return `<div lang="en" style="max-width:600px;margin:0 auto;background:#f8f6ef;color:#173d31;font-family:Arial,Helvetica,sans-serif;border:1px solid #d4ddcd;border-radius:14px">${banner}<div style="padding:25px 28px"><p style="margin:0 0 18px;font-size:14px;font-weight:bold;color:#455943">${l.id} December 2026 &nbsp;·&nbsp; 09:00–09:10 Berlin time</p><h2 style="font:26px/1.25 Georgia,serif;margin:0 0 14px">One day. One useful habit.</h2><p style="font-size:16px;line-height:1.65;margin:0 0 20px">${esc(adventBriefs[l.id]||l.takeaway)}</p><div style="padding:16px 18px;background:#e9efdf;border-left:4px solid #bfa26b;border-radius:5px"><p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#455943">KEEP THIS HABIT</p><p style="font:20px/1.4 Georgia,serif;margin:0">${esc(l.takeaway)}</p></div><p style="font-size:14px;line-height:1.6;margin:20px 0 24px">Join Nestor for three practical decisions, then explore the day’s briefing and sources in your Winterwatch calendar.</p><div style="border-top:1px solid #ccd7c5;padding-top:18px;font-size:12px;line-height:1.6;color:#455943"><strong>${esc(initiative)}</strong><br><a href="${arInABoxUrl}" style="color:#173d31;text-decoration:underline">Learn more about AR-in-a-Box</a><p style="margin:10px 0 0">AI-assisted conceptual illustration; not incident evidence.</p></div></div></div>`;
+  }
+  function drawAdventInviteBanner(l,image,width=600){
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=Math.round(width*.375);const ctx=canvas.getContext('2d');if(!ctx)return null;ctx.scale(width/600,width/600);
+    const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height,scale=Math.max(600/iw,225/ih),w=iw*scale,h=ih*scale;
+    ctx.fillStyle='#173d31';ctx.fillRect(0,0,600,225);ctx.drawImage(image,600-w,(225-h)/2,w,h);
+    const shade=ctx.createLinearGradient(0,0,600,0);shade.addColorStop(0,'#12352b');shade.addColorStop(.66,'#12352bf5');shade.addColorStop(.84,'#12352b80');shade.addColorStop(1,'#12352b00');ctx.fillStyle=shade;ctx.fillRect(0,0,600,225);
+    ctx.fillStyle='#e8ca8e';ctx.fillRect(27,22,30,2);ctx.font='bold 14px Arial';ctx.textBaseline='top';ctx.fillText(`DAY ${String(l.id).padStart(2,'0')} WITH NESTOR`,27,34);
+    cardText(ctx,l.title,{x:27,y:64,w:367,h:103},{size:29,minSize:22,family:'Georgia',color:'#fff8e6',spacing:1.12});
+    ctx.fillStyle='#e8ca8e';ctx.font='14px Arial';ctx.fillText(`${l.id} DECEMBER 2026  ·  10 MINUTES`,27,189);return canvas;
+  }
   function adventReminderCalendar(now=new Date(),images=new Map()){
     const e=value=>String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
     const upcoming=upcomingAdventLessons(now);if(!upcoming.length)return '';
     const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ENISA ARCH AHWG//Winterwatch Advent 2026//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Winterwatch Advent 2026','X-WR-TIMEZONE:Europe/Berlin'];
     for(const l of upcoming){
-      const date=`202612${String(l.id).padStart(2,'0')}`,visual=visualFor(l),image=visual&&images.get(visual.src),brief=adventBriefs[l.id]||l.takeaway;
-      const description=`Day ${l.id} with Nestor: ${l.title}\n\nWHAT TO EXPECT\n${brief}\n\nTODAY’S TAKEAWAY\n${l.takeaway}\n\n10 minutes at 09:00 Europe/Berlin. Make three practical decisions, then explore the briefing and sources in the Winterwatch calendar.\n\n${initiative}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n\nThe illustration is conceptual AI-assisted learning artwork, not incident evidence. Image display and alerts depend on your calendar application.`;
+      const date=`202612${String(l.id).padStart(2,'0')}`,image=images.get(l.id),brief=adventBriefs[l.id]||l.takeaway;
+      const description=`Day ${l.id} with Nestor\n${l.title}\n\n${brief}\n\nKeep this habit: ${l.takeaway}\n\n${l.id} December 2026 · 09:00–09:10 Berlin time. Three practical decisions, then the day’s briefing and sources.\n\n${initiative}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n\nAI-assisted conceptual illustration; not incident evidence.`;
       lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261119T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch with Nestor · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`);
-      if(image?.type==='image/jpeg'&&typeof image.data==='string'&&image.data.length>0&&image.data.length<=30000&&image.data.length%4===0&&/^[A-Za-z0-9+/]+={0,2}$/.test(image.data))lines.push(`IMAGE;DISPLAY=FULLSIZE;FMTTYPE=image/jpeg;ENCODING=BASE64;VALUE=BINARY:${image.data}`);
-      lines.push('TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:1','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Day ${l.id} with Nestor: ${l.title}. What to expect: ${brief}`)}`,'END:VALARM','END:VEVENT');
+      if(validInviteImage(image))lines.push(`IMAGE;DISPLAY=FULLSIZE;FMTTYPE=image/jpeg;ENCODING=BASE64;VALUE=BINARY:${image.data}`);
+      lines.push(`X-ALT-DESC;FMTTYPE=text/html:${e(adventInviteHtml(l,image))}`,'TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:2','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Day ${l.id} with Nestor: ${l.title}. ${brief}`)}`,'END:VALARM','END:VEVENT');
     }
     lines.push('END:VCALENDAR');return foldCalendarLines(lines);
   }
   const reminderImageCache=new Map();
   async function embeddedReminderImage(l){
     const visual=visualFor(l);if(!visual)return null;
-    if(!reminderImageCache.has(visual.src))reminderImageCache.set(visual.src,(async()=>{
+    const key=`${l.id}:${visual.src}:${l.title}`;
+    if(!reminderImageCache.has(key))reminderImageCache.set(key,(async()=>{
       let timeout;try{
         const image=await Promise.race([loadArtwork(l),new Promise(resolve=>{timeout=setTimeout(()=>resolve(null),8000);})]);if(!image)return null;
-        const canvas=document.createElement('canvas');
-        for(const width of [480,360]){
-          const scale=Math.min(1,width/image.naturalWidth,360/image.naturalHeight);canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
-          const ctx=canvas.getContext('2d');if(!ctx)return null;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
-          for(const quality of [.78,.62,.46]){const data=canvas.toDataURL('image/jpeg',quality);if(data.startsWith('data:image/jpeg;base64,')&&data.length-23<=30000)return {type:'image/jpeg',data:data.slice(23)};}
+        for(const width of [600,480]){
+          const canvas=drawAdventInviteBanner(l,image,width);if(!canvas)return null;
+          for(const quality of [.82,.70,.56,.42]){const data=canvas.toDataURL('image/jpeg',quality);if(data.startsWith('data:image/jpeg;base64,')&&data.length-23<=14000)return {type:'image/jpeg',data:data.slice(23)};}
         }
         return null;
       }catch{return null;}finally{clearTimeout(timeout);}
     })());
-    const result=await reminderImageCache.get(visual.src);if(!result)reminderImageCache.delete(visual.src);return result;
+    const result=await reminderImageCache.get(key);if(!result)reminderImageCache.delete(key);return result;
   }
   async function exportAdventReminders(){
     if(reminderExportPending)return;
@@ -463,16 +474,16 @@
     if(!count){toast('The 2026 reminder schedule has ended. All lessons remain available.');return;}
     reminderExportPending=true;updateAdventTracker(now);
     try{
-      const pairs=await Promise.all(upcoming.map(async l=>[visualFor(l)?.src,await embeddedReminderImage(l)])),images=new Map(pairs.filter(([src,image])=>src&&image));
+      const pairs=await Promise.all(upcoming.map(async l=>[l.id,await embeddedReminderImage(l)])),images=new Map(pairs.filter(([,image])=>image));
       download(adventReminderCalendar(now,images),'winterwatch-advent-2026-reminders.ics','text/calendar;charset=utf-8');
-      const missing=upcoming.some(l=>!images.has(visualFor(l)?.src));toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded.${missing?' Some illustrations could not be included; the titles and briefs are complete.':' Import the .ics file into your calendar.'}`);
+      const missing=upcoming.some(l=>!images.has(l.id));toast(`${count} daily ${count===1?'reminder':'reminders'} downloaded.${missing?' Some illustrations could not be included; the titles and briefs are complete.':' Import the .ics file into your calendar.'}`);
     }finally{reminderExportPending=false;updateAdventTracker();}
   }
   function exportDates(){download(milestoneCalendar(),`winterwatch-eu-${state.country}-milestones.ics`,'text/calendar;charset=utf-8');toast('EU and selected-country milestones downloaded. Review applicability before adding them.');}
-  let nestorMotionEnabled=state.ambience;
-  function setNestorMotion(){const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches,on=nestorMotionEnabled&&!reduced;$('#nestorIllustration')?.classList.toggle('is-animated',on);const button=$('[data-toggle-nestor-motion]');if(button){button.disabled=reduced;button.setAttribute('aria-pressed',String(on));button.textContent=reduced?'Reduced motion enabled':on?'Pause animation':'Play animation';}}
-  function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('.sleigh-flight').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow is falling':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';setNestorMotion();}
-  $('#snow').innerHTML=Array.from({length:42},(_,i)=>`<span style="--x:${(i*37)%100}%;--s:${i%4+1}px;--o:${.15+(i%5)*.1};--d:${12+i%13}s;--delay:-${i%23}s"></span>`).join('');
+  function fireplaceFrame(width,height){if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return null;const scale=Math.max(width/1536,height/1024);return {x:(width-1536*scale)*.5+1080*scale,y:(height-1024*scale)*.58+552*scale,width:170*scale,height:185*scale};}
+  function syncAtmosphereLayout(){const hero=$('.hero'),r=hero?.getBoundingClientRect(),frame=r&&fireplaceFrame(r.width,r.height);if(!frame)return;$('#snow').style.setProperty('--snow-distance',`${r.height+40}px`);const fire=$('#fireplaceFlames');if(fire)for(const [name,value]of Object.entries(frame))fire.style.setProperty(`--fire-${name}`,`${value}px`);}
+  function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('#fireplaceFlames').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow & fire on':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
+  $('#snow').innerHTML=Array.from({length:104},(_,i)=>`<span style="--x:${(i*37.17)%100}%;--s:${1+i%5}px;--o:${.22+(i%6)*.1};--d:${8+i%15}s;--delay:-${i%29}s;--drift:${-24+i%61}px"></span>`).join('');
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button,a');if(!b)return;
     if(b.closest?.('#mainNav')&&b.getAttribute('href')==='#calendar'){e.preventDefault();setMenu(false);location.hash='#calendar';$('#calendarTitle').scrollIntoView?.({block:'start'});$('#calendarTitle').focus({preventScroll:true});return;}
@@ -517,13 +528,12 @@
     if(b.hasAttribute('data-about')){about();return;}
     if(b.hasAttribute('data-sources')){allSources();return;}
     if(b.hasAttribute('data-download-advent-reminders')){await exportAdventReminders();return;}
-    if(b.hasAttribute('data-toggle-nestor-motion')){if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){nestorMotionEnabled=!nestorMotionEnabled;setNestorMotion();}return;}
     if(b.hasAttribute('data-export-dates')){exportDates();return;}
     if(b.hasAttribute('data-export-sources')){download(JSON.stringify({reviewed:'2026-11-06',sources},null,2),'winterwatch-source-register.json','application/json');toast('Source register downloaded.');return;}
     if(b.hasAttribute('data-reset-progress')){if(!$('#infoDialog').open||infoView!=='progress')progress();$('.guide-actions').innerHTML='<p>This clears saved quests, XP, reading bonuses, badges and streaks from this browser.</p><button class="button button-green" data-confirm-reset>Reset my progress</button><button class="subtle-button" data-progress>Keep playing</button>';$('#infoDialog [data-confirm-reset]')?.focus({preventScroll:true});return;}
     if(b.hasAttribute('data-confirm-reset')){const {audience,country,context,release,ambience}=state;state={...emptyState(),audience,country,context,release,ambience};stageDrafts={};readingFeedback=null;clearTimeout(badgeTimer);pendingBadges=[];knownBadgeIds=new Set();clearSavedProgress();updateProgress();renderDoors();setAmbience();progress();toast(storageStatus==='unavailable'?'Progress reset in this page; check browser storage to clear the saved record.':'Saved progress cleared. A fresh December awaits.');return;}
     if(b.dataset.clockAnswer){$('#clockFeedback').textContent=b.dataset.clockAnswer==='right'?'✓ Correct: 9 November 2026 at 10:00 Berlin time. Assess and report without undue delay; do not wait for the reference limit.':'Try again. Add 72 hours to the awareness time; the forensic report does not start this clock.';return;}
-    if(b.id==='ambienceButton'){state.ambience=!state.ambience;nestorMotionEnabled=state.ambience;refreshProgress();setAmbience();}
+    if(b.id==='ambienceButton'){state.ambience=!state.ambience;refreshProgress();setAmbience();}
   });
   function chooseCountry(id,fromSelect=false){if(!countries.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
   document.addEventListener('change',e=>{if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}if(e.target.id==='releaseMode'){state.release=e.target.checked;refreshProgress();renderDoors();toast(state.release?'Daily December release enabled.':'Explore mode enabled. All 24 doors are available.');}});
@@ -542,7 +552,9 @@
   });
   window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#day=(\d{1,2})$/);if(m)openLesson(Number(m[1]),false);});
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',setAmbience);
+  window.addEventListener('resize',syncAtmosphereLayout);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateAdventTracker();renderDoors();}});
-  renderDoors();updateProgress();setAmbience();tickAdventTracker();
+  renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();
+  if(typeof window.ResizeObserver==='function'){const observer=new window.ResizeObserver(syncAtmosphereLayout);observer.observe($('.hero'));}
   const deepLink=location.hash.match(/^#day=(\d{1,2})$/);if(deepLink)openLesson(Number(deepLink[1]),false);
 })();
