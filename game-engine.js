@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const empty=()=>({opened:[],solved:{},readings:[],completed:[],streak:{lastDay:null,current:0,best:0},audience:'everyone',country:'',context:'all',release:false,ambience:true});
+  const empty=()=>({opened:[],solved:{},readings:[],completed:[],streak:{lastDay:null,current:0,best:0},audience:'everyone',country:'',context:'all',ambience:true});
   const isDay=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T00:00:00Z'))&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
   const dayGap=(first,last)=>(Date.parse(first+'T00:00:00Z')-Date.parse(last+'T00:00:00Z'))/86400000;
   function restore(record){

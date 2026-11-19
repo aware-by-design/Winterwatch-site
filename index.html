@@ -10,20 +10,20 @@
   <meta property="og:title" content="Winterwatch — A Cyber & AI Advent">
   <meta property="og:description" content="24 festive daily quests. Real cyber, AI and privacy lessons for every team.">
   <title>Winterwatch — A Cyber & AI Advent</title>
-  <link rel="stylesheet" href="styles.css?v=static-country-20261119">
+  <link rel="stylesheet" href="styles.css?v=daily-doors-cet-20261119">
   <link rel="stylesheet" href="gameplay.css">
-  <link rel="stylesheet" href="accessibility.css?v=static-country-20261119">
-  <link rel="stylesheet" href="country-map.css?v=static-country-20261119">
+  <link rel="stylesheet" href="accessibility.css?v=daily-doors-cet-20261119">
+  <link rel="stylesheet" href="country-map.css?v=daily-doors-cet-20261119">
   <link rel="icon" type="image/png" sizes="96x96" href="assets/aware-by-design-mark.png">
   <link rel="apple-touch-icon" href="assets/aware-by-design-mark@2x.png">
   <script src="lessons.js" defer></script>
   <script src="lesson-images.js" defer></script>
   <script src="learning-content.js" defer></script>
   <script src="learning-content-more.js" defer></script>
-  <script src="country-guidance.js?v=static-country-20261119" defer></script>
-  <script src="game-engine.js?v=static-country-20261119" defer></script>
-  <script src="app.js?v=static-country-20261119" defer></script>
-  <script src="country-map.js?v=static-country-20261119" defer></script>
+  <script src="country-guidance.js?v=daily-doors-cet-20261119" defer></script>
+  <script src="game-engine.js?v=daily-doors-cet-20261119" defer></script>
+  <script src="app.js?v=daily-doors-cet-20261119" defer></script>
+  <script src="country-map.js?v=daily-doors-cet-20261119" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#calendar">Skip to calendar</a>
@@ -54,21 +54,21 @@
             <p class="advent-kicker" id="adventReminderKicker">A DAILY HELLO FROM THE NESTOR FAMILY</p>
             <h3 id="adventTrackerTitle"><span id="adventTitleMain">A little reminder.</span><em id="adventTitleAccent">A wiser December.</em></h3>
             <p class="advent-intro" id="adventReminderBrief">Meet the Nestor family. Make room for one useful habit, with ten minutes of learning and a little festive company each day.</p>
-            <p class="advent-schedule">1–24 December 2026 <span aria-hidden="true">·</span> 09:00 Berlin time</p>
+            <p class="advent-schedule">1–24 December 2026 <span aria-hidden="true">·</span> 09:00 CET</p>
             <div class="advent-reminders"><div class="advent-reminder-actions"><button class="button button-green" data-download-advent-reminders aria-describedby="adventReminderHelp">Add 24 daily reminders</button><button type="button" class="advent-reset-button" data-reset-progress>Reset progress</button></div><p id="adventReminderHelp">Your calendar file (.ics) includes each day’s title, a short brief and an embedded lesson image where supported. Only upcoming sessions are included. Import once, then check notification settings.</p></div>
           </div>
           <figure class="advent-nestor">
             <div id="nestorIllustration" class="nestor-illustration"><img id="adventHostImage" src="assets/nestor-advent-reminder.webp" alt="The Nestor family in Christmas sweaters and winter boots, sharing a calendar marked 1–24 December 2026." width="768" height="512" loading="lazy" decoding="async"></div>
             <div class="nestor-day-ribbon"><span id="nestorRibbonKicker">THE NESTOR FAMILY</span><strong id="nestorRibbonDate">1–24 December 2026</strong></div>
-            <figcaption><span>AI-assisted illustration</span></figcaption>
           </figure>
         </div>
         <dl class="advent-stats"><div class="advent-current-stat"><dt>Calendar day</dt><dd id="adventCurrentDay">Starts 1 December</dd></div><div><dt id="adventRemainingLabel">Advent days ahead</dt><dd id="adventDaysRemaining">24</dd></div><div><dt>Quests left to complete</dt><dd id="adventQuestsRemaining">24</dd></div></dl>
-        <p id="adventTiming" class="advent-timing">1–24 December 2026 · Europe/Berlin.</p>
+        <p id="adventTiming" class="advent-timing">1–24 December 2026 · CET.</p>
         <p class="sr-only" id="adventStatusAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
       </section>
       <div class="calendar-toolbar"><div class="category-tabs" role="group" aria-label="Filter lessons by theme"><button data-category="all" class="active" aria-pressed="true">All doors <span>24</span></button><button data-category="cyber" aria-pressed="false">Cyber</button><button data-category="ai" aria-pressed="false">AI & agents</button><button data-category="privacy" aria-pressed="false">Privacy</button><button data-category="governance" aria-pressed="false">Rules & standards</button><button data-category="ot" aria-pressed="false">Connected world</button></div><label class="context-filter">Your world <select id="contextFilter"><option value="all">Everyday life & every team</option><option value="customer">As a customer</option><option value="supplier">As a supplier</option><option value="work">At work</option><option value="home">At home</option><option value="finance">Financial services</option></select></label></div>
-      <div class="calendar-notice"><span><i class="status-dot"></i> <b id="modeLabel">A little early? Explore freely.</b> <span id="modeDetail">All 24 doors are open for discovery.</span></span><label class="release-toggle"><input id="releaseMode" type="checkbox"><span class="switch"></span>Follow December dates</label></div>
+      <div class="calendar-notice"><span><i class="status-dot"></i> <b id="modeLabel">A daily December tradition.</b> <span id="modeDetail">Completed days stay open. New doors unlock at midnight in CET.</span></span></div>
+      <aside class="nestor-door-message" aria-labelledby="nestorDoorTitle"><img src="assets/nestor-green.webp" alt="" width="64" height="85" loading="lazy"><div><h3 id="nestorDoorTitle">A little note from Nestor</h3><p id="nestorDoorMessage" role="status" aria-live="polite">Our first door opens on 1 December 2026 at 00:00 CET. See you then!</p></div></aside>
       <div class="doors-grid" id="doorsGrid" aria-label="24 advent calendar doors"></div>
       <div class="empty-state" id="emptyState" hidden>No doors match these filters. Try All doors or Everyday life &amp; every team.</div>
       <div class="calendar-bottom"><span class="legend"><i class="legend-dot cyber"></i> Open · 10 XP <i class="legend-dot ai"></i> Decisions · 60 XP <i class="legend-dot ot"></i> Day reward · 10 XP <i class="legend-dot privacy"></i> Reading · 20 XP</span><span>Two doors. One daily discovery. <span class="tiny-star">✦</span></span></div>
