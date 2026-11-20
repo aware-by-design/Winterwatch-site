@@ -414,7 +414,7 @@
     stopListening();
     const l=lessons.find(x=>x.id===activeId);if(!l||!activeDoorAllowed())return;
     const complete=state.completed.includes(l.id);
-    $('#lessonContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close aria-label="Close lesson">×</button><div class="modal-topline">DAY ${String(l.id).padStart(2,'0')} / 24 <span>·</span> ${esc(label[l.category].toUpperCase())}<span class="status-badge">${esc(l.kind)}</span></div><h2 id="lessonTitle">${esc(l.title)}</h2><div class="lesson-access-tools"><button type="button" data-listen-panel aria-pressed="false">Listen</button><button type="button" data-accessibility>Accessibility</button></div><p>${esc(l.takeaway)} <span class="lesson-duration">${l.minutes} min · ${lessonPoints(l.id)} / 100 XP</span></p>${l.id===24?'<button type="button" class="holiday-replay" data-holiday-greeting>Nestor’s holiday hello</button>':''}</div><div class="lesson-tabs" role="tablist" aria-label="Lesson sections">${[['play','Play the day'],['briefing','Case file'],['timeline','The story'],['lab','Defend'],['playbook','Respond'],['sources','Read & earn']].map(([id,n])=>`<button role="tab" id="tab-${id}" aria-controls="lessonPanel" aria-selected="${activeTab===id}" tabindex="${activeTab===id?'0':'-1'}" data-tab="${id}" class="${activeTab===id?'active':''}">${n}${id==='play'&&complete?' ✓':id==='sources'&&state.readings.includes(l.id)?' ✦':''}</button>`).join('')}</div><div class="tab-content" id="lessonPanel" role="tabpanel" aria-labelledby="tab-${activeTab}" tabindex="0">${lessonTabHtml(l)}</div><div class="modal-footer"><button class="complete-button ${complete?'done':''}" data-return-game>${complete?'✦ Day protected · '+lessonPoints(l.id)+' XP':'→ Resume the decisions'}</button><div class="day-navigation"><button data-prev ${l.id===1?'disabled':''} aria-label="Previous day"><span class="day-nav-arrow" aria-hidden="true">←</span></button><small><strong>Day ${l.id}</strong> of 24</small><button data-next ${l.id===24?'disabled':''} aria-label="Next day"><span>Next</span><span class="day-nav-arrow" aria-hidden="true">→</span></button></div></div>`;
+    $('#lessonContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close aria-label="Close lesson">×</button><div class="modal-topline">DAY ${String(l.id).padStart(2,'0')} / 24 <span>·</span> ${esc(label[l.category].toUpperCase())}<span class="status-badge">${esc(l.kind)}</span></div><h2 id="lessonTitle">${esc(l.title)}</h2><div class="lesson-access-tools"><button type="button" data-listen-panel aria-pressed="false">Listen</button><button type="button" data-accessibility>Accessibility</button></div><p class="listen-status" data-listen-status role="status" aria-live="polite"></p><p>${esc(l.takeaway)} <span class="lesson-duration">${l.minutes} min · ${lessonPoints(l.id)} / 100 XP</span></p>${l.id===24?'<button type="button" class="holiday-replay" data-holiday-greeting>Nestor’s holiday hello</button>':''}</div><div class="lesson-tabs" role="tablist" aria-label="Lesson sections">${[['play','Play the day'],['briefing','Case file'],['timeline','The story'],['lab','Defend'],['playbook','Respond'],['sources','Read & earn']].map(([id,n])=>`<button role="tab" id="tab-${id}" aria-controls="lessonPanel" aria-selected="${activeTab===id}" tabindex="${activeTab===id?'0':'-1'}" data-tab="${id}" class="${activeTab===id?'active':''}">${n}${id==='play'&&complete?' ✓':id==='sources'&&state.readings.includes(l.id)?' ✦':''}</button>`).join('')}</div><div class="tab-content" id="lessonPanel" role="tabpanel" aria-labelledby="tab-${activeTab}" tabindex="0">${lessonTabHtml(l)}</div><div class="modal-footer"><button class="complete-button ${complete?'done':''}" data-return-game>${complete?'✦ Day protected · '+lessonPoints(l.id)+' XP':'→ Resume the decisions'}</button><div class="day-navigation"><button data-prev ${l.id===1?'disabled':''} aria-label="Previous day"><span class="day-nav-arrow" aria-hidden="true">←</span></button><small><strong>Day ${l.id}</strong> of 24</small><button data-next ${l.id===24?'disabled':''} aria-label="Next day"><span>Next</span><span class="day-nav-arrow" aria-hidden="true">→</span></button></div></div>`;
   }
   function setTab(tab){if(!activeDoorAllowed())return;if(tab==='mission')tab='play';if(!['play','briefing','timeline','lab','playbook','sources'].includes(tab))return;activeTab=tab;renderLesson();$('#lessonDialog').scrollTop=0;$(`[role="tab"][data-tab="${tab}"]`).focus({preventScroll:true});}
   const lessonUrl=id=>`https://aware-by-design.github.io/Winterwatch-site/#day=${id}`;
@@ -609,14 +609,18 @@
     try{window.speechSynthesis?.cancel();}catch{/* A missing device service must not block learning. */}
     $$('[data-listen],[data-listen-panel]').forEach(b=>{b.setAttribute('aria-pressed','false');b.textContent=b.hasAttribute('data-listen-panel')&&b.classList.contains('briefing-listen')?'Listen to this briefing':'Listen';});
   }
+  function listenNotice(button,message){
+    const status=button.closest?.('dialog')?.querySelector('[data-listen-status]');
+    if(status)status.textContent=message;else if(message)toast(message);
+  }
   function listenText(text,key,button){
     if(listeningKey===key){stopListening();return;}
-    stopListening();
+    stopListening();listenNotice(button,'');
     const synth=window.speechSynthesis,Utterance=window.SpeechSynthesisUtterance;
-    if(!synth||typeof Utterance!=='function'){toast('Read aloud is not available in this browser. You can use your device’s screen reader.');return;}
+    if(!synth||typeof Utterance!=='function'){listenNotice(button,'Read aloud is not available in this browser. You can use your device’s screen reader.');return;}
     let voices;try{voices=synth.getVoices().filter(v=>v.localService===true);}catch{voices=[];}
     const voice=voices.find(v=>/^en[-_]/i.test(v.lang))||voices.find(v=>/^en$/i.test(v.lang));
-    if(!voice){toast('No English device voice is ready. Enable an English offline voice in your device settings, then try Listen again.');return;}
+    if(!voice){listenNotice(button,'No English device voice is ready. Enable an English offline voice in your device settings, then try Listen again.');return;}
     const words=String(text).replace(/\s+/g,' ').trim().split(' '),chunks=[];
     for(const word of words){if(!chunks.length||chunks[chunks.length-1].length+word.length>180)chunks.push(word);else chunks[chunks.length-1]+=' '+word;}
     if(!chunks.join('').trim())return;
@@ -627,8 +631,8 @@
       const chunk=chunks.shift();if(!chunk){stopListening();return;}
       const utterance=new Utterance(chunk);speechUtterance=utterance;utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=1;
       utterance.onend=()=>{if(token===speechToken)speak();};
-      utterance.onerror=()=>{if(token===speechToken){stopListening();toast('Your device could not read this text. Please try again or use a screen reader.');}};
-      try{synth.speak(utterance);}catch{stopListening();toast('Read aloud is unavailable on this device.');}
+      utterance.onerror=()=>{if(token===speechToken){stopListening();listenNotice(button,'Your device could not read this text. Please try again or use a screen reader.');}};
+      try{synth.speak(utterance);}catch{stopListening();listenNotice(button,'Read aloud is unavailable on this device.');}
     };
     speak();
   }

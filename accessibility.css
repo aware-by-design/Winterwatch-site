@@ -102,3 +102,5 @@ body .lesson-tabs{flex-wrap:wrap;overflow:visible;gap:8px 18px}body .lesson-tabs
 html:has(body.pause-animations){scroll-behavior:auto!important}.door-card .advent-door{aspect-ratio:auto}.door-lock-banner .door-listen{margin-bottom:12px}.site-header{flex-wrap:wrap;height:auto;min-height:80px;padding-top:12px;padding-bottom:12px}
 body :is(.category-tabs button,.atlas-heading small){white-space:normal}body .atlas-heading{flex-wrap:wrap}body .atlas-heading>*{min-width:0}.site-header nav{flex-wrap:wrap}body .door-card .door-inner{overflow:visible}
 @media(max-width:600px){body .completion-list button{flex-wrap:wrap}body .completion-list button small{margin-left:0}body .national-milestones time{min-width:0}body .country-map{max-width:100%;min-width:0}body .cm-grid{max-width:100%}body .hero-content{padding-top:40px}body .game-stage-track>div{min-width:0}}
+
+.listen-status:empty{display:none}.listen-status{font:1rem/1.65 var(--sans);padding:12px;background:#f8f6ef;color:#173d31;border:1px solid #476a55;border-radius:6px}.modal-heading .listen-status{color:#173d31}
