@@ -167,16 +167,26 @@
     }
     return 'All 24 doors are available. Play any missed lesson or revisit a reviewed day at your own pace.';
   }
+  function doorCountdown(id,now=new Date()){
+    if(!Number.isInteger(id)||id<1||id>24||!Number.isFinite(now.getTime()))return '';
+    const minutes=Math.max(0,Math.ceil((Date.UTC(2026,11,id,8)-now.getTime())/60000));
+    if(!minutes)return 'This door is ready to open.';
+    const days=Math.floor(minutes/1440),hours=Math.floor(minutes%1440/60),mins=minutes%60;
+    const unit=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
+    return `Time remaining: ${unit(days,'day')}, ${unit(hours,'hour')} and ${unit(mins,'minute')}.`;
+  }
   function lockedDoorMessage(id,now=new Date()){
     const a=dailyAccess(now);
     if(doorReleased(id,now))return `Day ${id} is available. You can play this lesson now.`;
-    return `${a.phase==='during'&&id===a.day+1?returnPrompt(new Date(Date.UTC(2026,11,id,8)),now)+' ':''}Day ${id} opens on ${id} December 2026 at 09:00 CET. All released lessons remain available.`;
+    return `${a.phase==='during'&&id===a.day+1?returnPrompt(new Date(Date.UTC(2026,11,id,8)),now)+' ':''}Day ${id} opens on ${id} December 2026 at 09:00 CET. ${doorCountdown(id,now)} All released lessons remain available.`;
   }
   let lockReturnFocus=null,lockedDoorId=null;
   function showDoorLock(id){
+    stopListening();
     const dialog=$('#doorLockDialog');lockedDoorId=id;
     if(!dialog.open){const el=document.activeElement,day=Number(el?.dataset?.door);lockReturnFocus=Number.isInteger(day)&&day>=1&&day<=24?{selector:`[data-door="${day}"]`}:{element:el};}
     $('#doorLockMessage').textContent=lockedDoorMessage(id);
+    $('#doorLockListen').dataset.listen=String(id);$('#doorLockListen').setAttribute('aria-label',`Listen to the Day ${id} opening message`);
     if(!dialog.open)dialog.showModal();$('#doorLockAcknowledge').focus({preventScroll:true});
   }
   function restoreDoorLockFocus(){
@@ -223,12 +233,13 @@
     return `<svg viewBox="0 0 64 66" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.star}</svg>`;
   };
   function renderDoors(){
+    stopListening();
     const access=dailyAccess();
     const visible=lessons.filter(l=>(category==='all'||l.category===category)&&(state.context==='all'||games[l.id].contexts.includes(state.context)));
     $('#doorsGrid').innerHTML=visible.map(l=>{
       const released=available(l.id),upcoming=!released,opened=released&&state.opened.includes(l.id),completed=released&&state.completed.includes(l.id),current=access.phase==='during'&&access.day===l.id;
       const lens=state.audience==='everyone'?games[l.id].role:`${state.audience} perspective`;
-      return `<button class="advent-door tone-${(l.id-1)%8}${opened||completed?' is-unwrapped':''}${current&&!completed?' is-today':''}${upcoming?' is-upcoming':''}" data-door="${l.id}" data-door-status="${completed?'completed':upcoming?'upcoming':current?'today':opened?'opened':'available'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${upcoming?lockedDoorMessage(l.id):completed?'Reviewed. Lesson complete. Revisit this day':opened?'Opened. Lesson to finish. Continue this day':current?'Today’s door. Open lesson':'Available. Open this day'}." ${upcoming?'aria-disabled="true"':''}><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span class="door-progress-status">${completed?state.readings.includes(l.id)?'Reviewed · source bonus earned':'Reviewed · lesson complete':'Opened · lesson to finish'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star" aria-hidden="true">✧</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${upcoming?`Opens ${l.id} Dec · 09:00 CET`:esc(label[l.category])}</span></span></button>`;
+      return `<div class="door-card"><button class="advent-door tone-${(l.id-1)%8}${opened||completed?' is-unwrapped':''}${current&&!completed?' is-today':''}${upcoming?' is-upcoming':''}" data-door="${l.id}" data-door-status="${completed?'completed':upcoming?'upcoming':current?'today':opened?'opened':'available'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${upcoming?lockedDoorMessage(l.id):completed?'Reviewed. Lesson complete. Revisit this day':opened?'Opened. Lesson to finish. Continue this day':current?'Today’s door. Open lesson':'Available. Open this day'}." ${upcoming?'aria-disabled="true"':''}><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span class="door-progress-status">${completed?state.readings.includes(l.id)?'Reviewed · source bonus earned':'Reviewed · lesson complete':'Opened · lesson to finish'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star" aria-hidden="true">✧</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${upcoming?`Opens ${l.id} Dec · 09:00 CET`:esc(label[l.category])}</span></span></button><button type="button" class="door-listen" data-listen="${l.id}" aria-label="Listen to Day ${l.id}" aria-pressed="false">Listen</button></div>`;
     }).join('');
     $('#emptyState').hidden=visible.length>0;
     $('#announcer').textContent=`${visible.length} lessons shown`;
@@ -239,6 +250,7 @@
     $$('[data-audience]').forEach(b=>{const on=b.dataset.audience===state.audience;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   }
   function openLesson(id){
+    stopListening();
     const l=lessons.find(x=>x.id===id);if(!l)return;
     if(!available(id)){showDoorLock(id);if(!$('#lessonDialog').open&&/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');return;}
     if(!$('#lessonDialog').open)lessonReturnFocus=focusTarget();
@@ -280,7 +292,7 @@
     if($('#lessonDialog').open)$('#lessonDialog [data-close]')?.focus({preventScroll:true});else restoreFocus({element:welcomeReturnFocus});
   }
   function syncCalendarGreetings(){
-    if(!greetingsReady||['#lessonDialog','#infoDialog','#doorLockDialog','#holidayDialog','#welcomeDialog'].some(selector=>$(selector).open))return;
+    if(!greetingsReady||['#lessonDialog','#infoDialog','#doorLockDialog','#holidayDialog','#welcomeDialog','#accessibilityDialog'].some(selector=>$(selector).open))return;
     if(todayKey()==='2026-12-25'&&!christmasGreetingShown){showHolidayGreeting('christmas');return;}
     if(welcomeGreetingAllowed()&&!welcomeGreetingShown&&!state.opened.includes(1)&&!state.completed.includes(1))showWelcomeGreeting();
   }
@@ -361,7 +373,7 @@
   function celebrate(kind,replay=false){
     if(!['day','reading'].includes(kind))return;if(pendingBadges.length)scheduleBadgeReward();
     toast(replay?'Celebration replayed · your earned points stay the same.':kind==='day'?`Day ${activeId} complete · ${lessonPoints(activeId)} XP earned.`:'Evidence bonus unlocked · +20 XP.');
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    if(motionPaused())return;
     const layer=document.createElement('div');layer.className=`celebration-layer ${kind==='reading'?'reading-celebration':'day-celebration'}`;layer.setAttribute('aria-hidden','true');
     layer.innerHTML=`<div class="celebration-emblem">${kind==='reading'?'▱':'✦'}<span>${kind==='reading'?'A LITTLE MORE WISDOM':'DAY '+activeId+' PROTECTED'}</span></div>${Array.from({length:kind==='reading'?9:22},(_,i)=>`<i style="--x:${5+i*37%90}%;--size:${14+i%4*7}px;--delay:${i%6*45}ms">${i%3===0?'✧':i%3===1?'❄':'✦'}</i>`).join('')}`;
     $$('.celebration-layer').forEach(x=>x.remove());($('#lessonDialog').open?$('#lessonDialog'):document.body).append(layer);setTimeout(()=>layer.remove(),kind==='reading'?2000:2600);
@@ -391,7 +403,7 @@
   }
   function lessonTabHtml(l){
     if(activeTab==='play'||activeTab==='mission')return playHtml(l);
-    if(activeTab==='briefing')return `${artworkFigure(l)}<div class="briefing-layout"><div><h3>What happened?</h3><p>${esc(l.summary)}</p><h4>What went wrong — or what could fail</h4><p>${esc(l.failure)}</p><p class="source-note">Evidence: ${l.sources.slice(0,2).map(id=>sourceLink(id,sources[id].org)).join(' · ')}. Operational actions below are training recommendations.</p></div><aside class="takeaway"><div class="eyebrow">YOUR TAKEAWAY</div><h3>${esc(l.takeaway)}</h3><p>Small actions, shared across teams. Earn up to <b>100 XP</b> with this lesson.</p><button class="mission-link" data-tab="play">Play the decisions →</button></aside></div><div class="lens-switch" role="group" aria-label="Choose lesson perspective">${['technical','business','operations'].map(a=>`<button data-lens="${a}" class="${a===modalLens?'active':''}" aria-pressed="${a===modalLens}">${a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div><div class="lens-card"><b>FOR ${esc(modalLens.toUpperCase())} TEAMS</b><p>${esc(l.lenses[modalLens])}</p></div>`;
+    if(activeTab==='briefing')return `<button type="button" class="briefing-listen" data-listen-panel aria-pressed="false">Listen to this briefing</button>${artworkFigure(l)}<div class="briefing-layout"><div><h3>What happened?</h3><p>${esc(l.summary)}</p><h4>What went wrong — or what could fail</h4><p>${esc(l.failure)}</p><p class="source-note">Evidence: ${l.sources.slice(0,2).map(id=>sourceLink(id,sources[id].org)).join(' · ')}. Operational actions below are training recommendations.</p></div><aside class="takeaway"><div class="eyebrow">YOUR TAKEAWAY</div><h3>${esc(l.takeaway)}</h3><p>Small actions, shared across teams. Earn up to <b>100 XP</b> with this lesson.</p><button class="mission-link" data-tab="play">Play the decisions →</button></aside></div><div class="lens-switch" role="group" aria-label="Choose lesson perspective">${['technical','business','operations'].map(a=>`<button data-lens="${a}" class="${a===modalLens?'active':''}" aria-pressed="${a===modalLens}">${a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div><div class="lens-card"><b>FOR ${esc(modalLens.toUpperCase())} TEAMS</b><p>${esc(l.lenses[modalLens])}</p></div>`;
     if(activeTab==='timeline')return `<h3>The moments that matter.</h3><ol class="timeline">${l.timeline.map(([d,t])=>`<li><time>${esc(d)}</time><p>${esc(t)}</p></li>`).join('')}</ol><div class="fact-callout">${/fictional/i.test(l.kind)?'This is an invented training scenario.':l.kind.includes('workshop')||l.kind.includes('practice')||l.kind.includes('Everyday')?'Workflow moments and verified source dates are distinguished above.':'Dates describe the cited case or legal milestone, not a live incident feed.'}</div>`;
     if(activeTab==='lab')return `<div class="lab-kicker">CONFIGURE · OBSERVE · VALIDATE</div><h3>Make the control testable.</h3><p>Tool-agnostic recipe for your SIEM, identity, endpoint, network or governance workflow. Field names below are illustrative; map them to your own telemetry and permissions.</p><ol class="config-list">${l.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol><div class="code-header"><span>ILLUSTRATIVE LOGIC · NOT A DROP-IN RULE</span><button class="copy-button" data-copy-rule>Copy</button></div><pre class="code-block">${esc(l.logic)}</pre>${l.hunt?`<h4>${esc(l.hunt.title)}</h4><p>${esc(l.hunt.setup)}</p><div class="code-header"><span>READ-ONLY KQL · TUNE BEFORE ALERTING</span><button class="copy-button" data-copy-hunt>Copy</button></div><pre class="code-block">${esc(l.hunt.code)}</pre>`:''}<div class="lab-meta"><div><h4>Safe validation</h4><p>${esc(l.test)}</p></div><div><h4>Tuning & visibility limits</h4><p>${esc(l.noise)}</p></div></div><div class="fact-callout lab-callout">Use written authorisation, agreed scope and synthetic data. Validate telemetry and thresholds before enabling blocking. Product-specific deployment steps must follow current vendor documentation.</div>`;
     if(activeTab==='playbook')return `${incidentProcessHtml(l)}${stakeholdersHtml(l)}<h3>A calm plan for a difficult moment.</h3><p>Adapt the sequence to your incident severity and safety needs. Record times, decisions, evidence and unknowns.</p><ol class="playbook-list">${l.response.map(r=>{const [owner,...rest]=r.split(' · ');return `<li><b>${esc(owner)}</b><p>${esc(rest.join(' · '))}</p></li>`;}).join('')}</ol><div class="response-footer"><p>Consider customer / supplier contracts, data protection, sector rules and criminal reporting separately.</p><div class="playbook-downloads"><button class="button button-green" data-download-playbook>Download Christmas playbook (PDF) ↓</button><button class="subtle-button" data-download-playbook-text>Plain-text version ↓</button><small>A4 PDF · public lesson content · no learner progress</small></div></div><button class="subtle-button" data-reporting>Authority routes & reporting clocks →</button>`;
@@ -399,9 +411,10 @@
   }
   function lessonPoints(id){return engine.dayXp(state,id);}
   function renderLesson(){
+    stopListening();
     const l=lessons.find(x=>x.id===activeId);if(!l||!activeDoorAllowed())return;
     const complete=state.completed.includes(l.id);
-    $('#lessonContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close aria-label="Close lesson">×</button><div class="modal-topline">DAY ${String(l.id).padStart(2,'0')} / 24 <span>·</span> ${esc(label[l.category].toUpperCase())}<span class="status-badge">${esc(l.kind)}</span></div><h2 id="lessonTitle">${esc(l.title)}</h2><p>${esc(l.takeaway)} <span class="lesson-duration">${l.minutes} min · ${lessonPoints(l.id)} / 100 XP</span></p>${l.id===24?'<button type="button" class="holiday-replay" data-holiday-greeting>Nestor’s holiday hello</button>':''}</div><div class="lesson-tabs" role="tablist" aria-label="Lesson sections">${[['play','Play the day'],['briefing','Case file'],['timeline','The story'],['lab','Defend'],['playbook','Respond'],['sources','Read & earn']].map(([id,n])=>`<button role="tab" id="tab-${id}" aria-controls="lessonPanel" aria-selected="${activeTab===id}" tabindex="${activeTab===id?'0':'-1'}" data-tab="${id}" class="${activeTab===id?'active':''}">${n}${id==='play'&&complete?' ✓':id==='sources'&&state.readings.includes(l.id)?' ✦':''}</button>`).join('')}</div><div class="tab-content" id="lessonPanel" role="tabpanel" aria-labelledby="tab-${activeTab}" tabindex="0">${lessonTabHtml(l)}</div><div class="modal-footer"><button class="complete-button ${complete?'done':''}" data-return-game>${complete?'✦ Day protected · '+lessonPoints(l.id)+' XP':'→ Resume the decisions'}</button><div class="day-navigation"><button data-prev ${l.id===1?'disabled':''} aria-label="Previous day"><span class="day-nav-arrow" aria-hidden="true">←</span></button><small><strong>Day ${l.id}</strong> of 24</small><button data-next ${l.id===24?'disabled':''} aria-label="Next day"><span>Next</span><span class="day-nav-arrow" aria-hidden="true">→</span></button></div></div>`;
+    $('#lessonContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close aria-label="Close lesson">×</button><div class="modal-topline">DAY ${String(l.id).padStart(2,'0')} / 24 <span>·</span> ${esc(label[l.category].toUpperCase())}<span class="status-badge">${esc(l.kind)}</span></div><h2 id="lessonTitle">${esc(l.title)}</h2><div class="lesson-access-tools"><button type="button" data-listen-panel aria-pressed="false">Listen</button><button type="button" data-accessibility>Accessibility</button></div><p>${esc(l.takeaway)} <span class="lesson-duration">${l.minutes} min · ${lessonPoints(l.id)} / 100 XP</span></p>${l.id===24?'<button type="button" class="holiday-replay" data-holiday-greeting>Nestor’s holiday hello</button>':''}</div><div class="lesson-tabs" role="tablist" aria-label="Lesson sections">${[['play','Play the day'],['briefing','Case file'],['timeline','The story'],['lab','Defend'],['playbook','Respond'],['sources','Read & earn']].map(([id,n])=>`<button role="tab" id="tab-${id}" aria-controls="lessonPanel" aria-selected="${activeTab===id}" tabindex="${activeTab===id?'0':'-1'}" data-tab="${id}" class="${activeTab===id?'active':''}">${n}${id==='play'&&complete?' ✓':id==='sources'&&state.readings.includes(l.id)?' ✦':''}</button>`).join('')}</div><div class="tab-content" id="lessonPanel" role="tabpanel" aria-labelledby="tab-${activeTab}" tabindex="0">${lessonTabHtml(l)}</div><div class="modal-footer"><button class="complete-button ${complete?'done':''}" data-return-game>${complete?'✦ Day protected · '+lessonPoints(l.id)+' XP':'→ Resume the decisions'}</button><div class="day-navigation"><button data-prev ${l.id===1?'disabled':''} aria-label="Previous day"><span class="day-nav-arrow" aria-hidden="true">←</span></button><small><strong>Day ${l.id}</strong> of 24</small><button data-next ${l.id===24?'disabled':''} aria-label="Next day"><span>Next</span><span class="day-nav-arrow" aria-hidden="true">→</span></button></div></div>`;
   }
   function setTab(tab){if(!activeDoorAllowed())return;if(tab==='mission')tab='play';if(!['play','briefing','timeline','lab','playbook','sources'].includes(tab))return;activeTab=tab;renderLesson();$('#lessonDialog').scrollTop=0;$(`[role="tab"][data-tab="${tab}"]`).focus({preventScroll:true});}
   const lessonUrl=id=>`https://aware-by-design.github.io/Winterwatch-site/#day=${id}`;
@@ -472,7 +485,7 @@
   }
   async function exportCard(shape,native=false){const l=lessons.find(x=>x.id===activeId);if(!l)return;const blob=await makeCard(l,shape);if(!blob){toast('Card export could not complete. Copy the post instead.');return;}const file=new File([blob],`winterwatch-day-${String(l.id).padStart(2,'0')}-${shape}.png`,{type:'image/png'});if(native&&navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:l.title,text:shareText(l)});return;}catch(e){if(e.name==='AbortError')return;}}download(blob,file.name);toast(shape==='status'?'1080 × 1920 status card downloaded.':'1080 × 1080 social card downloaded.');}
 
-  function showInfo(title,subtitle,body){if(!$('#infoDialog').open)infoReturnFocus=focusTarget();setMenu(false);infoView='';if($('#lessonDialog').open)$('#lessonDialog').close();$('#infoContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close-info aria-label="Close panel">×</button><div class="eyebrow">THE WINTERWATCH FIELD NOTES</div><h2 id="infoTitle">${esc(title)}</h2><p>${esc(subtitle)}</p></div><div class="guide-content">${body}</div>`;$('#infoDialog').showModal();$('#infoDialog').scrollTop=0;}
+  function showInfo(title,subtitle,body){stopListening();if(!$('#infoDialog').open)infoReturnFocus=focusTarget();setMenu(false);infoView='';if($('#lessonDialog').open)$('#lessonDialog').close();$('#infoContent').innerHTML=`<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div class="modal-heading"><button class="close-dialog" data-close-info aria-label="Close panel">×</button><div class="eyebrow">THE WINTERWATCH FIELD NOTES</div><h2 id="infoTitle">${esc(title)}</h2><p>${esc(subtitle)}</p></div><div class="guide-content">${body}</div>`;$('#infoDialog').showModal();$('#infoDialog').scrollTop=0;}
   function guide(){showInfo('Learn by making the decision.','Three decisions, one useful habit, and an evidence bonus behind every pair of doors.',`<div class="guide-game-loop"><article><span>01 · ENTER THE STORY</span><h3>Take a role.</h3><p>Become a customer, supplier, employee, responder or person at home. Read the situation and what is at stake.</p></article><article><span>02 · MAKE THE MOVES</span><h3>See the consequence.</h3><p>Choose actions, sort an attack sequence, select evidence or classify habits. Feedback explains why a decision helps or fails. You can try again.</p></article><article><span>03 · GO TO THE SOURCE</span><h3>Earn a little more wisdom.</h3><p>Answer a source question, explore the relevant article or framework, and take a practical habit into everyday life.</p></article></div><h3>Choose a place to start.</h3><div class="starter-games"><button data-open="2">I buy or manage a service <span>Customer–supplier decisions →</span></button><button data-open="7">I want to follow a real attack <span>The Binance chain →</span></button><button data-open="8">I work with money or approvals <span>The DNB impersonation attempt →</span></button><button data-open="12">I use AI in everyday life <span>Privacy and reliable answers →</span></button><button data-open="20">I build or deploy AI <span>An OWASP financial-assistant case →</span></button></div><h3>How the points work.</h3><p>Open a day’s lesson for 10 XP. Resolve each of its three decision rounds for 20 XP. Completing the day adds 10 XP and a celebration: 80 XP for the day’s work. Answer the source question for another 20 XP and a reading celebration. There are 2,400 XP to explore.</p><p>Wrong answers explain the risk and let you retry. Replaying a won round never adds duplicate points. Progress, XP, badges and your learning streak stay on this device across reloads when browser storage is available. They are learning rewards, not proof of compliance or professional certification.</p><div class="guide-actions"><button class="button button-green" data-progress>View progress</button><button class="button button-soft" data-dates>Countries, dates & duties →</button></div>`);}
   function showDates(){showInfo('Dates and duties, in context.','EU milestones and eight national NIS2 profiles.',`<p>Choose a country, then check the entity, sector, role and current source. Enacted law, phased duty, proposal and voluntary framework are different kinds of information.</p>${countrySelect(true)}${countryCard()}<h3>The EU milestones.</h3><div class="milestone-list">${dates.map(d=>`<article><time>${formatDate(d.date)}</time><div><b>${esc(d.name)}</b><p>${esc(d.detail)} ${sourceLink(d.source,'Official source')}</p></div></article>`).join('')}</div><p class="source-note">The AI dates follow the current amended Commission timeline. GDPR, DORA and applicable national cyber duties can already apply; a later AI or product milestone is not a general grace period.</p><h3>Match the instrument to the decision.</h3><div class="duty-cards"><article><b>${sourceLink('gdpr','GDPR · Articles 5, 28, 32–34')}</b><p>Purpose, roles, processor arrangements, security, breach assessment and people’s risk.</p></article><article><b>${sourceLink('nis','NIS2 · Articles 21 and 23')}</b><p>Applicable entity risk management, direct suppliers, significance and national reporting routes.</p></article><article><b>${sourceLink('dora','DORA · Articles 28–30')}</b><p>Covered financial entities, ICT providers, evidence, incident assistance and exit arrangements.</p></article><article><b>${sourceLink('craLaw','CRA · reporting and Annex I')}</b><p>Product role, vulnerability handling, lifecycle support and phased requirements.</p></article><article><b>${sourceLink('aiLaw','AI Act · current text and Article 50')}</b><p>Provider / deployer role, intended use, risk category, transparency and current transitions.</p></article></div><h3>Frameworks help organise the work.</h3><p>${sourceLink('nistIR','NIST incident response')}, ${sourceLink('csf','CSF 2.0')}, ${sourceLink('rmf','AI RMF')}, ${sourceLink('owaspApi','OWASP API Security')}, ${sourceLink('owaspPrompt','OWASP GenAI')} and ${sourceLink('enisaGuide','ENISA guidance')} support different parts of the decisions. ISO management standards remain linked in the case sources.</p><div class="guide-actions"><button class="button button-green" data-export-dates ${state.country?'':'disabled'}>${countries.some(c=>c.id===state.country)?'Download EU + selected-country milestones':'Download EU milestones'} ↓</button><button class="subtle-button" data-open="17">Play the dates challenge →</button></div>`);infoView='dates';}
   function formatDate(d){return new Intl.DateTimeFormat('en-GB',{timeZone:'Etc/GMT-1',day:'2-digit',month:'short',year:'numeric'}).format(new Date(d+'T12:00:00Z'));}
@@ -500,7 +513,7 @@
   function showBadgeReward(earned,replay=false){
     const valid=earned.filter(b=>badges().some(current=>current.id===b.id&&current.earned));if(!valid.length)return;pendingBadges=pendingBadges.filter(b=>!valid.some(v=>v.id===b.id));if(!pendingBadges.length)clearTimeout(badgeTimer);
     toast(`${replay?'Badge celebration replayed':'Badge unlocked'}: ${valid.map(b=>b.name).join(', ')}.`);
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    if(motionPaused())return;
     const layer=document.createElement('div');layer.className='celebration-layer badge-celebration';layer.setAttribute('aria-hidden','true');
     const reward=document.createElement('div');reward.className='badge-reward';
     const symbol=document.createElement('span');symbol.className='badge-reward-symbol';symbol.textContent=valid[0].icon;reward.append(symbol);
@@ -516,7 +529,7 @@
     showInfo('Reset all your progress?','This cannot be undone.',`<p>This clears saved quests, XP, reading bonuses, badges and streaks from this browser.</p><div class="guide-actions reset-confirm-actions"><button type="button" class="button button-soft" data-cancel-reset>Cancel</button><button type="button" class="button button-green" data-confirm-reset>Yes, reset my progress</button></div>`);infoView='reset-confirm';$('#infoDialog [data-cancel-reset]')?.focus({preventScroll:true});
   }
   function about(){
-    showInfo('A little wonder. A useful habit.','Cybersecurity, AI and privacy belong to everyone who builds, leads or keeps things running.',`<h3>Contact and feedback</h3><p>For content corrections and accessibility feedback, <a href="https://github.com/aware-by-design/Winterwatch-site/issues" target="_blank" rel="noopener noreferrer">contact the calendar maintainers through public GitHub issues ↗</a>. GitHub is an external service and handles submissions under its own terms.</p><h3>AI assistance and editorial review</h3><p>AI tools assisted with drafting, code, illustrations and review. Illustrations are labelled AI-generated. Claims are linked to sources and dated; mistakes can remain. Operational use needs current source checks and qualified review.</p><h3>24 doors. Three perspectives.</h3><p>Winterwatch pairs a quiet festive setting with practical learning. Explore recent incidents, everyday hygiene, customer–supplier dependencies, response playbooks and EU-first regulatory milestones. Each lesson includes technical, business and operations perspectives. The collection connects awareness raising with practical cyber-hygiene habits.</p><h3>Evidence, with the labels left on.</h3><p>Primary-source incidents, provider assessments, disclosed vulnerabilities, legal duties and fictional exercises are labelled separately. Operational recipes are authored training examples, not vendor-certified rules. The calendar does not update itself. Check current cases, reporting routes and country guidance at their official sources.</p><h3>Learn without an account.</h3><p>The calendar asks for no name, email, account or personal details. It has no analytics, advertising trackers, third-party scripts, remote fonts or learner-data server. When browser storage is available, the calendar saves minimal progress in this browser: which lessons and decisions you finished, reading bonuses, and your last learning-window date with streak counts. XP and milestone badges are reconstructed from that progress. Raw answers, personal details and display preferences are not saved. No progress is uploaded or exported. Use Reset progress beside View progress on the calendar to remove it after confirmation.</p><h3>When you follow a link.</h3><p>Sources and social platforms open only when you choose them. Social posts and cards use public lesson content. Those services handle visits under their own terms. This site is hosted on GitHub Pages, which logs and stores visitors’ IP addresses for security purposes. <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection" target="_blank" rel="noopener noreferrer">GitHub Pages data collection ↗</a> · <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub privacy statement ↗</a>. The calendar has no access to those visitor logs.</p><h3>A calm, accessible December.</h3><p>Each door becomes available on its December date at 09:00 CET and remains available. Play any released day, including lessons you missed. After 24 December at 09:00 CET, all 24 lessons remain available at your own pace. Keyboard navigation, reduced-motion support, and a snow toggle help you choose the atmosphere. There is no sound by default.</p><div class="guide-actions"><button class="button button-green" data-sources>Research & sources →</button><button class="subtle-button" data-guide>Field guide →</button></div>${initiativeHtml()}`);
+    showInfo('A little wonder. A useful habit.','Cybersecurity, AI and privacy belong to everyone who builds, leads or keeps things running.',`<h3>Contact and feedback</h3><p>For content corrections and accessibility feedback, <a href="https://github.com/aware-by-design/Winterwatch-site/issues" target="_blank" rel="noopener noreferrer">contact the calendar maintainers through public GitHub issues ↗</a>. GitHub is an external service and handles submissions under its own terms.</p><h3>AI assistance and editorial review</h3><p>AI tools assisted with drafting, code, illustrations and review. Illustrations are labelled AI-generated. Claims are linked to sources and dated; mistakes can remain. Operational use needs current source checks and qualified review.</p><h3>24 doors. Three perspectives.</h3><p>Winterwatch pairs a quiet festive setting with practical learning. Explore recent incidents, everyday hygiene, customer–supplier dependencies, response playbooks and EU-first regulatory milestones. Each lesson includes technical, business and operations perspectives. The collection connects awareness raising with practical cyber-hygiene habits.</p><h3>Evidence, with the labels left on.</h3><p>Primary-source incidents, provider assessments, disclosed vulnerabilities, legal duties and fictional exercises are labelled separately. Operational recipes are authored training examples, not vendor-certified rules. The calendar does not update itself. Check current cases, reporting routes and country guidance at their official sources.</p><h3>Learn without an account.</h3><p>The calendar asks for no name, email, account or personal details. It has no analytics, advertising trackers, third-party scripts, remote fonts or learner-data server. When browser storage is available, the calendar saves minimal progress in this browser: which lessons and decisions you finished, reading bonuses, and your last learning-window date with streak counts. XP and milestone badges are reconstructed from that progress. Raw answers, personal details and display preferences are not saved. No progress is uploaded or exported. Use Reset progress beside View progress on the calendar to remove it after confirmation.</p><h3>When you follow a link.</h3><p>Sources and social platforms open only when you choose them. Social posts and cards use public lesson content. Those services handle visits under their own terms. This site is hosted on GitHub Pages, which logs and stores visitors’ IP addresses for security purposes. <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection" target="_blank" rel="noopener noreferrer">GitHub Pages data collection ↗</a> · <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub privacy statement ↗</a>. The calendar has no access to those visitor logs.</p><h3>A calm, accessible December.</h3><p>Each door becomes available on its December date at 09:00 CET and remains available. Play any released day, including lessons you missed. After 24 December at 09:00 CET, all 24 lessons remain available at your own pace. Use Accessibility for three text sizes, pause animations, high contrast and easier reading. Listen buttons use an English voice installed on your device; speech stops when you change a lesson or close it. Keyboard navigation and reduced-motion support are also included. Display choices last for this tab only. There is no sound by default.</p><div class="guide-actions"><button class="button button-green" data-sources>Research & sources →</button><button class="subtle-button" data-guide>Field guide →</button></div>${initiativeHtml()}`);
   }
   function allSources(){showInfo('Follow the evidence.','Primary research, public authorities, legal texts and standards bodies.',`<p>Some source sites can restrict automated retrieval; corroborating official guidance is linked where available. A historical patch version or deadline is not a recommendation to use obsolete software or law.</p><div class="fact-callout">Follow each claim back to its source. Check the publication date, current legal text and relevant national authority before applying it. Case findings and defensive training recommendations are labelled separately.</div><ul class="source-list">${Object.entries(sources).map(([id,s])=>`<li>${sourceLink(id)}<small>${esc(s.org)} · ${esc(s.kind)}</small></li>`).join('')}</ul><div class="guide-actions"><button class="button button-green" data-export-sources>Download source register ↓</button><button class="subtle-button" data-about>About this collection</button></div>${initiativeHtml()}`);}
   function milestoneCalendar(){
@@ -587,11 +600,80 @@
     }finally{reminderExportPending=false;updateAdventTracker();}
   }
   function exportDates(){if(!jurisdictions.some(c=>c.id===state.country)){toast('Choose a country first.');return;}download(milestoneCalendar(),`winterwatch-eu-${state.country}-milestones.ics`,'text/calendar;charset=utf-8');toast(countries.some(c=>c.id===state.country)?'EU and selected-country milestones downloaded. Review applicability before adding them.':'EU milestones downloaded. This country has no detailed national milestone profile in this edition.');}
+  // Display choices live only in this tab; progress remains a separate checkpoint.
+  let textSize='normal',highContrast=false,easierReading=false,pauseAnimations=false;
+  let accessibilityReturnFocus=null,speechToken=0,listeningKey='',speechUtterance=null;
+  const motionPaused=()=>pauseAnimations||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function stopListening(){
+    speechToken++;listeningKey='';speechUtterance=null;
+    try{window.speechSynthesis?.cancel();}catch{/* A missing device service must not block learning. */}
+    $$('[data-listen],[data-listen-panel]').forEach(b=>{b.setAttribute('aria-pressed','false');b.textContent=b.hasAttribute('data-listen-panel')&&b.classList.contains('briefing-listen')?'Listen to this briefing':'Listen';});
+  }
+  function listenText(text,key,button){
+    if(listeningKey===key){stopListening();return;}
+    stopListening();
+    const synth=window.speechSynthesis,Utterance=window.SpeechSynthesisUtterance;
+    if(!synth||typeof Utterance!=='function'){toast('Read aloud is not available in this browser. You can use your device’s screen reader.');return;}
+    let voices;try{voices=synth.getVoices().filter(v=>v.localService===true);}catch{voices=[];}
+    const voice=voices.find(v=>/^en[-_]/i.test(v.lang))||voices.find(v=>/^en$/i.test(v.lang));
+    if(!voice){toast('No English device voice is ready. Enable an English offline voice in your device settings, then try Listen again.');return;}
+    const words=String(text).replace(/\s+/g,' ').trim().split(' '),chunks=[];
+    for(const word of words){if(!chunks.length||chunks[chunks.length-1].length+word.length>180)chunks.push(word);else chunks[chunks.length-1]+=' '+word;}
+    if(!chunks.join('').trim())return;
+    listeningKey=key;button.setAttribute('aria-pressed','true');button.textContent='Stop listening';
+    const token=speechToken;
+    const speak=()=>{
+      if(token!==speechToken)return;
+      const chunk=chunks.shift();if(!chunk){stopListening();return;}
+      const utterance=new Utterance(chunk);speechUtterance=utterance;utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=1;
+      utterance.onend=()=>{if(token===speechToken)speak();};
+      utterance.onerror=()=>{if(token===speechToken){stopListening();toast('Your device could not read this text. Please try again or use a screen reader.');}};
+      try{synth.speak(utterance);}catch{stopListening();toast('Read aloud is unavailable on this device.');}
+    };
+    speak();
+  }
+  function listenDoor(id,button){
+    const l=lessons.find(l=>l.id===id);if(!l)return;
+    const text=available(id)?`Day ${id}. ${l.title}. What to expect. ${adventBriefs[id]}. Today’s takeaway. ${l.takeaway}`:lockedDoorMessage(id);
+    listenText(text,`door-${id}`,button);
+  }
+  function listenPanel(button){
+    if(!$('#lessonDialog').open||!activeDoorAllowed())return;
+    const panel=$('#lessonPanel').cloneNode(true);
+    panel.querySelectorAll('svg,textarea,[aria-hidden="true"],details:not([open])').forEach(n=>n.remove());
+    panel.querySelectorAll('button').forEach(n=>{
+      if(n.matches('[data-game-choice],[data-evidence-option],[data-habit-index],[data-reading-answer]'))n.replaceWith(document.createTextNode(` Option: ${n.textContent}. `));
+      else n.remove();
+    });
+    // Separate blocks for natural speech without inserting executable markup.
+    panel.querySelectorAll('p,li,h3,h4,dt,dd,pre').forEach(n=>n.append(document.createTextNode('. ')));
+    listenText(`Day ${activeId}. ${lessons[activeId-1].title}. ${panel.textContent}`,`panel-${activeId}-${activeTab}`,button);
+  }
+  function applyAccessibility(){
+    document.body.setAttribute('data-text-size',textSize);
+    document.body.classList.toggle('high-contrast',highContrast);
+    document.body.classList.toggle('easier-reading',easierReading);
+    document.documentElement?.setAttribute('data-text-size',textSize);
+    document.body.classList.toggle('pause-animations',motionPaused());
+    $('#accessTextSize').value=textSize;$('#accessContrast').checked=highContrast;$('#accessReading').checked=easierReading;
+    $('#accessMotion').checked=motionPaused();$('#accessMotion').disabled=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setAmbience();
+  }
+  function showAccessibility(){
+    stopListening();
+    const dialog=$('#accessibilityDialog');if(dialog.open)return;
+    accessibilityReturnFocus={element:document.activeElement};applyAccessibility();dialog.showModal();$('#accessibilityClose').focus({preventScroll:true});
+  }
   function syncAtmosphereLayout(){const r=$('.hero')?.getBoundingClientRect();if(r&&Number.isFinite(r.height)&&r.height>0)$('#snow').style.setProperty('--snow-distance',`${r.height+40}px`);}
-  function setAmbience(){const on=state.ambience&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow on':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
+  function setAmbience(){const on=state.ambience&&!motionPaused();document.body.classList.toggle('pause-animations',motionPaused());$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow on':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
   $('#snow').innerHTML=Array.from({length:104},(_,i)=>`<span style="--x:${(i*37.17)%100}%;--s:${1+i%5}px;--o:${.22+(i%6)*.1};--d:${8+i%15}s;--delay:-${i%29}s;--drift:${-24+i%61}px"></span>`).join('');
   document.addEventListener('click',async e=>{
-    const b=e.target.closest('button,a');if(!b)return;if(b.closest?.('#lessonDialog')&&!b.hasAttribute('data-close')&&!activeDoorAllowed()){e.preventDefault();return;}
+    const b=e.target.closest('button,a');if(!b)return;
+    if(b.hasAttribute('data-accessibility')){showAccessibility();return;}
+    if(b.hasAttribute('data-close-accessibility')){$('#accessibilityDialog').close();return;}
+    if(b.hasAttribute('data-listen')){listenDoor(Number(b.dataset.listen),b);return;}
+    if(b.hasAttribute('data-listen-panel')){listenPanel(b);return;}
+    if(b.closest?.('#lessonDialog')&&!b.hasAttribute('data-close')&&!activeDoorAllowed()){e.preventDefault();return;}
     if(b.closest?.('#mainNav')&&b.getAttribute('href')==='#calendar'){e.preventDefault();setMenu(false);location.hash='#calendar';$('#calendarTitle').scrollIntoView?.({block:'start'});$('#calendarTitle').focus({preventScroll:true});return;}
     if(b.hasAttribute('data-close-door-lock')){$('#doorLockDialog').close();return;}
     if(b.hasAttribute('data-close-holiday')){$('#holidayDialog').close();return;}
@@ -648,13 +730,20 @@
     if(b.id==='ambienceButton'){state.ambience=!state.ambience;refreshProgress();setAmbience();}
   });
   function chooseCountry(id,fromSelect=false){if(!jurisdictions.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
-  document.addEventListener('change',e=>{if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}});
-  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){restoreDoorLockFocus();scheduleCalendarGreetings();}});
+  document.addEventListener('change',e=>{
+    if(e.target.id==='accessTextSize'&&['normal','larger','largest'].includes(e.target.value)){textSize=e.target.value;applyAccessibility();return;}
+    if(e.target.id==='accessMotion'){pauseAnimations=e.target.checked;applyAccessibility();return;}
+    if(e.target.id==='accessContrast'){highContrast=e.target.checked;applyAccessibility();return;}
+    if(e.target.id==='accessReading'){easierReading=e.target.checked;applyAccessibility();return;}
+    if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}});
+  $('#accessibilityDialog').addEventListener('close',()=>{if(!$('#accessibilityDialog').open){restoreFocus(accessibilityReturnFocus);scheduleCalendarGreetings();}});
+  $('#lessonDialog').addEventListener('cancel',stopListening);
+  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){stopListening();restoreDoorLockFocus();scheduleCalendarGreetings();}});
   $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open){restoreHolidayFocus();scheduleCalendarGreetings();}});
   $('#welcomeDialog').addEventListener('close',()=>{if(!$('#welcomeDialog').open){restoreWelcomeFocus();scheduleCalendarGreetings();}});
-  $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);scheduleCalendarGreetings();});
+  $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;stopListening();if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);scheduleCalendarGreetings();});
   $('#infoDialog').addEventListener('close',()=>{if(!$('#infoDialog').open&&!$('#lessonDialog').open)restoreFocus(infoReturnFocus);scheduleCalendarGreetings();});
-  for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog'),$('#holidayDialog'),$('#welcomeDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+  for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog'),$('#holidayDialog'),$('#welcomeDialog'),$('#accessibilityDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#menuToggle').getAttribute('aria-expanded')==='true'){setMenu(false,true);return;}if(e.target.matches('[role="tab"]')&&['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const tabs=$$('[role="tab"]');let i=tabs.indexOf(e.target);i=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;const id=tabs[i].dataset.tab;setTab(id);$(`[role="tab"][data-tab="${id}"]`).focus();}});
   window.addEventListener('storage',e=>{
     if(e.key!==progressKey&&e.key!==null)return;
@@ -666,10 +755,11 @@
     updateProgress();renderDoors();if($('#lessonDialog').open){currentStage=engine.firstUnsolved(state,activeId);renderLesson();}else if(infoView==='progress')progress();
   });
   window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#day=(\d{1,2})$/);if(m)openLesson(Number(m[1]),false);});
-  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',setAmbience);
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',applyAccessibility);
   window.addEventListener('resize',syncAtmosphereLayout);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateAdventTracker();syncDailyDoors();}});
-  renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();
+  window.addEventListener('pagehide',stopListening);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopListening();if(!document.hidden){updateAdventTracker();syncDailyDoors();}});
+  applyAccessibility();renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();
   if(typeof window.ResizeObserver==='function'){const observer=new window.ResizeObserver(syncAtmosphereLayout);observer.observe($('.hero'));}
   const deepLink=location.hash.match(/^#day=(\d{1,2})$/);if(deepLink)openLesson(Number(deepLink[1]),false);
   greetingsReady=true;syncCalendarGreetings();

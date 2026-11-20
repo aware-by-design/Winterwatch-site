@@ -10,10 +10,10 @@
   <meta property="og:title" content="Winterwatch — A Cyber & AI Advent">
   <meta property="og:description" content="24 festive daily quests. Real cyber, AI and privacy lessons for every team.">
   <title>Winterwatch — A Cyber & AI Advent</title>
-  <link rel="stylesheet" href="styles.css?v=final-audit-20261119">
-  <link rel="stylesheet" href="gameplay.css?v=final-audit-20261119">
-  <link rel="stylesheet" href="accessibility.css?v=final-audit-20261119">
-  <link rel="stylesheet" href="country-map.css?v=final-audit-20261119">
+  <link rel="stylesheet" href="styles.css?v=accessibility-20261120">
+  <link rel="stylesheet" href="gameplay.css?v=accessibility-20261120">
+  <link rel="stylesheet" href="accessibility.css?v=accessibility-20261120">
+  <link rel="stylesheet" href="country-map.css?v=accessibility-20261120">
   <link rel="icon" type="image/png" sizes="96x96" href="assets/aware-by-design-mark.png">
   <link rel="apple-touch-icon" href="assets/aware-by-design-mark@2x.png">
   <script src="lessons.js?v=final-audit-20261119" defer></script>
@@ -22,14 +22,14 @@
   <script src="learning-content-more.js?v=final-audit-20261119" defer></script>
   <script src="country-guidance.js?v=final-audit-20261119" defer></script>
   <script src="game-engine.js?v=final-audit-20261119" defer></script>
-  <script src="app.js?v=final-audit-20261119" defer></script>
+  <script src="app.js?v=accessibility-20261120" defer></script>
   <script src="country-map.js?v=final-audit-20261119" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#calendarTitle">Skip to calendar</a>
   <header class="site-header">
     <a href="#" class="brand" aria-label="Winterwatch home"><span class="brand-symbol" aria-hidden="true">✳</span><span>WINTERWATCH<small>A CYBER & AI ADVENT</small></span></a>
-    <button class="menu-toggle" id="menuToggle" aria-controls="mainNav" aria-expanded="false">Menu</button><nav id="mainNav" aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">→</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
+    <button type="button" class="accessibility-button" data-accessibility aria-haspopup="dialog" aria-controls="accessibilityDialog">Accessibility</button><button class="menu-toggle" id="menuToggle" aria-controls="mainNav" aria-expanded="false">Menu</button><nav id="mainNav" aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">→</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
     <button class="progress-button" id="progressButton" aria-label="View your learning progress" aria-haspopup="dialog" aria-controls="infoDialog"><span class="progress-ring" id="progressRing">✦</span><span><b id="navCount">0 of 24</b><small>Progress saves on this device</small></span></button>
   </header>
 
@@ -81,8 +81,18 @@
 
   <dialog id="lessonDialog" class="lesson-dialog" aria-labelledby="lessonTitle"><div id="lessonContent"></div></dialog>
   <dialog id="infoDialog" class="info-dialog" aria-labelledby="infoTitle"><div id="infoContent"></div></dialog>
-  <dialog id="doorLockDialog" class="door-lock-dialog" aria-labelledby="doorLockTitle" aria-describedby="doorLockMessage"><div class="door-lock-banner"><div class="door-lock-avatars" aria-hidden="true"><img src="assets/nestor-red.webp" alt="" width="110" height="138"><img src="assets/nestor-blue.webp" alt="" width="110" height="138"></div><p class="door-lock-kicker">A LITTLE NOTE FROM NESTOR</p><h2 id="doorLockTitle">One new door. One useful habit.</h2><p id="doorLockMessage"></p><button type="button" class="button button-green" id="doorLockAcknowledge" data-close-door-lock autofocus>Got it</button></div></dialog>
+  <dialog id="doorLockDialog" class="door-lock-dialog" aria-labelledby="doorLockTitle" aria-describedby="doorLockMessage"><div class="door-lock-banner"><div class="door-lock-avatars" aria-hidden="true"><img src="assets/nestor-red.webp" alt="" width="110" height="138"><img src="assets/nestor-blue.webp" alt="" width="110" height="138"></div><p class="door-lock-kicker">A LITTLE NOTE FROM NESTOR</p><h2 id="doorLockTitle">One new door. One useful habit.</h2><p id="doorLockMessage"></p><button type="button" id="doorLockListen" class="door-listen" data-listen="1" aria-pressed="false">Listen</button><button type="button" class="button button-green" id="doorLockAcknowledge" data-close-door-lock autofocus>Got it</button></div></dialog>
   <dialog id="holidayDialog" class="holiday-dialog" aria-labelledby="holidayTitle" aria-describedby="holidayIntro"><button type="button" class="holiday-close" id="holidayClose" data-close-holiday aria-label="Close holiday greeting" autofocus>×</button><img class="holiday-family" src="assets/nestor-family-holidays.webp" alt="NESTOR shown in adult and child forms sharing hot cocoa by a fireplace, with snow outside. One child form has a cocoa moustache; another has a mountain of marshmallows." width="1200" height="800" loading="lazy" decoding="async"><div class="holiday-copy"><p class="holiday-kicker" id="holidayKicker">DAY 24 · A FESTIVE HELLO FROM NESTOR</p><h2 id="holidayTitle">Nestor wishes you a Merry Christmas and happy holidays!</h2><p id="holidayIntro">May your cocoa be hot, your passwords unique and your AI answers checked twice.</p><ul class="holiday-tips"><li><strong>Check it twice.</strong> AI can help with Santa’s list. A human still checks the answers.</li><li><strong>Keep a few secrets.</strong> Private data stays out of prompts. The secret cocoa recipe stays in the kitchen.</li><li><strong>Wrap up your accounts.</strong> Use passkeys where available, or unique passwords and MFA. A red suit alone is not proof of identity.</li></ul><p class="holiday-signoff">Share the joy. Verify the surprise links. Keep the good habits going all year.</p><button type="button" class="button button-green" id="holidayAcknowledge" data-close-holiday>Back to Day 24</button></div></dialog>
+  <dialog id="accessibilityDialog" class="accessibility-dialog" aria-labelledby="accessibilityTitle" aria-describedby="accessibilityHelp">
+    <div class="accessibility-heading"><h2 id="accessibilityTitle">Make yourself comfortable</h2><button type="button" id="accessibilityClose" data-close-accessibility aria-label="Close accessibility settings">×</button></div>
+    <p id="accessibilityHelp">Choose what helps you read and play. These choices last for this tab.</p>
+    <label class="accessibility-setting" for="accessTextSize"><span>Text size</span><select id="accessTextSize"><option value="normal">Normal</option><option value="larger">Larger</option><option value="largest">Largest</option></select></label>
+    <label class="accessibility-setting" for="accessMotion"><span>Pause animations<small>Stops snow and decorative movement. Enabled automatically when your device requests reduced motion.</small></span><input type="checkbox" id="accessMotion"></label>
+    <label class="accessibility-setting" for="accessContrast"><span>High contrast<small>Black backgrounds, white text and bright outlines.</small></span><input type="checkbox" id="accessContrast"></label>
+    <label class="accessibility-setting" for="accessReading"><span>Easier reading<small>More space between lines, words and letters, with upright text.</small></span><input type="checkbox" id="accessReading"></label>
+    <p>Use Listen on a door or inside a lesson to hear it read aloud. Press again to stop. An English offline voice must be available on your device.</p>
+    <button type="button" class="button button-green" data-close-accessibility>Done</button>
+  </dialog>
   <dialog id="welcomeDialog" class="holiday-dialog welcome-dialog" aria-labelledby="welcomeTitle" aria-describedby="welcomeIntro"><button type="button" class="holiday-close" id="welcomeClose" data-close-welcome aria-label="Close welcome message" autofocus>×</button><img class="welcome-family" src="assets/nestor-advent-reminder.webp" alt="NESTOR shown in adult and child forms, welcoming you to the Advent calendar." width="768" height="512" loading="lazy" decoding="async"><div class="holiday-copy"><p class="holiday-kicker">DAY 1 · YOUR WINTERWATCH ADVENTURE STARTS HERE</p><h2 id="welcomeTitle">Welcome to Winterwatch: a Cyber and AI Advent Calendar!</h2><p id="welcomeIntro">I’m <strong>Next-gen Ethical Safeguards Training for Organizational Resilience in Artificial Intelligence</strong>, but you can call me <strong>NESTOR</strong> <span role="img" aria-label="wink">😉</span>.</p><p>I can appear as an adult or a child, but I’m always the same NESTOR. I’m here to help you build safer cyber, AI and privacy habits at home and at work.</p><ul class="holiday-tips"><li><strong>Play today’s door.</strong> Each new door opens at 09:00 CET.</li><li><strong>Try three decisions.</strong> Read the feedback, explore the case file and earn a source-reading bonus.</li><li><strong>Keep your place.</strong> Every released lesson stays available. Miss a day? Play it whenever you’re ready.</li></ul><p class="welcome-signoff">Stay curious, enjoy the challenge and have fun with me!</p><button type="button" class="button button-green" data-welcome-start>Let’s open Day 1</button></div></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <div id="announcer" class="sr-only" aria-live="polite"></div>
