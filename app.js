@@ -50,7 +50,7 @@
   let currentStage=0,stageDrafts={},readingFeedback=null,infoView='';
   let toastTimer=null, clockTimer=null,santaId=null,santaStatus='',countdownTimer=null,countdownPaused=false;
   const label={cyber:'Cybersecurity',ai:'AI & agents',privacy:'Privacy',governance:'Rules & standards',ot:'Connected world'};
-  const initiative="An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Group";
+  const initiative="This material was developed by experts of the ENISA Ad-Hoc Working Group of Awareness Raising and Cyber-Hygiene (ARCH-AHWG)";
   const arInABoxUrl="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box";
   function initiativeHtml(){return `<div class="publisher-card"><img src="assets/winterwatch-mark.svg" alt="" width="40" height="40"><p><b>${esc(initiative)}</b><br><a href="${arInABoxUrl}" target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></p></div>`;}
   const localDate=(now=new Date())=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Etc/GMT-1',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);return Object.fromEntries(p.map(x=>[x.type,x.value]));};
@@ -470,7 +470,7 @@
     const clauses=games[l.id].legal||[];if(!clauses.length)return '';
     return `<div class="legal-brief"><div class="lab-kicker">FROM THE RULE TO THE DECISION</div>${clauses.map(c=>`<article><b>${sourceLink(c.source,c.article)}</b><blockquote>“${esc(c.excerpt)}”</blockquote><p>${esc(c.meaning)}</p></article>`).join('')}<small>Short excerpts need the full article, legal role, national context and current application date.</small></div>`;
   }
-  function countryMap(){return `<section class="jurisdiction-atlas" aria-label="Country training profiles"><div class="atlas-heading"><div><div class="lab-kicker">EXPLORE THE JURISDICTION</div><h3>One world. Different duties.</h3></div><span class="publisher-name">ENISA ARCH AHWG</span></div><img src="assets/training-jurisdictions.svg" width="900" height="400" alt="World overview and Europe detail highlighting Belgium, Finland, France, Germany, Ireland, Italy, Netherlands and Spain."><p>Eight detailed NIS2 profiles. All 27 EU countries can be selected using the tiles or list; this does not detect your location or determine which law applies.</p><p class="source-note">Generalised boundaries: <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener noreferrer">Natural Earth, public domain ↗</a>. Highlighting shows this edition’s coverage, not legal status.</p></section>`;}
+  function countryMap(){return `<section class="jurisdiction-atlas" aria-label="Country training profiles"><div class="atlas-heading"><div><div class="lab-kicker">EXPLORE THE JURISDICTION</div><h3>One world. Different duties.</h3></div><span class="publisher-name">ENISA ARCH-AHWG</span></div><img src="assets/training-jurisdictions.svg" width="900" height="400" alt="World overview and Europe detail highlighting Belgium, Finland, France, Germany, Ireland, Italy, Netherlands and Spain."><p>Eight detailed NIS2 profiles. All 27 EU countries can be selected using the tiles or list; this does not detect your location or determine which law applies.</p><p class="source-note">Generalised boundaries: <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener noreferrer">Natural Earth, public domain ↗</a>. Highlighting shows this edition’s coverage, not legal status.</p></section>`;}
   function countrySelect(mapOpen=false){return `<div class="country-prompt"><h3>Choose your country to find official contacts.</h3><p>Select a country on the map or in the list. Then match the incident to the route below and confirm the responsible authority, entity and sector. Your choice stays in this page; it does not detect your location.</p></div><label class="country-select">Country for this exercise <select data-country-select><option value="" disabled ${state.country?'':'selected'}>Select your country…</option>${jurisdictions.map(c=>`<option value="${c.id}" ${c.id===state.country?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label><details class="country-atlas-inline" ${mapOpen?'open':''}><summary>About the eight detailed country profiles</summary>${countryMap()}</details>`;}
   function contactRoutesHtml(){
     const j=jurisdictions.find(x=>x.id===state.country),c=countries.find(x=>x.id===state.country);
@@ -511,7 +511,7 @@
   }
   async function copy(text,success='Copied.'){try{await navigator.clipboard.writeText(text);toast(success);return true;}catch{toast('Clipboard unavailable. Select and copy the text shown.');return false;}}
   function download(content,name,type='text/plain;charset=utf-8'){const b=content instanceof Blob?content:new Blob([content],{type});const url=URL.createObjectURL(b);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-  function playbookPdfPath(id){return Number.isInteger(id)&&id>=1&&id<=24?`assets/playbooks/winterwatch-day-${String(id).padStart(2,'0')}-playbook.pdf?edition=final-audit-20261119`:'';}
+  function playbookPdfPath(id){return Number.isInteger(id)&&id>=1&&id<=24?`assets/playbooks/winterwatch-day-${String(id).padStart(2,'0')}-playbook.pdf?edition=arch-credit-20261120`:'';}
   function downloadPlaybook(l){const href=playbookPdfPath(l?.id);if(!href){toast('Playbook unavailable.');return;}const a=document.createElement('a');a.href=href;a.download=href.split('/').pop().split('?')[0];document.body.append(a);a.click();a.remove();toast('Your Christmas PDF playbook download is ready.');}
   function playbookText(l){return `WINTERWATCH · DAY ${l.id}\n${l.title}\n\n${l.kind}\n\nBRIEFING\n${l.summary}\n\nTAKEAWAY\n${l.takeaway}\n\nTECHNICAL\n${l.lenses.technical}\n\nBUSINESS\n${l.lenses.business}\n\nOPERATIONS\n${l.lenses.operations}\n\nCONTROL RECIPE (illustrative; map to your telemetry)\n${l.steps.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\n${l.logic}\n\nSAFE VALIDATION\n${l.test}\n\nLIMITATIONS\n${l.noise}\n\nPLAYBOOK\n${l.response.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\nLEARNING DECISIONS\n${games[l.id].steps.map((s,i)=>`${i+1}. ${s.title}: ${s.success}`).join('\n')}\n\nREAD MORE\n${l.sources.map(id=>`${sources[id].title}\n${sources[id].url}\nActivity: ${sources[id].activity}`).join('\n\n')}\n\nTraining recommendations are separate from source findings. Confirm current legal scope and product documentation. Test only with explicit authorisation and agreed scope.\n\n${initiative}\nLearn more about AR-in-a-Box: ${arInABoxUrl}\n`;}
   const artworkCache=new Map();
@@ -544,8 +544,8 @@
   }
   function trackedText(ctx,text,x,y,{size=18,color='#c9d2bc',tracking=6,family='Arial'}={}){ctx.font=`${size}px ${family}`;ctx.fillStyle=color;ctx.textBaseline='top';let cx=x;for(const ch of text){ctx.fillText(ch,cx,y);cx+=ctx.measureText(ch).width+tracking;}}
   function socialCardLayout(shape){
-    if(shape==='status')return {height:1920,headerY:103,subY:150,dayY:252,title:{x:90,y:340,w:900,h:245},image:{x:80,y:650,w:920,h:615},creditY:1290,takeawayLabelY:1344,takeaway:{x:95,y:1380,w:890,h:180},actionLabelY:1598,action:{x:95,y:1630,w:890,h:83},source:{x:95,y:1740,w:890,h:50},reviewY:1798,tagsY:1830};
-    return {height:1080,headerY:73,subY:117,dayY:188,title:{x:80,y:250,w:920,h:154},image:{x:80,y:425,w:470,h:315},creditY:756,takeawayLabelY:443,takeaway:{x:585,y:481,w:415,h:245},actionLabelY:794,action:{x:80,y:822,w:920,h:55},source:{x:80,y:903,w:920,h:43},reviewY:965,tagsY:1002};
+    if(shape==='status')return {height:1920,headerY:103,subY:150,dayY:252,title:{x:90,y:340,w:900,h:245},image:{x:80,y:650,w:920,h:615},creditY:1290,takeawayLabelY:1344,takeaway:{x:95,y:1380,w:890,h:180},actionLabelY:1598,action:{x:95,y:1630,w:890,h:83},source:{x:95,y:1740,w:890,h:50},reviewY:1793,tagsY:1840};
+    return {height:1080,headerY:73,subY:117,dayY:188,title:{x:80,y:250,w:920,h:154},image:{x:80,y:425,w:470,h:315},creditY:756,takeawayLabelY:443,takeaway:{x:585,y:481,w:415,h:245},actionLabelY:794,action:{x:80,y:822,w:920,h:55},source:{x:80,y:903,w:920,h:43},reviewY:950,tagsY:1002};
   }
   async function makeCard(l,shape){
     const layout=socialCardLayout(shape),visual=visualFor(l),img=await loadArtwork(l);
@@ -566,8 +566,9 @@
     cardText(ctx,l.takeaway,layout.takeaway,{size:shape==='status'?43:34,minSize:25,family:'Georgia',color:'#e8e5ce',spacing:1.25});
     cardText(ctx,'ONE ACTION TO TAKE',{x:layout.action.x,y:layout.actionLabelY,w:920,h:24},{size:13,minSize:12,color:'#c5ad71'});
     cardText(ctx,visual?.action||l.takeaway,layout.action,{size:shape==='status'?26:22,minSize:18,color:'#c6d5bd'});
-    cardText(ctx,`SOURCE: ${sources[l.sources[0]].org}`,layout.source,{size:shape==='status'?18:16,minSize:13,color:'#c0af7e'});
-    cardText(ctx,'ENISA ARCH AHWG · '+(/fictional/i.test(l.kind)?'Fictional training scenario':'Public learning card'),{x:layout.action.x,y:layout.reviewY,w:920,h:25},{size:shape==='status'?16:14,minSize:12,color:'#a2b69b'});
+    const kind=/fictional/i.test(l.kind)?'Fictional training scenario':'Public learning card';
+    cardText(ctx,`SOURCE: ${sources[l.sources[0]].org} · ${kind}`,layout.source,{size:shape==='status'?18:16,minSize:13,color:'#c0af7e'});
+    cardText(ctx,initiative,{x:layout.source.x,y:layout.reviewY,w:layout.source.w,h:layout.tagsY-layout.reviewY-3},{size:18,minSize:16,spacing:1.15,color:'#c6d5bd'});
     cardText(ctx,`Play: aware-by-design.github.io/Winterwatch-site/#day=${l.id}`,{x:layout.action.x,y:layout.tagsY,w:920,h:28},{size:shape==='status'?18:16,minSize:14,color:'#dfcea5'});
     return new Promise(resolve=>c.toBlob(resolve,'image/png'));
   }
@@ -650,13 +651,13 @@
   function adventReminderCalendar(now=new Date(),images=new Map()){
     const e=value=>String(value).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
     const upcoming=upcomingAdventLessons(now);if(!upcoming.length)return '';
-    const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ENISA ARCH AHWG//Winterwatch Advent 2026//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Winterwatch Advent 2026','X-WR-TIMEZONE:CET'];
+    const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ENISA ARCH-AHWG//Winterwatch Advent 2026//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Winterwatch Advent 2026','X-WR-TIMEZONE:CET'];
     for(const l of upcoming){
       const date=`202612${String(l.id).padStart(2,'0')}`,image=images.get(l.id),brief=adventBriefs[l.id]||l.takeaway;
       const description=`Day ${l.id} with Nestor\n${l.title}\n\n${brief}\n\nKeep this habit: ${l.takeaway}\n\n${l.id} December 2026 · 09:00–09:10 CET. Three practical decisions, then the day’s briefing and sources.\n\nAI-assisted conceptual illustration; not incident evidence.\n\n${initiative}\nLearn more about AR-in-a-Box: ${arInABoxUrl}`;
-      lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261119T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch with Nestor · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`);
+      lines.push('BEGIN:VEVENT',`UID:winterwatch-arch-ahwg-2026-day-${String(l.id).padStart(2,'0')}@calendar.local`,'DTSTAMP:20261120T000000Z',`DTSTART:${date}T080000Z`,`DTEND:${date}T081000Z`,`SUMMARY:${e(`Winterwatch with Nestor · Day ${l.id}: ${l.title}`)}`,`DESCRIPTION:${e(description)}`);
       if(validInviteImage(image))lines.push(`IMAGE;DISPLAY=FULLSIZE;FMTTYPE=image/jpeg;ENCODING=BASE64;VALUE=BINARY:${image.data}`);
-      lines.push(`X-ALT-DESC;FMTTYPE=text/html:${e(adventInviteHtml(l,image))}`,'TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:4','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Day ${l.id} with Nestor: ${l.title}. ${brief}`)}`,'END:VALARM','END:VEVENT');
+      lines.push(`X-ALT-DESC;FMTTYPE=text/html:${e(adventInviteHtml(l,image))}`,'TRANSP:TRANSPARENT','STATUS:CONFIRMED','SEQUENCE:5','BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M',`DESCRIPTION:${e(`Day ${l.id} with Nestor: ${l.title}. ${brief}`)}`,'END:VALARM','END:VEVENT');
     }
     lines.push('END:VCALENDAR');return foldCalendarLines(lines);
   }

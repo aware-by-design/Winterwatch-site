@@ -1,6 +1,6 @@
 # Winterwatch website publication
 
-An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Group
+This material was developed by experts of the ENISA Ad-Hoc Working Group of Awareness Raising and Cyber-Hygiene (ARCH-AHWG)
 
 Learn more about AR-in-a-Box: https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box
 

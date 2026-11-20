@@ -12,7 +12,7 @@
   <title>Winterwatch: A Cyber &amp; AI Advent</title>
   <link rel="stylesheet" href="styles.css?v=accessibility-20261120">
   <link rel="stylesheet" href="gameplay.css?v=accessibility-20261120">
-  <link rel="stylesheet" href="accessibility.css?v=timber-20261120">
+  <link rel="stylesheet" href="accessibility.css?v=nav-credit-20261120">
   <link rel="stylesheet" href="country-map.css?v=accessibility-20261120">
   <link rel="stylesheet" href="chalet.css?v=mobile-ambassador-20261120">
   <link rel="icon" type="image/x-icon" sizes="16x16 24x24 32x32 48x48 64x64" href="assets/nestor-family.ico">
@@ -23,14 +23,23 @@
   <script src="learning-content-more.js?v=final-audit-20261119" defer></script>
   <script src="country-guidance.js?v=final-audit-20261119" defer></script>
   <script src="game-engine.js?v=final-audit-20261119" defer></script>
-  <script src="app.js?v=mobile-ambassador-20261120" defer></script>
+  <script src="app.js?v=nav-credit-20261120" defer></script>
   <script src="country-map.js?v=final-audit-20261119" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#calendarTitle">Skip to calendar</a>
   <header class="site-header">
     <a href="#" class="brand" aria-label="Winterwatch home"><span class="brand-symbol" aria-hidden="true">✳</span><span>WINTERWATCH<small>A CYBER & AI ADVENT</small></span></a>
-    <button type="button" class="accessibility-button" data-accessibility aria-haspopup="dialog" aria-controls="accessibilityDialog" aria-label="Accessibility" title="Accessibility"><svg class="control-icon accessibility-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="7" r="1" fill="currentColor"/><path d="m7 10 5 1 5-1m-5 1v5m0-2-3 4m3-4 3 4"/></svg><span class="accessibility-label">Accessibility</span></button><button class="menu-toggle" id="menuToggle" aria-controls="mainNav" aria-expanded="false">Menu</button><nav id="mainNav" aria-label="Main navigation"><a class="nav-active" href="#calendar">The calendar</a><button class="text-button" data-guide>Field guide <span aria-hidden="true">→</span></button><button class="text-button" data-dates>Dates & duties</button></nav>
+    <button type="button" class="accessibility-button" data-accessibility aria-haspopup="dialog" aria-controls="accessibilityDialog" aria-label="Accessibility" title="Accessibility"><svg class="control-icon accessibility-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="7" r="1" fill="currentColor"/><path d="m7 10 5 1 5-1m-5 1v5m0-2-3 4m3-4 3 4"/></svg><span class="accessibility-label">Accessibility</span></button>
+    <button type="button" class="menu-toggle" id="menuToggle" aria-controls="mainNav" aria-expanded="false">
+      <svg class="menu-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <span>Menu</span>
+    </button>
+    <nav id="mainNav" aria-label="Main navigation">
+      <a class="nav-active" href="#calendar" aria-current="page">The calendar</a>
+      <button type="button" class="text-button" data-guide>Field guide <span aria-hidden="true">→</span></button>
+      <button type="button" class="text-button" data-dates>Dates &amp; duties</button>
+    </nav>
     <button class="progress-button" id="progressButton" aria-label="View your learning progress" aria-haspopup="dialog" aria-controls="infoDialog"><span class="progress-ring" id="progressRing">✦</span><span><b id="navCount">0 of 24</b><small>Progress saves on this device</small></span></button>
   </header>
 
@@ -97,7 +106,18 @@
     <section class="field-banner" aria-labelledby="fieldTitle"><div class="banner-art" aria-hidden="true"><span>✧</span><svg width="64" height="70" viewBox="0 0 64 70" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M32 6 54 15v18c0 16-22 30-22 30S10 49 10 33V15L32 6Z"/><path d="m23 33 6 6 13-16"/></svg><span>✦</span></div><div><div class="eyebrow">FROM INTELLIGENCE TO ACTION</div><h2 id="fieldTitle">Make the lesson last beyond December.</h2><p>Turn the headlines into an exposure check, a detection, and a rehearsed response.</p></div><button class="button button-outline" data-guide>Open the field guide <span aria-hidden="true">→</span></button></section>
     <section class="how-it-works" aria-label="How to use the calendar"><article><span>01 / UNWRAP</span><h3>Take a role.</h3><p>Follow a real incident or everyday situation as a customer, supplier, colleague or person at home.</p></article><article><span>02 / CONNECT</span><h3>Make the decisions.</h3><p>Choose an action, sort the story or spot the evidence. See the consequence and try again.</p></article><article><span>03 / PUT IT TO WORK</span><h3>Celebrate and explore.</h3><p>Complete the day, earn its celebration, then unlock a source-reading bonus and a practical habit.</p></article></section>
   </main>
-  <footer><a href="#" class="footer-brand">✳ WINTERWATCH</a><p>A thoughtful December. A more resilient year.</p><button class="text-button" data-guide>Field guide →</button><button class="text-button" data-dates>Dates &amp; duties →</button><button class="text-button" data-sources>Research &amp; sources →</button><a class="text-button" href="accessibility.html">Accessibility statement</a><button class="text-button" data-about>About &amp; privacy →</button><div class="publisher-mark arch-credit"><strong>An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Group</strong><a href="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box" target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></div></footer>
+  <footer>
+    <a href="#" class="footer-brand">✳ WINTERWATCH</a>
+    <p>A thoughtful December. A more resilient year.</p>
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <button type="button" class="text-button" data-guide>Field guide <span aria-hidden="true">→</span></button>
+      <button type="button" class="text-button" data-dates>Dates &amp; duties <span aria-hidden="true">→</span></button>
+      <button type="button" class="text-button" data-sources>Research &amp; sources <span aria-hidden="true">→</span></button>
+      <a class="text-button" href="accessibility.html">Accessibility statement</a>
+      <button type="button" class="text-button" data-about>About &amp; privacy <span aria-hidden="true">→</span></button>
+    </nav>
+    <div class="publisher-mark arch-credit"><strong>This material was developed by experts of the ENISA Ad-Hoc Working Group of Awareness Raising and Cyber-Hygiene (ARCH-AHWG)</strong><a href="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box" target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></div>
+  </footer>
 
   <dialog id="lessonDialog" class="lesson-dialog" aria-labelledby="lessonTitle"><div id="lessonContent"></div></dialog>
   <dialog id="infoDialog" class="info-dialog" aria-labelledby="infoTitle"><div id="infoContent"></div></dialog>
