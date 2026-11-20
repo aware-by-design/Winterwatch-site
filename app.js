@@ -77,12 +77,18 @@
     // All 2026 Advent sessions are in CET: 09:00 CET is 08:00 UTC.
     const time=now.getTime();return lessons.filter(l=>Date.UTC(2026,11,l.id,8)>=time);
   }
-  const adventNestorFamily=Object.freeze({src:'assets/nestor-advent-reminder.webp',width:768,height:512,alt:'NESTOR shown in adult and child forms, in Christmas sweaters and winter boots, holding a calendar marked 1–24 December 2026.'});
+  function ambassadorBadge(form, description) {
+    return Object.freeze({
+      src: 'assets/ambassador-' + form + '.webp',
+      alt: 'NESTOR ' + description + ' on the Awareness Raising Ambassador badge. Cybersecurity. Powered by ENISA.'
+    });
+  }
+  const adventNestorFamily=ambassadorBadge('family','in adult and child forms');
   const adventNestorHosts=Object.freeze([
-    {src:'assets/nestor-burgundy.webp',width:512,height:640,alt:'NESTOR in an adult form, wearing a burgundy Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-green.webp',width:480,height:640,alt:'NESTOR in an adult form, wearing a green Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-red.webp',width:512,height:640,alt:'NESTOR in a child form, with a pink flower, red Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'},
-    {src:'assets/nestor-blue.webp',width:512,height:640,alt:'NESTOR in a child form, wearing a blue Christmas sweater and winter boots, holding a bell and a calendar marked 1–24 December 2026.'}
+    ambassadorBadge('adult-female','in adult female form wearing a burgundy sweater'),
+    ambassadorBadge('adult-male','in adult male form wearing a green sweater'),
+    ambassadorBadge('child-female','in child female form with a red sweater and pink flower'),
+    ambassadorBadge('child-male','in child male form wearing a blue sweater')
   ]);
   const adventBriefs=Object.freeze({
     1:'Explore how exposed refrigeration controls can affect everyday services. Choose the first response, useful warning signs and safer supplier access.',
@@ -124,7 +130,7 @@
     set('#adventReminderBrief',l?model.brief:model.phase==='after'?'NESTOR is here for a refresher. Revisit any day or finish missed lessons at your own pace.':'Meet NESTOR in different forms. One guide, one useful habit and ten minutes of festive learning each day.');
     set('#nestorRibbonKicker',l?`DAY ${l.id} WITH NESTOR`:'ONE NESTOR. MANY FORMS.');
     set('#nestorRibbonDate',l?`${l.id} December 2026`:'1–24 December 2026');
-    const image=$('#adventHostImage');if(image){image.setAttribute('src',model.host.src);image.setAttribute('alt',model.host.alt);image.setAttribute('width',String(model.host.width));image.setAttribute('height',String(model.host.height));}
+    const image=$('#adventHostImage');if(image&&image.getAttribute('src')!==model.host.src){image.setAttribute('src',model.host.src);image.setAttribute('alt',model.host.alt);}
   }
   function updateAdventTracker(now=new Date()){
     updateAdventReminder(now);
@@ -278,7 +284,7 @@
       const started=model.status==='in-progress';
       body=`<h3>${esc(lesson.short)}</h3>${started?`<p class="santa-progress">${model.done} of 3 decisions complete</p><progress max="3" value="${model.done}" aria-label="Day ${santaId} decisions complete">${model.done} of 3</progress><p>${esc(storageStatus==='saved'?'Your progress is saved on this device.':storageNotice())}</p>`:'<p>This door is still ready for you. Open it whenever you’re ready.</p>'}<div class="santa-waiting"><h4>Your habit recap is waiting.</h4><p>Finish the lesson to reveal its Nice habits and Naughty traps.</p></div><button type="button" class="button button-green" data-open="${santaId}">${started?'Continue':'Open'} Day ${santaId}</button>`;
     }
-    $('#santaListContent').innerHTML=`<label class="santa-picker" for="santaDayPicker">Choose a door<select id="santaDayPicker" data-santa-select>${lessons.map(l=>`<option value="${l.id}" ${l.id===santaId?'selected':''}>Day ${l.id} · ${available(l.id,now)?state.completed.includes(l.id)?'reviewed':state.opened.includes(l.id)?'in progress':'ready':'upcoming'}</option>`).join('')}</select></label><p class="santa-day"><span>${String(santaId).padStart(2,'0')}</span> Day ${santaId} · ${esc(status)}</p>${body}<button type="button" class="santa-listen" data-listen-santa data-listen="${santaId}" aria-label="Listen to Day ${santaId}" aria-pressed="false">${speakerLabel('Listen')}</button>`;
+    $('#santaListContent').innerHTML=`<label class="santa-picker" for="santaDayPicker">Choose a door<select id="santaDayPicker" data-santa-select>${lessons.map(l=>`<option value="${l.id}" ${l.id===santaId?'selected':''}>Day ${l.id} · ${available(l.id,now)?state.completed.includes(l.id)?'reviewed':state.opened.includes(l.id)?'in progress':'ready':'upcoming'}</option>`).join('')}</select></label><p class="santa-day"><span aria-hidden="true">${String(santaId).padStart(2,'0')}</span> Day ${santaId} · ${esc(status)}</p>${body}<button type="button" class="santa-listen" data-listen-santa data-listen="${santaId}" aria-label="Listen to Day ${santaId}" aria-pressed="false">${speakerLabel('Listen')}</button>`;
     for (const card of $$('[data-chalet-day]')) {
       card.classList.toggle('is-santa-selected', Number(card.dataset.chaletDay) === santaId);
     }
@@ -353,6 +359,7 @@
   }
   function showHolidayGreeting(mode='lesson'){
     if(!holidayGreetingAllowed(mode))return;
+    stopListening();
     const dialog=$('#holidayDialog');if(!dialog.open)holidayReturnFocus=document.activeElement;
     holidayMode=mode;holidayGreetingShown=true;if(todayKey()==='2026-12-25')christmasGreetingShown=true;
     $('#holidayKicker').textContent=mode==='christmas'?'25 DECEMBER · A FESTIVE HELLO FROM NESTOR':'DAY 24 · A FESTIVE HELLO FROM NESTOR';
@@ -365,6 +372,7 @@
   }
   function showWelcomeGreeting(){
     if(!welcomeGreetingAllowed())return;
+    stopListening();
     const dialog=$('#welcomeDialog');if(!dialog.open)welcomeReturnFocus=document.activeElement;
     welcomeGreetingShown=true;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#welcomeClose').focus({preventScroll:true});
   }
@@ -683,23 +691,50 @@
   // Display choices live only in this tab; progress remains a separate checkpoint.
   let textSize='normal',highContrast=false,easierReading=false,pauseAnimations=false;
   let accessibilityReturnFocus=null,speechToken=0,listeningKey='',speechUtterance=null;
+  const messageLabels={advent:'the daily welcome',welcome:'the welcome message',holiday:'the holiday message'};
   const motionPaused=()=>pauseAnimations||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function speakerLabel(text){return `<svg class="control-icon speaker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg><span>${esc(text)}</span>`;}
   function setListenButton(button,playing){
     const briefing=button.hasAttribute('data-listen-panel')&&button.classList.contains('briefing-listen');
     button.setAttribute('aria-pressed',String(playing));
     button.innerHTML=speakerLabel(playing?'Stop listening':briefing?'Listen to this briefing':'Listen');
+    if(button.hasAttribute('data-listen-message')){
+      button.setAttribute('aria-label',(playing?'Stop listening to ':'Listen to ')+messageLabels[button.dataset.listenMessage]);
+      return;
+    }
     const id=Number(button.dataset.listen);
     button.setAttribute('aria-label',Number.isInteger(id)&&id>=1&&id<=24?`${playing?'Stop listening to':'Listen to'} Day ${id}${button.id==='doorLockListen'?' opening message':''}`:playing?'Stop listening':briefing?'Listen to this briefing':'Listen to this lesson section');
   }
   function stopListening(){
     speechToken++;listeningKey='';speechUtterance=null;
     try{window.speechSynthesis?.cancel();}catch{/* A missing device service must not block learning. */}
-    $$('[data-listen],[data-listen-panel]').forEach(b=>{setListenButton(b,false);});
+    $$('[data-listen],[data-listen-panel],[data-listen-message]').forEach(b=>{setListenButton(b,false);});
   }
   function listenNotice(button,message){
     const status=button.closest?.('dialog')?.querySelector('[data-listen-status]');
     if(status)status.textContent=message;else if(message)toast(message);
+  }
+  // Use the live elements so that CSS, the selected country and disclosure state
+  // determine exactly what is read at the instant the visitor presses Listen.
+  function readingText(...roots){
+    const pieces=[];
+    const omit='[hidden],[inert],[aria-hidden="true"],.sr-only,svg,script,style,progress,[data-listen],[data-listen-panel],[data-listen-message],[data-listen-status],.lesson-access-tools,.close-dialog';
+    function visit(node){
+      if(node.nodeType===3){pieces.push(node.nodeValue);return;}
+      if(node.nodeType!==1||node.matches(omit))return;
+      const style=window.getComputedStyle(node);
+      if(style.display==='none'||style.visibility!=='visible')return;
+      const block=style.display!=='inline'&&style.display!=='contents';
+      if(block)pieces.push('\n');
+      if(node.tagName==='BR')pieces.push('\n');
+      else if(node.tagName==='SELECT')pieces.push(node.selectedOptions[0]?.textContent||'');
+      else if(node.tagName==='TEXTAREA'){if(node.readOnly)pieces.push(node.value);}
+      else if(node.tagName==='DETAILS'&&!node.open){const summary=node.querySelector(':scope > summary');if(summary)visit(summary);}
+      else for(const child of node.childNodes)visit(child);
+      if(block)pieces.push('\n');
+    }
+    for(const root of roots){if(root){visit(root);pieces.push('\n');}}
+    return pieces.join('').split(/\n+/).map(line=>line.replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');
   }
   function listenText(text,key,button){
     if(listeningKey===key){stopListening();return;}
@@ -709,9 +744,17 @@
     let voices;try{voices=synth.getVoices().filter(v=>v.localService===true);}catch{voices=[];}
     const voice=voices.find(v=>/^en[-_]/i.test(v.lang))||voices.find(v=>/^en$/i.test(v.lang));
     if(!voice){listenNotice(button,'No English device voice is ready. Enable an English offline voice in your device settings, then try Listen again.');return;}
-    const words=String(text).replace(/\s+/g,' ').trim().split(' '),chunks=[];
-    for(const word of words){if(!chunks.length||chunks[chunks.length-1].length+word.length>180)chunks.push(word);else chunks[chunks.length-1]+=' '+word;}
-    if(!chunks.join('').trim())return;
+    const chunks=[];
+    for(let line of text.split(/\n+/)){
+      line=line.trim();
+      while(line.length>180){
+        const space=line.lastIndexOf(' ',180);
+        const end=space>0?space:180;
+        chunks.push(line.slice(0,end));line=line.slice(end).trimStart();
+      }
+      if(line)chunks.push(line);
+    }
+    if(!chunks.length)return;
     listeningKey=key;setListenButton(button,true);
     const token=speechToken;
     const speak=()=>{
@@ -725,27 +768,27 @@
     speak();
   }
   function listenDoor(id,button){
-    const l=lessons.find(l=>l.id===id);if(!l)return;
-    const text=available(id)?`Day ${id}. ${l.title}. What to expect. ${adventBriefs[id]}. Today’s takeaway. ${l.takeaway}`:lockedDoorMessage(id);
-    listenText(text,`door-${id}`,button);
+    if(button.id==='doorLockListen'){
+      listenText(readingText($('.door-lock-banner')), 'lock-'+id, button);
+      return;
+    }
+    const card=$(`[data-door="${id}"]`);
+    if(card)listenText('Day '+readingText(card).replace(/^0(?=\d\b)/,''), 'door-'+id, button);
   }
   function listenSanta(button){
-    const copy=$('#santaListContent').cloneNode(true);
-    copy.querySelectorAll('button,select,label,svg,[aria-hidden="true"]').forEach(n=>n.remove());
-    copy.querySelectorAll('p,li,h3,h4').forEach(n=>n.append(document.createTextNode('. ')));
-    listenText(`Santa’s list. ${copy.textContent}`,`santa-${santaId}-${santaStatus}`,button);
+    listenText(readingText($('.santa-scroll')), 'santa-'+santaId+'-'+santaStatus, button);
   }
   function listenPanel(button){
     if(!$('#lessonDialog').open||!activeDoorAllowed())return;
-    const panel=$('#lessonPanel').cloneNode(true);
-    panel.querySelectorAll('svg,textarea,[aria-hidden="true"],details:not([open])').forEach(n=>n.remove());
-    panel.querySelectorAll('button').forEach(n=>{
-      if(n.matches('[data-game-choice],[data-evidence-option],[data-habit-index],[data-reading-answer]'))n.replaceWith(document.createTextNode(` Option: ${n.textContent}. `));
-      else n.remove();
-    });
-    // Separate blocks for natural speech without inserting executable markup.
-    panel.querySelectorAll('p,li,h3,h4,dt,dd,pre').forEach(n=>n.append(document.createTextNode('. ')));
-    listenText(`Day ${activeId}. ${lessons[activeId-1].title}. ${panel.textContent}`,`panel-${activeId}-${activeTab}`,button);
+    const briefing=button.classList.contains('briefing-listen');
+    const panel=$('#lessonPanel');
+    const text=briefing?readingText(panel):readingText($('#lessonContent .modal-heading'),$('#lessonContent [aria-selected="true"]'),panel);
+    listenText(text,(briefing?'briefing-':'panel-')+activeId+'-'+activeTab,button);
+  }
+  function listenMessage(button){
+    const key=button.dataset.listenMessage;
+    const text=key==='advent'?readingText($('#adventWelcomeCopy'),$('.nestor-day-ribbon')):readingText($(key==='welcome'?'#welcomeDialog .holiday-copy':'#holidayDialog .holiday-copy'));
+    listenText(text,'message-'+key,button);
   }
   function applyAccessibility(){
     document.body.setAttribute('data-text-size',textSize);
@@ -771,11 +814,13 @@
   function setAmbience(){const on=state.ambience&&!motionPaused();document.body.classList.toggle('pause-animations',motionPaused());$('.hero').classList.toggle('paused',!on);$('#snow').classList.toggle('paused',!on);$('#snow').hidden=!on;$('#ambienceButton').setAttribute('aria-pressed',String(on));$('#ambienceText').textContent=on?'Snow on':'Still & cosy';$('#ambienceIcon').textContent=on?'❄':'✧';}
   $('#snow').innerHTML=Array.from({length:104},(_,i)=>`<span style="--x:${(i*37.17)%100}%;--s:${1+i%5}px;--o:${.22+(i%6)*.1};--d:${8+i%15}s;--delay:-${i%29}s;--drift:${-24+i%61}px"></span>`).join('');
   document.addEventListener('click',async e=>{
+    if(listeningKey&&e.target.closest('#lessonPanel summary'))stopListening();
     const b=e.target.closest('button,a');if(!b)return;
-    if(b.hasAttribute('data-countdown-pause')){countdownPaused=!countdownPaused;const inLock=$('#doorLockDialog').open;if(inLock)updateDoorLockMessage(lockedDoorId);renderSanta();$(inLock?'#doorLockDialog [data-countdown-pause]':'#santaListContent [data-countdown-pause]')?.focus({preventScroll:true});return;}
+    if(b.hasAttribute('data-countdown-pause')){stopListening();countdownPaused=!countdownPaused;const inLock=$('#doorLockDialog').open;if(inLock)updateDoorLockMessage(lockedDoorId);renderSanta();$(inLock?'#doorLockDialog [data-countdown-pause]':'#santaListContent [data-countdown-pause]')?.focus({preventScroll:true});return;}
     if(b.hasAttribute('data-accessibility')){showAccessibility();return;}
     if(b.hasAttribute('data-reset-accessibility')){resetAccessibility();return;}
     if(b.hasAttribute('data-close-accessibility')){$('#accessibilityDialog').close();return;}
+    if(b.hasAttribute('data-listen-message')){listenMessage(b);return;}
     if(b.hasAttribute('data-listen-santa')){listenSanta(b);return;}
     if(b.hasAttribute('data-listen')){listenDoor(Number(b.dataset.listen),b);return;}
     if(b.hasAttribute('data-listen-panel')){listenPanel(b);return;}
@@ -846,8 +891,8 @@
   $('#accessibilityDialog').addEventListener('close',()=>{if(!$('#accessibilityDialog').open){restoreFocus(accessibilityReturnFocus);scheduleCalendarGreetings();}});
   $('#lessonDialog').addEventListener('cancel',stopListening);
   $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){stopListening();restoreDoorLockFocus();scheduleCalendarGreetings();scheduleDoorCountdown();}});
-  $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open){restoreHolidayFocus();scheduleCalendarGreetings();}});
-  $('#welcomeDialog').addEventListener('close',()=>{if(!$('#welcomeDialog').open){restoreWelcomeFocus();scheduleCalendarGreetings();}});
+  $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open){stopListening();restoreHolidayFocus();scheduleCalendarGreetings();}});
+  $('#welcomeDialog').addEventListener('close',()=>{if(!$('#welcomeDialog').open){stopListening();restoreWelcomeFocus();scheduleCalendarGreetings();}});
   $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;stopListening();if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);scheduleCalendarGreetings();});
   $('#infoDialog').addEventListener('close',()=>{if(!$('#infoDialog').open&&!$('#lessonDialog').open)restoreFocus(infoReturnFocus);scheduleCalendarGreetings();});
   for(const dialog of [$('#lessonDialog'),$('#infoDialog'),$('#doorLockDialog'),$('#holidayDialog'),$('#welcomeDialog'),$('#accessibilityDialog')]) dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
