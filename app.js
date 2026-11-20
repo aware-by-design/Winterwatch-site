@@ -671,6 +671,11 @@
     $('#accessMotion').checked=motionPaused();$('#accessMotion').disabled=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     setAmbience();
   }
+  function resetAccessibility(){
+    stopListening();textSize='normal';highContrast=false;easierReading=false;pauseAnimations=false;state.ambience=true;
+    applyAccessibility();
+    $('#accessibilityStatus').textContent=motionPaused()?'Accessibility settings reset. Your device’s reduced-motion preference keeps animations paused.':'Accessibility settings reset. Animations are allowed again.';
+  }
   function showAccessibility(){
     stopListening();
     const dialog=$('#accessibilityDialog');if(dialog.open)return;
@@ -682,6 +687,7 @@
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button,a');if(!b)return;
     if(b.hasAttribute('data-accessibility')){showAccessibility();return;}
+    if(b.hasAttribute('data-reset-accessibility')){resetAccessibility();return;}
     if(b.hasAttribute('data-close-accessibility')){$('#accessibilityDialog').close();return;}
     if(b.hasAttribute('data-listen')){listenDoor(Number(b.dataset.listen),b);return;}
     if(b.hasAttribute('data-listen-panel')){listenPanel(b);return;}

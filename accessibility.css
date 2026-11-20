@@ -113,3 +113,24 @@ body :is(.category-tabs button,.atlas-heading small){white-space:normal}body .at
 
 /* Keep Winterwatch's warm cream and gold lettering on black surfaces. */
 body.high-contrast :is(h1,h2,h3,h4,h5,.eyebrow,.holiday-kicker,.door-lock-kicker):not(.advent-door *){color:#e8ca8e!important}
+
+/* Natural flow keeps larger text and reading spacing separate from nearby controls. */
+.accessibility-actions{display:flex;flex-wrap:wrap;gap:12px}.accessibility-actions .button{min-height:48px;line-height:1.6;white-space:normal;padding:10px 16px;max-width:100%}.accessibility-heading button{flex-shrink:0;line-height:1;padding:8px}
+.brand>span,.progress-button>span{min-width:0}.door-card .advent-door .door-inner>.door-progress-status{position:static;inset:auto;margin-top:auto;display:block;width:100%;padding-top:.75rem}.door-card .door-inner{padding-bottom:1.25rem}.door-card .door-inner strong{line-height:1.4}
+body .close-dialog{position:static;inset:auto;display:flex;align-items:center;justify-content:center;width:auto;height:auto;min-width:44px;min-height:44px;line-height:1;padding:8px;margin:0 0 1rem auto}body .modal-heading::after{display:none}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .doors-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) :is(.briefing-layout,.game-cover,.lesson-visual){grid-template-columns:minmax(0,1fr)}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .game-stage-track{flex-wrap:wrap}body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .game-stage-track>button{flex:1 1 12rem}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .sequence-cards>li{flex-wrap:wrap;align-items:flex-start}body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .habit-round>div{flex-wrap:wrap}
+body :is(.game-stage-track>button>span,.decision-options>button>span:not(.decision-option-text),.evidence-options>button>span){width:auto;height:auto;min-width:1.75rem;min-height:1.75rem;flex:0 0 auto;padding:.15rem;line-height:1.3!important}
+body .sequence-cards button{width:auto;height:auto;min-width:44px;min-height:44px;line-height:1.3!important;padding:6px}
+/* Keep the lodge/fireplace visible above the text when reading controls are active. */
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero{display:grid;grid-template-columns:minmax(0,1fr);height:auto;min-height:0}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero-image{position:relative;inset:auto;grid-row:1;width:100%;height:auto;min-height:0;aspect-ratio:3/2;background-size:contain;background-position:center;background-repeat:no-repeat}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero-shade{display:none}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero-content{position:relative;grid-row:2;width:auto;max-width:none;padding:2rem 6%;height:auto}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero-feature{position:relative;inset:auto;grid-row:3;width:auto;max-width:none;margin:1rem 6%}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .ambience{position:relative;inset:auto;grid-row:4;justify-self:start;max-width:88%;margin:1rem 6%}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading,.high-contrast) .hero-caption{position:relative;inset:auto;grid-row:5;max-width:88%;margin:1rem 6%}
+body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .cm-grid{grid-template-columns:repeat(auto-fit,minmax(3rem,1fr));grid-template-rows:none;max-width:none}body:is([data-text-size=larger],[data-text-size=largest],.easier-reading) .cm-tile{grid-column:auto;grid-row:auto;aspect-ratio:auto;min-height:3rem}
+@media(max-width:600px){.accessibility-actions{flex-direction:column}.accessibility-actions .button{width:100%}.cm-grid{grid-template-columns:repeat(auto-fit,minmax(3rem,1fr));grid-template-rows:none;max-width:none}.cm-tile{grid-column:auto;grid-row:auto;aspect-ratio:auto;min-height:3rem}}
