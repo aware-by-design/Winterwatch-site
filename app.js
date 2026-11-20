@@ -173,19 +173,28 @@
     if(!minutes)return 'This door is ready to open.';
     const days=Math.floor(minutes/1440),hours=Math.floor(minutes%1440/60),mins=minutes%60;
     const unit=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
-    return `Time remaining: ${unit(days,'day')}, ${unit(hours,'hour')} and ${unit(mins,'minute')}.`;
+    return `Come back in: ${unit(days,'day')}, ${unit(hours,'hour')} and ${unit(mins,'minute')}.`;
   }
   function lockedDoorMessage(id,now=new Date()){
     const a=dailyAccess(now);
     if(doorReleased(id,now))return `Day ${id} is available. You can play this lesson now.`;
     return `${a.phase==='during'&&id===a.day+1?returnPrompt(new Date(Date.UTC(2026,11,id,8)),now)+' ':''}Day ${id} opens on ${id} December 2026 at 09:00 CET. ${doorCountdown(id,now)} All released lessons remain available.`;
   }
+  function updateDoorLockMessage(id,now=new Date()){
+    const released=available(id,now),message=released?`Day ${id} is now open. Close this note to explore it.`:lockedDoorMessage(id,now);
+    const target=$('#doorLockMessage');target.textContent=message;
+    if(released)return;
+    const countdown=doorCountdown(id,now),parts=message.split(countdown);
+    if(parts.length!==2)return;
+    const remaining=countdown.replace(/^Come back in: /,'').replace(/\.$/,'');
+    target.innerHTML=`<p>${esc(parts[0].trim())}</p><div class="locked-countdown"><span>Come back in:</span> <strong>${esc(remaining)}</strong></div><p>${esc(parts[1].trim())}</p>`;
+  }
   let lockReturnFocus=null,lockedDoorId=null;
   function showDoorLock(id){
     stopListening();
     const dialog=$('#doorLockDialog');lockedDoorId=id;
     if(!dialog.open){const el=document.activeElement,day=Number(el?.dataset?.door);lockReturnFocus=Number.isInteger(day)&&day>=1&&day<=24?{selector:`[data-door="${day}"]`}:{element:el};}
-    $('#doorLockMessage').textContent=lockedDoorMessage(id);
+    updateDoorLockMessage(id);
     $('#doorLockListen').dataset.listen=String(id);$('#doorLockListen').setAttribute('aria-label',`Listen to the Day ${id} opening message`);
     if(!dialog.open)dialog.showModal();$('#doorLockAcknowledge').focus({preventScroll:true});
   }
@@ -198,7 +207,7 @@
   function syncDailyDoors(){
     if($('#holidayDialog').open&&!holidayGreetingAllowed())$('#holidayDialog').close();
     if($('#welcomeDialog').open&&!welcomeGreetingAllowed())$('#welcomeDialog').close();
-    if($('#doorLockDialog').open)$('#doorLockMessage').textContent=available(lockedDoorId)?`Day ${lockedDoorId} is now open. Close this note to explore it.`:lockedDoorMessage(lockedDoorId);
+    if($('#doorLockDialog').open)updateDoorLockMessage(lockedDoorId);
     $('#nestorDoorMessage').textContent=nestorDoorMessage();
     if(renderedDoorDay===releaseWindowKey()){syncCalendarGreetings();return;}
     const focusedDay=Number(document.activeElement?.dataset?.door);renderDoors();
@@ -232,8 +241,13 @@
     };
     return `<svg viewBox="0 0 64 66" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.star}</svg>`;
   };
+  function themeCounts(){
+    const matching=lessons.filter(l=>state.context==='all'||games[l.id].contexts.includes(state.context));
+    return Object.fromEntries(['all',...Object.keys(label)].map(key=>[key,matching.filter(l=>key==='all'||l.category===key).length]));
+  }
   function renderDoors(){
     stopListening();
+    for(const [key,count] of Object.entries(themeCounts())){const counter=$(`[data-category="${key}"] [data-category-count]`);if(counter)counter.textContent=key==='all'?String(count):`(${count})`;}
     const access=dailyAccess();
     const visible=lessons.filter(l=>(category==='all'||l.category===category)&&(state.context==='all'||games[l.id].contexts.includes(state.context)));
     $('#doorsGrid').innerHTML=visible.map(l=>{
