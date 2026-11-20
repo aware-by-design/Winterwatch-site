@@ -48,7 +48,7 @@
   function setMenu(open,returnFocus=false){$('.site-header').classList.toggle('menu-open',open);$('#menuToggle').setAttribute('aria-expanded',String(open));if(returnFocus)$('#menuToggle').focus();}
   let category='all', activeId=null, activeTab='play', modalLens=state.audience==='everyone'?'technical':state.audience;
   let currentStage=0,stageDrafts={},readingFeedback=null,infoView='';
-  let toastTimer=null, clockTimer=null;
+  let toastTimer=null, clockTimer=null,santaId=null,santaStatus='',countdownTimer=null,countdownPaused=false;
   const label={cyber:'Cybersecurity',ai:'AI & agents',privacy:'Privacy',governance:'Rules & standards',ot:'Connected world'};
   const initiative="An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Group";
   const arInABoxUrl="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box";
@@ -169,11 +169,10 @@
   }
   function doorCountdown(id,now=new Date()){
     if(!Number.isInteger(id)||id<1||id>24||!Number.isFinite(now.getTime()))return '';
-    const minutes=Math.max(0,Math.ceil((Date.UTC(2026,11,id,8)-now.getTime())/60000));
-    if(!minutes)return 'This door is ready to open.';
-    const days=Math.floor(minutes/1440),hours=Math.floor(minutes%1440/60),mins=minutes%60;
-    const unit=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
-    return `Come back in: ${unit(days,'day')}, ${unit(hours,'hour')} and ${unit(mins,'minute')}.`;
+    const seconds=Math.max(0,Math.ceil((Date.UTC(2026,11,id,8)-now.getTime())/1000));
+    if(!seconds)return 'This door is ready to open.';
+    const days=Math.floor(seconds/86400),pad=n=>String(n).padStart(2,'0');
+    return `Come back in: ${days} ${days===1?'day':'days'} ${pad(Math.floor(seconds%86400/3600))}:${pad(Math.floor(seconds%3600/60))}:${pad(seconds%60)}.`;
   }
   function lockedDoorMessage(id,now=new Date()){
     const a=dailyAccess(now);
@@ -183,11 +182,27 @@
   function updateDoorLockMessage(id,now=new Date()){
     const released=available(id,now),message=released?`Day ${id} is now open. Close this note to explore it.`:lockedDoorMessage(id,now);
     const target=$('#doorLockMessage');target.textContent=message;
-    if(released)return;
+    if(released){target.innerHTML=`<p id="doorLockSchedule">${esc(message)}</p>`;return;}
     const countdown=doorCountdown(id,now),parts=message.split(countdown);
     if(parts.length!==2)return;
-    const remaining=countdown.replace(/^Come back in: /,'').replace(/\.$/,'');
-    target.innerHTML=`<p>${esc(parts[0].trim())}</p><div class="locked-countdown"><span>Come back in:</span> <strong>${esc(remaining)}</strong></div><p>${esc(parts[1].trim())}</p>`;
+    const remaining=countdownPaused?'Countdown paused':countdown.replace(/^Come back in: /,'').replace(/\.$/,'');
+    target.innerHTML=`<p id="doorLockSchedule">${esc(parts[0].trim())}</p><div class="locked-countdown"><span>Come back in:</span> <strong role="timer" aria-live="off">${esc(remaining)}</strong><button type="button" class="countdown-pause" data-countdown-pause aria-pressed="${countdownPaused}">${countdownPaused?'Resume countdown':'Pause countdown'}</button></div><p>${esc(parts[1].trim())}</p>`;
+  }
+  function scheduleDoorCountdown(){
+    clearTimeout(countdownTimer);countdownTimer=null;
+    if(document.hidden)return;
+    const active=($('#doorLockDialog').open&&!available(lockedDoorId))||(santaStatus==='locked'&&santaId!==null);
+    if(active)countdownTimer=setTimeout(tickDoorCountdown,1000-new Date().getTime()%1000);
+  }
+  function tickDoorCountdown(){
+    const now=new Date(),pauseHadFocus=document.activeElement?.hasAttribute?.('data-countdown-pause');
+    if($('#doorLockDialog').open){updateDoorLockMessage(lockedDoorId,now);if(pauseHadFocus&&available(lockedDoorId,now))$('#doorLockAcknowledge').focus({preventScroll:true});}
+    if(santaStatus==='locked'){
+      if(available(santaId,now))renderDoors();
+      else {const timer=$('#santaCountdown');if(timer)timer.textContent=countdownPaused?'Countdown paused':doorCountdown(santaId,now);}
+    }
+    if(renderedDoorDay!==releaseWindowKey(now))syncDailyDoors();
+    scheduleDoorCountdown();
   }
   let lockReturnFocus=null,lockedDoorId=null;
   function showDoorLock(id){
@@ -196,7 +211,7 @@
     if(!dialog.open){const el=document.activeElement,day=Number(el?.dataset?.door);lockReturnFocus=Number.isInteger(day)&&day>=1&&day<=24?{selector:`[data-door="${day}"]`}:{element:el};}
     updateDoorLockMessage(id);
     $('#doorLockListen').dataset.listen=String(id);$('#doorLockListen').setAttribute('aria-label',`Listen to the Day ${id} opening message`);
-    if(!dialog.open)dialog.showModal();$('#doorLockAcknowledge').focus({preventScroll:true});
+    if(!dialog.open)dialog.showModal();$('#doorLockAcknowledge').focus({preventScroll:true});scheduleDoorCountdown();
   }
   function restoreDoorLockFocus(){
     if($('#lessonDialog').open){const el=lockReturnFocus?.element;if(el?.isConnected!==false&&el?.closest?.('#lessonDialog'))el.focus({preventScroll:true});else $('#lessonDialog [data-close]')?.focus({preventScroll:true});}
@@ -241,6 +256,34 @@
     };
     return `<svg viewBox="0 0 64 66" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.star}</svg>`;
   };
+  function santaModel(id,now=new Date()){
+    const lesson=lessons.find(l=>l.id===id);if(!lesson)return {status:'empty'};
+    if(!available(id,now))return {id,status:'locked',done:0};
+    const completed=state.completed.includes(id),opened=state.opened.includes(id);
+    return {id,status:completed?'reviewed':opened?'in-progress':'not-started',done:opened?Math.min(3,(state.solved[id]||[]).length):0};
+  }
+  function renderSanta(){
+    const focused=document.activeElement,santaHadFocus=Boolean(focused?.closest?.('#santaListContent'));
+    const focusControl=focused?.id==='santaDayPicker'?'#santaDayPicker':focused?.hasAttribute?.('data-countdown-pause')?'[data-countdown-pause]':focused?.hasAttribute?.('data-listen-santa')?'[data-listen-santa]':'[data-open]';
+    const now=new Date(),released=lessons.filter(l=>available(l.id,now)),last=state.opened.filter(id=>available(id,now));
+    if(!lessons.some(l=>l.id===santaId))santaId=last[last.length-1]||dailyAccess(now).releasedThrough||1;
+    const model=santaModel(santaId,now),lesson=lessons.find(l=>l.id===santaId);santaStatus=model.status;
+    const status={'locked':'UPCOMING DOOR','not-started':'NOT OPENED YET','in-progress':'LESSON IN PROGRESS','reviewed':'REVIEWED'}[model.status];
+    let body='';
+    if(model.status==='locked')body=`<h3>A new habit awaits.</h3><p>Day ${santaId} opens on ${santaId} December 2026 at 09:00 CET.</p><p id="santaCountdown" class="santa-countdown" role="timer" aria-live="off">${esc(countdownPaused?'Countdown paused':doorCountdown(santaId,now))}</p><button type="button" class="countdown-pause" data-countdown-pause aria-pressed="${countdownPaused}">${countdownPaused?'Resume countdown':'Pause countdown'}</button><p>Play any released door while you wait.</p><button type="button" class="button button-green" data-open="${santaId}">Opening details for Day ${santaId}</button>`;
+    else if(model.status==='reviewed'){
+      const habits=games[santaId].habit,nice=habits.filter(h=>/^Do:/i.test(h)).map(h=>h.replace(/^Do:\s*/i,'')),naughty=habits.filter(h=>/^Do not:/i.test(h)).map(h=>h.replace(/^Do not:\s*/i,''));
+      body=`<h3>${esc(lesson.short)}</h3><section class="santa-habits"><h4><span aria-hidden="true">✓</span> Nice habits</h4><ul>${nice.map(h=>`<li>${esc(h)}</li>`).join('')}</ul><h4><span aria-hidden="true">×</span> Naughty traps</h4><ul>${naughty.map(h=>`<li>${esc(h)}</li>`).join('')}</ul></section><p class="santa-signoff">Even Santa verifies twice.</p><button type="button" class="button button-green" data-open="${santaId}">Revisit Day ${santaId}</button>`;
+    }else{
+      const started=model.status==='in-progress';
+      body=`<h3>${esc(lesson.short)}</h3>${started?`<p class="santa-progress">${model.done} of 3 decisions complete</p><progress max="3" value="${model.done}" aria-label="Day ${santaId} decisions complete">${model.done} of 3</progress><p>${esc(storageStatus==='saved'?'Your progress is saved on this device.':storageNotice())}</p>`:'<p>This door is still ready for you. Open it whenever you’re ready.</p>'}<div class="santa-waiting"><h4>Your habit recap is waiting.</h4><p>Finish the lesson to reveal its Nice habits and Naughty traps.</p></div><button type="button" class="button button-green" data-open="${santaId}">${started?'Continue':'Open'} Day ${santaId}</button>`;
+    }
+    $('#santaListContent').innerHTML=`<label class="santa-picker" for="santaDayPicker">Choose a door<select id="santaDayPicker" data-santa-select>${lessons.map(l=>`<option value="${l.id}" ${l.id===santaId?'selected':''}>Day ${l.id} · ${available(l.id,now)?state.completed.includes(l.id)?'reviewed':state.opened.includes(l.id)?'in progress':'ready':'upcoming'}</option>`).join('')}</select></label><p class="santa-day"><span>${String(santaId).padStart(2,'0')}</span> Day ${santaId} · ${esc(status)}</p>${body}<button type="button" class="santa-listen" data-listen-santa data-listen="${santaId}" aria-label="Listen to Day ${santaId}" aria-pressed="false">${speakerLabel('Listen')}</button>`;
+    const picker=$('#santaDayPicker');if(picker)picker.value=String(santaId);
+    $('#santaStatusAnnouncement').textContent=`Santa’s list: Day ${santaId}, ${status.toLowerCase()}.`;
+    if(santaHadFocus)($(focusControl,$('#santaListContent'))||$('#santaDayPicker'))?.focus({preventScroll:true});
+    scheduleDoorCountdown();
+  }
   function themeCounts(){
     const matching=lessons.filter(l=>state.context==='all'||games[l.id].contexts.includes(state.context));
     return Object.fromEntries(['all',...Object.keys(label)].map(key=>[key,matching.filter(l=>key==='all'||l.category===key).length]));
@@ -249,12 +292,15 @@
     stopListening();
     for(const [key,count] of Object.entries(themeCounts())){const counter=$(`[data-category="${key}"] [data-category-count]`);if(counter)counter.textContent=key==='all'?String(count):`(${count})`;}
     const access=dailyAccess();
+    if(santaId===null)santaId=state.opened.filter(id=>available(id)).slice(-1)[0]||access.releasedThrough||1;
+    $('#chaletStage')?.classList.toggle('is-filtered',category!=='all'||state.context!=='all');
     const visible=lessons.filter(l=>(category==='all'||l.category===category)&&(state.context==='all'||games[l.id].contexts.includes(state.context)));
     $('#doorsGrid').innerHTML=visible.map(l=>{
       const released=available(l.id),upcoming=!released,opened=released&&state.opened.includes(l.id),completed=released&&state.completed.includes(l.id),current=access.phase==='during'&&access.day===l.id;
       const lens=state.audience==='everyone'?games[l.id].role:`${state.audience} perspective`;
-      return `<div class="door-card"><button class="advent-door tone-${(l.id-1)%8}${opened||completed?' is-unwrapped':''}${current&&!completed?' is-today':''}${upcoming?' is-upcoming':''}" data-door="${l.id}" data-door-status="${completed?'completed':upcoming?'upcoming':current?'today':opened?'opened':'available'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${upcoming?lockedDoorMessage(l.id):completed?'Reviewed. Lesson complete. Revisit this day':opened?'Opened. Lesson to finish. Continue this day':current?'Today’s door. Open lesson':'Available. Open this day'}." ${upcoming?'aria-disabled="true"':''}><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span class="door-progress-status">${completed?state.readings.includes(l.id)?'Reviewed · source bonus earned':'Reviewed · lesson complete':'Opened · lesson to finish'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star" aria-hidden="true">✧</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${upcoming?`Opens ${l.id} Dec · 09:00 CET`:esc(label[l.category])}</span></span></button><button type="button" class="door-listen" data-listen="${l.id}" aria-label="Listen to Day ${l.id}" aria-pressed="false">${speakerLabel('Listen')}</button></div>`;
+      return `<div class="door-card tone-${(l.id-1)%8}${l.id===santaId?' is-santa-selected':''}${upcoming?' is-upcoming':''}"><button class="advent-door tone-${(l.id-1)%8}${opened||completed?' is-unwrapped':''}${current&&!completed?' is-today':''}${upcoming?' is-upcoming':''}" data-door="${l.id}" data-door-status="${completed?'completed':upcoming?'upcoming':current?'today':opened?'opened':'available'}" aria-label="Day ${l.id}: ${esc(l.title)}. ${upcoming?lockedDoorMessage(l.id):completed?'Reviewed. Lesson complete. Revisit this day':opened?'Opened. Lesson to finish. Continue this day':current?'Today’s door. Open lesson':'Available. Open this day'}." ${upcoming?'aria-disabled="true"':''}><span class="chalet-door-number" aria-hidden="true">${String(l.id).padStart(2,'0')}</span><span class="chalet-door-state" aria-hidden="true">${completed?'Reviewed':opened?'Opened':upcoming?'Upcoming':'Open'}</span><span class="door-inner"><span class="inner-icon">${completed?'✦':'✧'}</span><strong>${esc(l.short)}</strong><small>${esc(lens)}</small><span class="door-progress-status">${completed?state.readings.includes(l.id)?'Reviewed · source bonus earned':'Reviewed · lesson complete':'Opened · lesson to finish'}</span>${completed?'<span class="door-explored">✓</span>':''}</span><span class="door-leaf left"></span><span class="door-leaf right"></span><span class="door-cover"><span class="door-top-star" aria-hidden="true">✧</span><span class="door-day">DECEMBER</span><span class="door-number">${String(l.id).padStart(2,'0')}</span><span class="door-illustration">${icon(l.icon)}</span><span class="door-topic">${esc(l.short)}</span><span class="door-category">${upcoming?`Opens ${l.id} Dec · 09:00 CET`:esc(label[l.category])}</span></span></button><button type="button" class="door-listen" data-listen="${l.id}" aria-label="Listen to Day ${l.id}" aria-pressed="false">${speakerLabel('Listen')}</button></div>`;
     }).join('');
+    renderSanta();
     $('#emptyState').hidden=visible.length>0;
     $('#announcer').textContent=`${visible.length} lessons shown`;
     $('#modeLabel').textContent=access.phase==='before'?'A daily December tradition.':access.phase==='during'?`Day ${access.day} of 24 · daily unlock at 09:00 CET.`:'All 24 lessons are available.';
@@ -266,6 +312,7 @@
   function openLesson(id){
     stopListening();
     const l=lessons.find(x=>x.id===id);if(!l)return;
+    santaId=id;renderSanta();
     if(!available(id)){showDoorLock(id);if(!$('#lessonDialog').open&&/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');return;}
     if(!$('#lessonDialog').open)lessonReturnFocus=focusTarget();
     if($('#welcomeDialog').open)$('#welcomeDialog').close();
@@ -663,6 +710,12 @@
     const text=available(id)?`Day ${id}. ${l.title}. What to expect. ${adventBriefs[id]}. Today’s takeaway. ${l.takeaway}`:lockedDoorMessage(id);
     listenText(text,`door-${id}`,button);
   }
+  function listenSanta(button){
+    const copy=$('#santaListContent').cloneNode(true);
+    copy.querySelectorAll('button,select,label,svg,[aria-hidden="true"]').forEach(n=>n.remove());
+    copy.querySelectorAll('p,li,h3,h4').forEach(n=>n.append(document.createTextNode('. ')));
+    listenText(`Santa’s list. ${copy.textContent}`,`santa-${santaId}-${santaStatus}`,button);
+  }
   function listenPanel(button){
     if(!$('#lessonDialog').open||!activeDoorAllowed())return;
     const panel=$('#lessonPanel').cloneNode(true);
@@ -686,7 +739,7 @@
     setAmbience();
   }
   function resetAccessibility(){
-    stopListening();textSize='normal';highContrast=false;easierReading=false;pauseAnimations=false;state.ambience=true;
+    stopListening();textSize='normal';highContrast=false;easierReading=false;pauseAnimations=false;countdownPaused=false;state.ambience=true;
     applyAccessibility();
     $('#accessibilityStatus').textContent=motionPaused()?'Accessibility settings reset. Your device’s reduced-motion preference keeps animations paused.':'Accessibility settings reset. Animations are allowed again.';
   }
@@ -700,9 +753,11 @@
   $('#snow').innerHTML=Array.from({length:104},(_,i)=>`<span style="--x:${(i*37.17)%100}%;--s:${1+i%5}px;--o:${.22+(i%6)*.1};--d:${8+i%15}s;--delay:-${i%29}s;--drift:${-24+i%61}px"></span>`).join('');
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button,a');if(!b)return;
+    if(b.hasAttribute('data-countdown-pause')){countdownPaused=!countdownPaused;const inLock=$('#doorLockDialog').open;if(inLock)updateDoorLockMessage(lockedDoorId);renderSanta();$(inLock?'#doorLockDialog [data-countdown-pause]':'#santaListContent [data-countdown-pause]')?.focus({preventScroll:true});return;}
     if(b.hasAttribute('data-accessibility')){showAccessibility();return;}
     if(b.hasAttribute('data-reset-accessibility')){resetAccessibility();return;}
     if(b.hasAttribute('data-close-accessibility')){$('#accessibilityDialog').close();return;}
+    if(b.hasAttribute('data-listen-santa')){listenSanta(b);return;}
     if(b.hasAttribute('data-listen')){listenDoor(Number(b.dataset.listen),b);return;}
     if(b.hasAttribute('data-listen-panel')){listenPanel(b);return;}
     if(b.closest?.('#lessonDialog')&&!b.hasAttribute('data-close')&&!activeDoorAllowed()){e.preventDefault();return;}
@@ -763,6 +818,7 @@
   });
   function chooseCountry(id,fromSelect=false){if(!jurisdictions.some(c=>c.id===id))return;const scope=$('#lessonDialog').open?$('#lessonDialog'):$('#infoDialog').open?$('#infoDialog'):document;const atlasWasOpen=Boolean($('.country-atlas-inline',scope)?.open);state.country=id;refreshProgress();if($('#lessonDialog').open)renderLesson();else if(infoView==='dates')showDates();else if(infoView==='reporting')reporting();if(atlasWasOpen)$('.country-atlas-inline',scope)?.setAttribute('open','');const control=fromSelect?$('[data-country-select]',scope):$(`[data-country="${id}"]`,scope);control?.focus({preventScroll:true});}
   document.addEventListener('change',e=>{
+    if(e.target.id==='santaDayPicker'){const id=Number(e.target.value);if(lessons.some(l=>l.id===id)){santaId=id;stopListening();renderDoors();$('#santaDayPicker')?.focus({preventScroll:true});}return;}
     if(e.target.id==='accessTextSize'&&['normal','larger','largest'].includes(e.target.value)){textSize=e.target.value;applyAccessibility();return;}
     if(e.target.id==='accessMotion'){pauseAnimations=e.target.checked;applyAccessibility();return;}
     if(e.target.id==='accessContrast'){highContrast=e.target.checked;applyAccessibility();return;}
@@ -770,7 +826,7 @@
     if(e.target.matches('[data-country-select]'))chooseCountry(e.target.value,true);if(e.target.id==='contextFilter'&&['all','customer','supplier','work','home','finance'].includes(e.target.value)){state.context=e.target.value;refreshProgress();renderDoors();}});
   $('#accessibilityDialog').addEventListener('close',()=>{if(!$('#accessibilityDialog').open){restoreFocus(accessibilityReturnFocus);scheduleCalendarGreetings();}});
   $('#lessonDialog').addEventListener('cancel',stopListening);
-  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){stopListening();restoreDoorLockFocus();scheduleCalendarGreetings();}});
+  $('#doorLockDialog').addEventListener('close',()=>{if(!$('#doorLockDialog').open){stopListening();restoreDoorLockFocus();scheduleCalendarGreetings();scheduleDoorCountdown();}});
   $('#holidayDialog').addEventListener('close',()=>{if(!$('#holidayDialog').open){restoreHolidayFocus();scheduleCalendarGreetings();}});
   $('#welcomeDialog').addEventListener('close',()=>{if(!$('#welcomeDialog').open){restoreWelcomeFocus();scheduleCalendarGreetings();}});
   $('#lessonDialog').addEventListener('close',()=>{if($('#lessonDialog').open)return;stopListening();if(/^#day=/.test(location.hash))history.replaceState(null,'','#calendar');clearTimeout(clockTimer);if(!$('#infoDialog').open)restoreFocus(lessonReturnFocus);scheduleCalendarGreetings();});
@@ -790,8 +846,8 @@
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',applyAccessibility);
   window.addEventListener('resize',syncAtmosphereLayout);
   window.addEventListener('pagehide',stopListening);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopListening();if(!document.hidden){updateAdventTracker();syncDailyDoors();}});
-  applyAccessibility();renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopListening();clearTimeout(countdownTimer);}if(!document.hidden){updateAdventTracker();syncDailyDoors();scheduleDoorCountdown();}});
+  applyAccessibility();renderDoors();updateProgress();syncAtmosphereLayout();setAmbience();tickAdventTracker();scheduleDoorCountdown();
   if(typeof window.ResizeObserver==='function'){const observer=new window.ResizeObserver(syncAtmosphereLayout);observer.observe($('.hero'));}
   const deepLink=location.hash.match(/^#day=(\d{1,2})$/);if(deepLink)openLesson(Number(deepLink[1]),false);
   greetingsReady=true;syncCalendarGreetings();
