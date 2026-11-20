@@ -4,7 +4,7 @@ An initiative of ENISA’s Awareness Raising and Cyber-Hygiene Ad-Hoc Working Gr
 
 Learn more about AR-in-a-Box: https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box
 
-This repository contains only the files delivered by the public website and this deployment note. This publication repository excludes development history, tests, credentials and internal reports. Development-repository access is managed separately. Repository visibility is controlled by its owner.
+This repository contains only the files delivered by the public website, this deployment note and the reviewed security policy. This publication repository excludes development history, tests, credentials and internal reports. Development-repository access is managed separately. Repository visibility is controlled by its owner.
 
 Publish this repository root through the organisation's approved static website host. GitHub Pages is configured to use main and /(root). There is no install or build command and no application backend. Website visitors can inspect all HTML, CSS, JavaScript, images and lesson content delivered to their browsers.
 
