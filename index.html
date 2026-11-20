@@ -7,23 +7,23 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="Unwrap 24 practical cyber and AI lessons. A festive advent calendar for technical, business and operations teams, grounded in real incidents.">
-  <meta property="og:title" content="Winterwatch — A Cyber & AI Advent">
+  <meta property="og:title" content="Winterwatch: A Cyber &amp; AI Advent">
   <meta property="og:description" content="24 festive daily quests. Real cyber, AI and privacy lessons for every team.">
-  <title>Winterwatch — A Cyber & AI Advent</title>
+  <title>Winterwatch: A Cyber &amp; AI Advent</title>
   <link rel="stylesheet" href="styles.css?v=accessibility-20261120">
   <link rel="stylesheet" href="gameplay.css?v=accessibility-20261120">
-  <link rel="stylesheet" href="accessibility.css?v=theme-countdown-20261120">
+  <link rel="stylesheet" href="accessibility.css?v=timber-20261120">
   <link rel="stylesheet" href="country-map.css?v=accessibility-20261120">
-  <link rel="stylesheet" href="chalet.css?v=chalet-20261120">
-  <link rel="icon" type="image/png" sizes="96x96" href="assets/aware-by-design-mark.png">
-  <link rel="apple-touch-icon" href="assets/aware-by-design-mark@2x.png">
+  <link rel="stylesheet" href="chalet.css?v=timber-20261120">
+  <link rel="icon" type="image/x-icon" sizes="16x16 24x24 32x32 48x48 64x64" href="assets/nestor-family.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/nestor-family-touch.png">
   <script src="lessons.js?v=final-audit-20261119" defer></script>
   <script src="lesson-images.js?v=final-audit-20261119" defer></script>
   <script src="learning-content.js?v=final-audit-20261119" defer></script>
   <script src="learning-content-more.js?v=final-audit-20261119" defer></script>
   <script src="country-guidance.js?v=final-audit-20261119" defer></script>
   <script src="game-engine.js?v=final-audit-20261119" defer></script>
-  <script src="app.js?v=chalet-20261120" defer></script>
+  <script src="app.js?v=timber-20261120" defer></script>
   <script src="country-map.js?v=final-audit-20261119" defer></script>
 </head>
 <body>
@@ -36,19 +36,26 @@
 
   <main>
     <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-image" role="img" aria-label="A cosy Christmas lodge with a glowing fireplace, pine garlands, Christmas tree and a sleigh beside a snowy window"></div>
-      <div class="hero-shade"></div>
+      <div class="hero-image" role="img" aria-label="A glowing lodge fireplace with three Christmas stockings embroidered Cyber, AI and Privacy."></div>
       <div class="snow" id="snow" aria-hidden="true"></div>
-      <div class="hero-content"><div class="eyebrow"><span class="tiny-star">✦</span> THE 2026 ADVENT COLLECTION</div><h1 id="heroTitle">A little wonder.<br>A wiser <em>tomorrow.</em></h1><p>24 doors. Real incidents. Small lessons that make<br class="desktop-br"> a big difference to your cyber & AI resilience.</p><a class="button button-cream" href="#calendar">Play the calendar <span aria-hidden="true">↘</span></a><div class="hero-note"><span aria-hidden="true">✧</span> For the people who build, lead, and keep things running.</div></div>
-      <button class="ambience" id="ambienceButton" aria-label="Snow animation" aria-pressed="true"><span id="ambienceIcon" aria-hidden="true">❄</span><span id="ambienceText">Snow on</span></button>
-      <button class="hero-feature" data-open="1"><span class="feature-kicker"><i></i> IN THE REAL WORLD · NOV 2026</span><strong>Even the fridge <br>needs a firewall.</strong><span class="feature-bottom">Explore the cold-chain attacks <span aria-hidden="true">→</span></span></button>
-      <div class="hero-caption">A season for giving. A habit of protecting.</div>
+      <div class="hero-content">
+        <div class="eyebrow"><span class="tiny-star" aria-hidden="true">✦</span> The 2026 Advent collection</div>
+        <div class="hero-copy">
+          <h1 id="heroTitle">A little wonder.<br>A wiser <em>tomorrow.</em></h1>
+          <p>24 doors. Real incidents. Small lessons that make a big difference to your cyber &amp; AI resilience.</p>
+          <div class="hero-actions">
+            <a class="button button-cream" href="#calendar">Play the calendar</a>
+            <button type="button" class="ambience" id="ambienceButton" aria-label="Snow animation" aria-pressed="true"><span id="ambienceIcon" aria-hidden="true">❄</span><span id="ambienceText">Snow on</span></button>
+          </div>
+          <button type="button" class="hero-feature" data-open="1"><span class="feature-kicker">Door 1</span><strong>Even the fridge needs a firewall.</strong></button>
+        </div>
+      </div>
     </section>
 
     <div class="intro-strip"><span><b>24</b> daily discoveries</span><i></i><span><b>2,400 XP</b> to earn, one stronger team</span><i></i><span><span class="strip-star">✧</span> Cyber. AI. Privacy. Practice.</span></div>
 
     <section class="calendar-section" id="calendar" aria-labelledby="calendarTitle">
-      <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle" tabindex="-1">Good habits. <em>Great presence.</em></h2><p>Open a pair of doors. Make the decisions. Discover why they matter.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
+      <div class="section-top"><div><div class="eyebrow green">A LITTLE WISER, EVERY DAY</div><h2 id="calendarTitle" tabindex="-1">Good habits. <em>Great presence.</em></h2><p>Open a door. Make three decisions. Discover one habit to practise.</p></div><div class="perspective-control"><label id="perspectiveLabel">Make it relevant to you</label><div class="segmented" role="group" aria-labelledby="perspectiveLabel"><button class="active" data-audience="everyone" aria-pressed="true">Everyone</button><button data-audience="technical" aria-pressed="false">Technical</button><button data-audience="business" aria-pressed="false">Business</button><button data-audience="operations" aria-pressed="false">Operations</button></div></div></div>
       <section class="advent-tracker" aria-labelledby="adventTrackerTitle">
         <div class="advent-banner-main">
           <div class="advent-tracker-heading">
@@ -72,13 +79,17 @@
       <aside class="nestor-door-message" aria-labelledby="nestorDoorTitle"><div class="nestor-note-avatars nestor-note-male" aria-hidden="true"><img src="assets/nestor-green.webp" alt="" width="64" height="85" loading="lazy"></div><div class="nestor-note-copy"><h3 id="nestorDoorTitle">A little note from Nestor</h3><p id="nestorDoorMessage" role="status" aria-live="polite">Our first door opens on 1 December 2026 at 09:00 CET. See you then!</p></div><div class="nestor-note-avatars nestor-note-female" aria-hidden="true"><img src="assets/nestor-burgundy-left.webp" alt="" width="64" height="85" loading="lazy"></div></aside>
       <div class="chalet-layout">
         <div class="chalet-stage" id="chaletStage">
-          <div class="chalet-scene" aria-hidden="true"><img class="chalet-header-art" src="assets/winterwatch-chalet-header.webp" alt="" width="1536" height="1024" loading="lazy" decoding="async"><img class="chalet-shell-art" src="assets/winterwatch-chalet.webp" alt="" width="1536" height="1024" loading="lazy" decoding="async"></div>
-          <div class="chalet-doors-area"><div class="doors-grid" id="doorsGrid" aria-label="24 advent calendar doors"></div><div class="empty-state" id="emptyState" hidden>No doors match these filters. Try All doors or Everyday life &amp; every team.</div></div>
+          <img class="chalet-roof" src="assets/winterwatch-chalet-header.webp?v=timber" width="1536" height="380" alt="" loading="lazy" decoding="async">
+          <div class="chalet-doors-area">
+            <div class="doors-grid" id="doorsGrid" role="group" aria-label="Advent calendar doors"></div>
+            <div class="empty-state" id="emptyState" hidden>No doors match these filters. Try All doors or Everyday life &amp; every team.</div>
+          </div>
+          <img class="chalet-foundation" src="assets/winterwatch-chalet.webp?v=timber" width="1536" height="290" alt="" loading="lazy" decoding="async">
         </div>
         <aside class="santa-scroll" aria-labelledby="santaTitle"><div class="santa-scroll-heading"><p class="eyebrow">READY WHEN YOU ARE</p><h2 id="santaTitle">Santa’s list</h2></div><div id="santaListContent"></div><p class="santa-footnote">Released doors stay available. Take your time.</p></aside>
       </div>
       <p class="sr-only" id="santaStatusAnnouncement" role="status" aria-live="polite"></p>
-      <div class="calendar-bottom"><span class="legend"><i class="legend-dot cyber"></i> Open · 10 XP <i class="legend-dot ai"></i> Decisions · 60 XP <i class="legend-dot ot"></i> Day reward · 10 XP <i class="legend-dot privacy"></i> Reading · 20 XP</span><span>Two doors. One daily discovery. <span class="tiny-star">✦</span></span></div>
+      <div class="calendar-bottom"><span class="legend"><i class="legend-dot cyber"></i> Open · 10 XP <i class="legend-dot ai"></i> Decisions · 60 XP <i class="legend-dot ot"></i> Day reward · 10 XP <i class="legend-dot privacy"></i> Reading · 20 XP</span><span>One new door each day. <span class="tiny-star">✦</span></span></div>
     </section>
 
     <section class="field-banner" aria-labelledby="fieldTitle"><div class="banner-art" aria-hidden="true"><span>✧</span><svg width="64" height="70" viewBox="0 0 64 70" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M32 6 54 15v18c0 16-22 30-22 30S10 49 10 33V15L32 6Z"/><path d="m23 33 6 6 13-16"/></svg><span>✦</span></div><div><div class="eyebrow">FROM INTELLIGENCE TO ACTION</div><h2 id="fieldTitle">Make the lesson last beyond December.</h2><p>Turn the headlines into an exposure check, a detection, and a rehearsed response.</p></div><button class="button button-outline" data-guide>Open the field guide <span aria-hidden="true">→</span></button></section>
