@@ -64,145 +64,151 @@ ing systems; check amended rules.","source":"aiDates"},{"date":"2027-08-02","nam
 e":"AI Act: pre-August 2025 GPAI models","detail":"Article 111(3): providers of \
 general-purpose AI models placed on the market before 2 August 2025 must comply \
 with applicable model obligations by this date.","source":"aiLaw"},{"date":"2027\
--08-02","name":"AI regulatory sandboxes: national milestone","detail":"Commissio\
-n timeline: at least one operational sandbox per Member State.","source":"aiDate\
-s"},{"date":"2027-12-02","name":"AI Act: Annex III high-risk rules","detail":"Am\
-ended timeline following AI Omnibus.","source":"aiDates"},{"date":"2027-12-11","\
-name":"CRA: main application and relevant steward reporting","detail":"Product s\
-cope and organisation role must be assessed.","source":"craDates"},{"date":"2028\
--08-02","name":"AI Act: Annex I product-embedded high-risk rules","detail":"Amen\
-ded timeline for relevant regulated products.","source":"aiDates"}];window.WINTERWATCH_SOURCES=
-{"csirts":{"title":"CSIRTs Network · members","org":"EU CSIRTs Network","url":"\
-https://csirtsnetwork.eu/","kind":"National CSIRT routing directory","activity":"\
-Find the CSIRT for a fictional entity’s country and verify its current secure re\
-porting channel."},"dpas":{"title":"Our members · supervisory authorities","org":"\
-European Data Protection Board","url":"https://www.edpb.europa.eu/about-edpb/our\
--members_en","kind":"EU / EEA data-protection authority directory","activity":"F\
-ind the competent supervisory authority, then confirm its breach-reporting form \
-and out-of-hours process."},"cra":{"title":"Cyber Resilience Act reporting oblig\
-ations","org":"European Commission · current guidance","url":"https://digital-s\
-trategy.ec.europa.eu/en/policies/cra-reporting","kind":"Official implementation \
-guidance","activity":"Compare final-report timing for an actively exploited vuln\
-erability with timing for a severe incident."},"aiNational":{"title":"AI Act nat\
-ional resources and authorities","org":"European Commission · AI Act Service Des\
-k","url":"https://ai-act-service-desk.ec.europa.eu/en/national-resources","kind":"\
-National resource directory; identify the competent authority","activity":"Find \
-the authority for the country and issue. A helpdesk, market-surveillance authori\
-ty, DPA and CSIRT have different roles."},"police":{"title":"National online cyb\
-ercrime reporting routes","org":"Europol","url":"https://www.europol.europa.eu/r\
-eport-a-crime/report-cybercrime-online","kind":"National law-enforcement routing\
- directory","activity":"Identify the appropriate national police route. Criminal\
- reporting does not automatically replace regulatory notification."},"nistIR":{"\
-title":"NIST SP 800-61 Rev. 3: incident response","org":"NIST · final 3 Apr 2025",
-"url":"https://csrc.nist.gov/pubs/sp/800/61/r3/final","kind":"CSF 2.0 incident-r\
-esponse recommendations","activity":"Read how Detect, Respond and Recover are su\
-pported by preparation and continuous improvement; the six functions are not a m\
-andatory linear checklist."},"gdpr":{"title":"GDPR · Articles 5, 28, 32–34","\
-org":"EU · Regulation 2016/679","url":"https://eur-lex.europa.eu/eli/reg/2016/6\
-79/oj/eng","kind":"Regulation · scope-dependent duties","excerpt":"not later th\
-an 72 hours","excerptAt":"Article 33(1), within a longer conditional reporting d\
-uty","activity":"Read Article 33(1)–(5) and Article 34. Distinguish risk, high r\
-isk, awareness, and processor escalation."},"nis":{"title":"NIS2 · Articles 21 a\
-nd 23","org":"EU · Directive 2022/2555","url":"https://eur-lex.europa.eu/legal-\
-content/EN/TXT/?uri=CELEX:32022L2555","kind":"Directive · national implementatio\
-n matters","excerpt":"basic cyber hygiene practices and cybersecurity training",
-"excerptAt":"Article 21(2)(g)","activity":"Read the significant-incident thresho\
-ld and reporting sequence. Find the national rules and authority for your actual\
- entity."},"dora":{"title":"DORA · Articles 28–30","org":"EU · Regulation 202\
-2/2554","url":"https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022R2\
-554","kind":"Regulation · covered financial entities","excerpt":"shall be clear\
-ly allocated and set out in writing","excerptAt":"Article 30(1), rights and obli\
-gations","activity":"Read the contract provisions. Find the evidence needed for \
-an exit rehearsal with a critical ICT supplier."},"craLaw":{"title":"Cyber Resil\
-ience Act · Annex I","org":"EU · Regulation 2024/2847","url":"https://eur-lex.\
-europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R2847","kind":"Regulation · phase\
-d application","excerpt":"a secure by default configuration","excerptAt":"Annex \
-I, Part I, point 2(b)","activity":"Read Annex I’s vulnerability-handling require\
-ments. Identify evidence a customer should request from a product supplier."},"a\
-iLaw":{"title":"AI Act · current consolidated text","org":"EU · Regulation 2024\
-/1689; consolidated 27 Jul 2026","url":"https://eur-lex.europa.eu/eli/reg/2024/1\
-689/2026-07-27/eng","kind":"Regulation · amended implementation","excerpt":"mac\
-hine-readable format","excerptAt":"Article 50(2), marking synthetic outputs","ac\
-tivity":"Identify whether a fictional workflow is a provider or deployer activit\
-y, and whether Article 50 applies."},"csf":{"title":"The NIST Cybersecurity Fram\
-ework (CSF) 2.0","org":"NIST · Feb 2024","url":"https://nvlpubs.nist.gov/nistpu\
-bs/CSWP/NIST.CSWP.29.pdf","kind":"Voluntary outcome-based framework","excerpt":"\
-GOVERN","activity":"Compare a current and target profile. Choose an outcome, an \
-owner, and a measurable evidence gap."},"rmf":{"title":"AI Risk Management Frame\
-work 1.0","org":"NIST · Jan 2023","url":"https://nvlpubs.nist.gov/nistpubs/ai/N\
-IST.AI.100-1.pdf","kind":"Voluntary framework","excerpt":"GOVERN, MAP, MEASURE, \
-and MANAGE","activity":"Map a support chatbot to the four core functions. Includ\
-e human escalation and model-change testing."},"owaspApi":{"title":"OWASP API Se\
-curity Top 10 · 2023","org":"OWASP · API1, API8 and API10","url":"https://owas\
-p.org/projects/api-security-project","kind":"Application-security risk reference\
- · CC BY-SA 4.0","excerpt":"Broken Object Level Authorization","activity":"Read\
- API1:2023. Explain why signing in does not authorise access to every record ide\
-ntifier."},"owaspPrompt":{"title":"OWASP LLM01:2025 Prompt Injection","org":"OWA\
-SP GenAI Security Project","url":"https://genai.owasp.org/llmrisk/llm01-prompt-i\
-njection/","kind":"Risk / mitigation reference · CC BY-SA 4.0","excerpt":"Requi\
-re human approval for high-risk actions","activity":"Read indirect prompt inject\
-ion and mitigation. Explain what enforces the boundary when a retrieved document\
- contains instructions."},"enisaGuide":{"title":"NIS2 technical implementation g\
-uidance","org":"ENISA · 26 Jun 2025","url":"https://www.enisa.europa.eu/publica\
-tions/nis2-technical-implementation-guidance","kind":"Guidance for specified dig\
-ital sectors under Implementing Regulation 2024/2690","activity":"Read supply-ch\
-ain security and incident handling examples. Check sector scope before treating \
-an example as an applicable requirement."},"doraClock":{"title":"DORA incident-r\
-eporting time limits","org":"EU · Delegated Regulation 2025/301, Article 5","ur\
-l":"https://eur-lex.europa.eu/eli/reg_del/2025/301/oj/eng","kind":"Binding deleg\
-ated regulation","activity":"Read Article 5(1) and (2), including late major cla\
-ssification. Do not start every clock at the same event."},"aiDates":{"title":"A\
-I Act implementation timeline, including AI Omnibus","org":"European Commission \
-· current service desk","url":"https://ai-act-service-desk.ec.europa.eu/en/ai-a\
-ct/eu-ai-act-implementation-timeline","kind":"Official amended implementation ti\
-meline","activity":"Compare the December 2027 Annex III milestone with the Augus\
-t 2028 Annex I milestone. Classify one fictional use case."},"craDates":{"title":"\
-CRA implementation timeline","org":"European Commission","url":"https://digital-\
-strategy.ec.europa.eu/en/factpages/cyber-resilience-act-implementation","kind":"\
-Official milestones","activity":"Mark already-applicable reporting duties separa\
-tely from the December 2027 main requirements."},"countryDe":{"title":"Germany: \
-current BSIG and NIS2 commencement","org":"Federal German statute · amended 22 O\
-ct 2026","url":"https://www.gesetze-im-internet.de/bsig_2025/BSIG.pdf","kind":"N\
-ational enacted law · sections 32–33","activity":"Read registration and repor\
-ting triggers, scope exclusions and the current BSI route."},"countryBe":{"title":"\
-Belgium: NIS2 assessment and certification milestones","org":"CCB · official FAQ",
-"url":"https://atwork.safeonweb.be/frequently-asked-questions-faq-nis2-and-cyber\
-fundamentals","kind":"National authority guidance · pathway-specific milestones",
-"activity":"Compare CyFun, ISO and direct-inspection pathways. Do not confuse an\
- assessment milestone with a reporting grace period."},"countryIt":{"title":"Ita\
-ly: NIS2 implementation decree","org":"Gazzetta Ufficiale · Legislative Decree 1\
-38/2024","url":"https://www.gazzettaufficiale.it/eli/id/2024/10/01/24G00155/SG",
-"kind":"National enacted law","activity":"Identify the entity’s listing year and\
- its applicable ACN communications."},"italyCohort":{"title":"ACN Determination \
-127434/2026 · official document","org":"ACN · 13 Apr 2026 · published by MUR",
-"url":"https://trasparenza.mur.gov.it/archiviofile/mur/Altri%20contenuti/Avvisi%\
-20e%20News/DetACN_MisureSicurezza.v4_post.pdf","kind":"National authority determ\
-ination · first-listed 2026 cohort","activity":"Read Article 1 for first-listed\
- 2026 entities. Confirm applicability and later determinations with ACN."},"coun\
-tryNl":{"title":"Netherlands: Cyberbeveiligingswet commencement","org":"NCSC Net\
-herlands · official guidance","url":"https://www.ncsc.nl/cyberbeveiligingswet-n\
-is2","kind":"National authority guidance · enacted 15 Aug 2026","activity":"Che\
-ck scope, registration, sector reporting and the central MijnNCSC route."},"fran\
-ceStatus":{"title":"France: first-reading adoption, 17 Nov 2026","org":"Assemblé\
-e nationale · official legislative update","url":"https://www.assemblee-nationa\
-le.fr/dyn/actualites-accueil-hub/adoption-du-projet-de-loi-relatif-a-la-resilien\
-ce-des-infrastructures-critiques-et-au-renforcement-de-la-cybersecurite","kind":"\
-Bill adopted at first reading; not proof of commencement","activity":"Distinguis\
-h parliamentary adoption from promulgation and commencement. Check the final law\
- and implementing texts before assigning deadlines."},"countryIe":{"title":"Irel\
-and: official NIS2 implementation guidance","org":"NCSC Ireland · national imple\
-mentation guidance","url":"https://ncsc.gov.ie/nis2/","kind":"Official implement\
-ation guidance; confirm final national enactment","activity":"Check current tran\
-sposition, scope and reporting guidance; preparation guidance is not an enacted \
-commencement date."},"countryEs":{"title":"Spain: draft cybersecurity coordinati\
-on law","org":"Ministry of the Interior · 14 Jan 2025","url":"https://www.inter\
-ior.gob.es/opencms/es/detalle/articulo/El-Consejo-de-Ministros-aprueba-el-antepr\
-oyecto-de-Ley-de-Coordinacion-y-Gobernanza-de-la-Ciberseguridad/","kind":"Draft \
-announcement; final NIS2 enactment not verified in this review","activity":"Chec\
-k BOE for the latest enacted position and retain applicable existing reporting d\
-uties."},"countryFi":{"title":"Finland: NIS2 and Cybersecurity Act","org":"Trafi\
-com / NCSC-FI · national guidance","url":"https://www.kyberturvallisuuskeskus.f\
-i/en/our-activities/regulation-and-supervision/nis2-european-union-cybersecurity\
--directive","kind":"National authority guidance · effective 8 Apr 2025","activi\
-ty":"Find the relevant sector supervisor and significant-incident reporting serv\
-ice."}};
+-08-02","name":"AI regulatory sandboxes: national milestone","detail":"Amended A\
+rticle 57(1) sets this deadline. Each Member State must have at least one operat\
+ional national sandbox. Competent authorities may establish one jointly.","sourc\
+e":"aiSandboxLaw"},{"date":"2027-12-02","name":"AI Act: Annex III high-risk rule\
+s","detail":"Amended timeline following AI Omnibus.","source":"aiDates"},{"date":"\
+2027-12-11","name":"CRA: main application and relevant steward reporting","detai\
+l":"Product scope and organisation role must be assessed.","source":"craDates"},
+{"date":"2028-08-02","name":"AI Act: Annex I product-embedded high-risk rules","\
+detail":"Amended timeline for relevant regulated products.","source":"aiDates"}];
+window.WINTERWATCH_SOURCES={"csirts":{"title":"CSIRTs Network · members","org":"\
+EU CSIRTs Network","url":"https://csirtsnetwork.eu/","kind":"National CSIRT rout\
+ing directory","activity":"Find the CSIRT for a fictional entity’s country and v\
+erify its current secure reporting channel."},"dpas":{"title":"Our members · sup\
+ervisory authorities","org":"European Data Protection Board","url":"https://www.\
+edpb.europa.eu/about-edpb/our-members_en","kind":"EU / EEA data-protection autho\
+rity directory","activity":"Find the competent supervisory authority, then confi\
+rm its breach-reporting form and out-of-hours process."},"cra":{"title":"Cyber R\
+esilience Act reporting obligations","org":"European Commission · current guidan\
+ce","url":"https://digital-strategy.ec.europa.eu/en/policies/cra-reporting","kin\
+d":"Official implementation guidance","activity":"Compare final-report timing fo\
+r an actively exploited vulnerability with timing for a severe incident."},"aiNa\
+tional":{"title":"AI Act national resources and authorities","org":"European Com\
+mission · AI Act Service Desk","url":"https://ai-act-service-desk.ec.europa.eu/\
+en/national-resources","kind":"National resource directory; identify the compete\
+nt authority","activity":"Find the authority for the country and issue. A helpde\
+sk, market-surveillance authority, DPA and CSIRT have different roles."},"police":{
+"title":"National online cybercrime reporting routes","org":"Europol","url":"htt\
+ps://www.europol.europa.eu/report-a-crime/report-cybercrime-online","kind":"Nati\
+onal law-enforcement routing directory","activity":"Identify the appropriate nat\
+ional police route. Criminal reporting does not automatically replace regulatory\
+ notification."},"nistIR":{"title":"NIST SP 800-61 Rev. 3: incident response","o\
+rg":"NIST · final 3 Apr 2025","url":"https://csrc.nist.gov/pubs/sp/800/61/r3/fi\
+nal","kind":"CSF 2.0 incident-response recommendations","activity":"Read how Det\
+ect, Respond and Recover are supported by preparation and continuous improvement\
+; the six functions are not a mandatory linear checklist."},"gdpr":{"title":"GDP\
+R · Articles 5, 28, 32–34","org":"EU · Regulation 2016/679","url":"https://e\
+ur-lex.europa.eu/eli/reg/2016/679/oj/eng","kind":"Regulation · scope-dependent d\
+uties","excerpt":"not later than 72 hours","excerptAt":"Article 33(1), within a \
+longer conditional reporting duty","activity":"Read Article 33(1)–(5) and Articl\
+e 34. Distinguish risk, high risk, awareness, and processor escalation."},"nis":{
+"title":"NIS2 · Articles 21 and 23","org":"EU · Directive 2022/2555","url":"ht\
+tps://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555","kind":"Dire\
+ctive · national implementation matters","excerpt":"basic cyber hygiene practic\
+es and cybersecurity training","excerptAt":"Article 21(2)(g)","activity":"Read t\
+he significant-incident threshold and reporting sequence. Find the national rule\
+s and authority for your actual entity."},"dora":{"title":"DORA · Articles 28–30",
+"org":"EU · Regulation 2022/2554","url":"https://eur-lex.europa.eu/legal-conten\
+t/EN/TXT/?uri=CELEX:32022R2554","kind":"Regulation · covered financial entities",
+"excerpt":"shall be clearly allocated and set out in writing","excerptAt":"Artic\
+le 30(1), rights and obligations","activity":"Read the contract provisions. Find\
+ the evidence needed for an exit rehearsal with a critical ICT supplier."},"craL\
+aw":{"title":"Cyber Resilience Act · Annex I","org":"EU · Regulation 2024/2847",
+"url":"https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R2847","ki\
+nd":"Regulation · phased application","excerpt":"a secure by default configurat\
+ion","excerptAt":"Annex I, Part I, point 2(b)","activity":"Read Annex I’s vulner\
+ability-handling requirements. Identify evidence a customer should request from \
+a product supplier."},"aiLaw":{"title":"AI Act · current consolidated text","or\
+g":"EU · Regulation 2024/1689; consolidated 27 Jul 2026","url":"https://eur-lex\
+.europa.eu/eli/reg/2024/1689/2026-07-27/eng","kind":"Regulation · amended implem\
+entation","excerpt":"machine-readable format","excerptAt":"Article 50(2), markin\
+g synthetic outputs","activity":"Identify whether a fictional workflow is a prov\
+ider or deployer activity, and whether Article 50 applies."},"csf":{"title":"The\
+ NIST Cybersecurity Framework (CSF) 2.0","org":"NIST · Feb 2024","url":"https:/\
+/nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf","kind":"Voluntary outcome-base\
+d framework","excerpt":"GOVERN","activity":"Compare a current and target profile\
+. Choose an outcome, an owner, and a measurable evidence gap."},"rmf":{"title":"\
+AI Risk Management Framework 1.0","org":"NIST · Jan 2023","url":"https://nvlpub\
+s.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf","kind":"Voluntary framework","excerpt":"\
+GOVERN, MAP, MEASURE, and MANAGE","activity":"Map a support chatbot to the four \
+core functions. Include human escalation and model-change testing."},"owaspApi":{
+"title":"OWASP API Security Top 10 · 2023","org":"OWASP · API1, API8 and API10",
+"url":"https://owasp.org/projects/api-security-project","kind":"Application-secu\
+rity risk reference · CC BY-SA 4.0","excerpt":"Broken Object Level Authorizatio\
+n","activity":"Read API1:2023. Explain why signing in does not authorise access \
+to every record identifier."},"owaspPrompt":{"title":"OWASP LLM01:2025 Prompt In\
+jection","org":"OWASP GenAI Security Project","url":"https://genai.owasp.org/llm\
+risk/llm01-prompt-injection/","kind":"Risk / mitigation reference · CC BY-SA 4.0",
+"excerpt":"Require human approval for high-risk actions","activity":"Read indire\
+ct prompt injection and mitigation. Explain what enforces the boundary when a re\
+trieved document contains instructions."},"enisaGuide":{"title":"NIS2 technical \
+implementation guidance","org":"ENISA · 26 Jun 2025","url":"https://www.enisa.e\
+uropa.eu/publications/nis2-technical-implementation-guidance","kind":"Guidance f\
+or specified digital sectors under Implementing Regulation 2024/2690","activity":"\
+Read supply-chain security and incident handling examples. Check sector scope be\
+fore treating an example as an applicable requirement."},"doraClock":{"title":"D\
+ORA incident-reporting time limits","org":"EU · Delegated Regulation 2025/301, A\
+rticle 5","url":"https://eur-lex.europa.eu/eli/reg_del/2025/301/oj/eng","kind":"\
+Binding delegated regulation","activity":"Read Article 5(1)–(2) for the standard\
+ clocks and late classification. Check Article 5(4)–(6) for weekend and bank hol\
+iday rules, exclusions and authority decisions."},"aiDates":{"title":"AI Act imp\
+lementation timeline, including AI Omnibus","org":"European Commission · current\
+ service desk","url":"https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-a\
+ct-implementation-timeline","kind":"Official amended implementation timeline","a\
+ctivity":"Compare the December 2027 Annex III milestone with the August 2028 Ann\
+ex I milestone. Classify one fictional use case."},"aiSandboxLaw":{"title":"AI A\
+ct · amended Article 57(1)","org":"EU · Regulation 2026/1744, Article 1(22)(a)",
+"url":"https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng/pdf","kind":"Binding a\
+mendment · national AI regulatory sandboxes","activity":"Read Article 1(22)(a).\
+ Find the 2 August 2027 operational deadline and the option for competent author\
+ities to establish a sandbox jointly."},"craDates":{"title":"CRA implementation \
+timeline","org":"European Commission","url":"https://digital-strategy.ec.europa.\
+eu/en/factpages/cyber-resilience-act-implementation","kind":"Official milestones",
+"activity":"Mark already-applicable reporting duties separately from the Decembe\
+r 2027 main requirements."},"countryDe":{"title":"Germany: current BSIG and NIS2\
+ commencement","org":"Federal German statute · amended 22 Oct 2026","url":"http\
+s://www.gesetze-im-internet.de/bsig_2025/BSIG.pdf","kind":"National enacted law \
+· sections 32–33","activity":"Read registration and reporting triggers, scope\
+ exclusions and the current BSI route."},"countryBe":{"title":"Belgium: NIS2 ass\
+essment and certification milestones","org":"CCB · official FAQ","url":"https:/\
+/atwork.safeonweb.be/frequently-asked-questions-faq-nis2-and-cyberfundamentals",
+"kind":"National authority guidance · pathway-specific milestones","activity":"\
+Compare CyFun, ISO and direct-inspection pathways. Do not confuse an assessment \
+milestone with a reporting grace period."},"countryIt":{"title":"Italy: NIS2 imp\
+lementation decree","org":"Gazzetta Ufficiale · Legislative Decree 138/2024","u\
+rl":"https://www.gazzettaufficiale.it/eli/id/2024/10/01/24G00155/SG","kind":"Nat\
+ional enacted law","activity":"Identify the entity’s listing year and its applic\
+able ACN communications."},"italyCohort":{"title":"ACN Determination 127434/2026\
+ · official document","org":"ACN · 13 Apr 2026 · published by MUR","url":"htt\
+ps://trasparenza.mur.gov.it/archiviofile/mur/Altri%20contenuti/Avvisi%20e%20News\
+/DetACN_MisureSicurezza.v4_post.pdf","kind":"National authority determination · \
+first-listed 2026 cohort","activity":"Read Article 1 for first-listed 2026 entit\
+ies. Confirm applicability and later determinations with ACN."},"countryNl":{"ti\
+tle":"Netherlands: Cyberbeveiligingswet commencement","org":"NCSC Netherlands · \
+official guidance","url":"https://www.ncsc.nl/cyberbeveiligingswet-nis2","kind":"\
+National authority guidance · enacted 15 Aug 2026","activity":"Check scope, reg\
+istration, sector reporting and the central MijnNCSC route."},"franceStatus":{"t\
+itle":"France: first-reading adoption, 17 Nov 2026","org":"Assemblée nationale ·\
+ official legislative update","url":"https://www.assemblee-nationale.fr/dyn/actu\
+alites-accueil-hub/adoption-du-projet-de-loi-relatif-a-la-resilience-des-infrast\
+ructures-critiques-et-au-renforcement-de-la-cybersecurite","kind":"Bill adopted \
+at first reading; not proof of commencement","activity":"Distinguish parliamenta\
+ry adoption from promulgation and commencement. Check the final law and implemen\
+ting texts before assigning deadlines."},"countryIe":{"title":"Ireland: official\
+ NIS2 implementation guidance","org":"NCSC Ireland · national implementation gui\
+dance","url":"https://ncsc.gov.ie/nis2/","kind":"Official implementation guidanc\
+e; confirm final national enactment","activity":"Check current transposition, sc\
+ope and reporting guidance; preparation guidance is not an enacted commencement \
+date."},"countryEs":{"title":"Spain: draft cybersecurity coordination law","org":"\
+Ministry of the Interior · 14 Jan 2025","url":"https://www.interior.gob.es/open\
+cms/es/detalle/articulo/El-Consejo-de-Ministros-aprueba-el-anteproyecto-de-Ley-d\
+e-Coordinacion-y-Gobernanza-de-la-Ciberseguridad/","kind":"Draft announcement; f\
+inal NIS2 enactment not verified in this review","activity":"Check BOE for the l\
+atest enacted position and retain applicable existing reporting duties."},"count\
+ryFi":{"title":"Finland: NIS2 and Cybersecurity Act","org":"Traficom / NCSC-FI ·\
+ national guidance","url":"https://www.kyberturvallisuuskeskus.fi/en/our-activit\
+ies/regulation-and-supervision/nis2-european-union-cybersecurity-directive","kin\
+d":"National authority guidance · effective 8 Apr 2025","activity":"Find the re\
+levant sector supervisor and significant-incident reporting service."}};
