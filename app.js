@@ -1,100 +1,100 @@
 "use strict";(()=>{const A=window.WINTERWATCH_LESSONS,S=window.WINTERWATCH_SOURCES,kt=window.
 WINTERWATCH_DATES,fa=window.WINTERWATCH_ARTWORK||{},ga=window.WINTERWATCH_LESSON_VISUALS||
 {},T=window.WINTERWATCH_ENGINE,C=window.WINTERWATCH_GAMES,le=window.WINTERWATCH_COUNTRIES,
-Te=window.WINTERWATCH_JURISDICTIONS,o=(e,t=document)=>t.querySelector(e),H=(e,t=document)=>[
+Ae=window.WINTERWATCH_JURISDICTIONS,o=(e,t=document)=>t.querySelector(e),H=(e,t=document)=>[
 ...t.querySelectorAll(e)],r=e=>String(e??"").replace(/[&<>"']/g,t=>({"&":"&amp;",
-"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[t]),De=e=>{try{if(typeof e!="st\
+"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[t]),Te=e=>{try{if(typeof e!="st\
 ring"||/[\u0000-\u0020\u007f]/.test(e))return"#";const t=new URL(e);return t.protocol===
 "https:"&&!t.username&&!t.password?t.href:"#"}catch{return"#"}},b=(e,t)=>{const a=S[e];
-return`<a href="${r(De(a.url))}" target="_blank" rel="noopener noreferrer">${r(t||
-a.title)} ↗</a>`},Ee=T.empty,Q="winterwatch-2026-progress-v3";let E="ready",ee=null,
-Ke=!1,P=0,ce=!1;function ba(e){if(typeof e!="string"||e.length>12e3)throw Error(
+return`<a href="${r(Te(a.url))}" target="_blank" rel="noopener noreferrer">${r(t||
+a.title)} ↗</a>`},De=T.empty,Q="winterwatch-2026-progress-v3";let E="ready",ee=null,
+Ze=!1,O=0,ce=!1;function ba(e){if(typeof e!="string"||e.length>12e3)throw Error(
 "Invalid progress record");const t=JSON.parse(e);if(!t||t.version!==3)throw Error(
 "Unsupported progress record");const a=T.restore(t);return a.generation=Number.isSafeInteger(
-t.generation)&&t.generation>0?t.generation:0,a}function Se(){const e=localStorage.
-getItem(Q);if(e===null)return{raw:e,progress:Ee(),generation:0,status:"ready"};try{
+t.generation)&&t.generation>0?t.generation:0,a}function Ee(){const e=localStorage.
+getItem(Q);if(e===null)return{raw:e,progress:De(),generation:0,status:"ready"};try{
 const t=ba(e);return{raw:e,progress:t,generation:t.generation,status:t.opened.length?
-"saved":"ready"}}catch{return{raw:e,progress:Ee(),generation:0,status:"corrupt"}}}
-function ma(){try{const e=Se();return P=e.generation,ee=e.raw,E=e.status,e.progress}catch{
-return E="unavailable",Ee()}}function At(e){const t=globalThis.navigator?.locks;
+"saved":"ready"}}catch{return{raw:e,progress:De(),generation:0,status:"corrupt"}}}
+function ma(){try{const e=Ee();return O=e.generation,ee=e.raw,E=e.status,e.progress}catch{
+return E="unavailable",De()}}function At(e){const t=globalThis.navigator?.locks;
 return t?t.request(Q,e):new Promise((a,n)=>{const s=indexedDB.open(Q+"-lock",1);
 s.onupgradeneeded=()=>s.result.createObjectStore("writers"),s.onerror=()=>n(s.error),
 s.onsuccess=()=>{const i=s.result,l=i.transaction("writers","readwrite");l.oncomplete=
 ()=>{i.close(),a()},l.onabort=()=>{i.close(),n(l.error||Error("Write interrupted"))},
 l.objectStore("writers").count().onsuccess=()=>{try{e()}catch(d){l.abort(),n(d)}}}})}
-function Je(e,t){const a=t?e.progress:T.mergeProgress(e.progress,T.snapshot(c)),
+function Ke(e,t){const a=t?e.progress:T.mergeProgress(e.progress,T.snapshot(c)),
 n=JSON.stringify(T.snapshot(c))!==JSON.stringify(T.snapshot(a)),{audience:s,country:i,
-context:l,ambience:d}=c;P=e.generation,ee=e.raw,E=e.status,Object.assign(c,a,{audience:s,
+context:l,ambience:d}=c;O=e.generation,ee=e.raw,E=e.status,Object.assign(c,a,{audience:s,
 country:i,context:l,ambience:d}),(n||t)&&(t&&(V={},z=null),clearTimeout(de),W=[],
-Ce=new Set(G().filter(u=>u.earned).map(u=>u.id)),N(),o("#lessonDialog").open?(v=
+Se=new Set(G().filter(u=>u.earned).map(u=>u.id)),N(),o("#lessonDialog").open?(v=
 T.firstUnsolved(c,g),I()):o("#infoDialog").open&&M==="progress"&&oa()),ie()}function Tt(){
-try{const e=Se();if(e.raw===ee)return;Je(e,e.generation!==P||e.raw===null||e.status===
-"corrupt")}catch{E="unavailable",ie()}}function ya(){const e=T.snapshot(c),t=P;if(ce||
+try{const e=Ee();if(e.raw===ee)return;Ke(e,e.generation!==O||e.raw===null||e.status===
+"corrupt")}catch{E="unavailable",ie()}}function ya(){const e=T.snapshot(c),t=O;if(ce||
 !e.opened.length)return;const a=n=>JSON.stringify(t?{...n,generation:t}:n);a(e)!==
-ee&&At(()=>{const n=Se();if(ce||t!==P)return;if(n.generation!==t||n.raw===null&&
-ee!==null){Je(n,!0);return}const s=T.mergeProgress(n.progress,e),i=a(T.snapshot(
-s));i!==n.raw&&localStorage.setItem(Q,i),Ke=!1,Je({raw:i,progress:s,generation:t,
-status:"saved"},!1)}).catch(()=>{E="unavailable",ie(),Ke||(Ke=!0,$("Progress cou\
+ee&&At(()=>{const n=Ee();if(ce||t!==O)return;if(n.generation!==t||n.raw===null&&
+ee!==null){Ke(n,!0);return}const s=T.mergeProgress(n.progress,e),i=a(T.snapshot(
+s));i!==n.raw&&localStorage.setItem(Q,i),Ze=!1,Ke({raw:i,progress:s,generation:t,
+status:"saved"},!1)}).catch(()=>{E="unavailable",ie(),Ze||(Ze=!0,$("Progress cou\
 ld not be saved. Check whether this browser allows site storage."))})}async function va(){
-ce=!0;try{await At(()=>{const e=Se(),t=e.generation===Number.MAX_SAFE_INTEGER?1:
+ce=!0;try{await At(()=>{const e=Ee(),t=e.generation===Number.MAX_SAFE_INTEGER?1:
 e.generation+1,a=JSON.stringify({version:3,generation:t});localStorage.setItem(Q,
-a),ee=a,P=t,E="ready"})}catch{E="unavailable"}finally{ce=!1}}function Dt(){return E===
-"saved"?"Saved on this device":E==="ready"?"Progress saves on this device":E==="\
-corrupt"?"Saved progress could not be read":"Not saved · browser storage unavail\
-able"}function Et(){return E==="unavailable"?"This browser is not saving progres\
-s. Allow site storage to keep it after reload.":E==="corrupt"?"The saved record \
-could not be read. New progress can be saved; Reset progress removes the unreada\
-ble record.":"Completed quests and decisions, reading bonuses and streak dates/c\
-ounts are saved only in this browser."}let c=ma(),Ce=new Set(G().filter(e=>e.earned).
-map(e=>e.id)),W=[],de=null,Qe=null,et=null;function St(){const e=document.activeElement;
-if(e?.closest?.("#lessonDialog"))return Qe;if(e?.closest?.("#infoDialog"))return et;
+a),ee=a,O=t,E="ready"})}catch{E="unavailable"}finally{ce=!1}}function Dt(){return E===
+"saved"?"Saved in this browser":E==="ready"?"Progress saves in this browser":E===
+"corrupt"?"Saved progress could not be read":"Not saved · browser storage unavai\
+lable"}function Et(){return E==="unavailable"?"This browser is not saving progre\
+ss. Allow site storage to keep it after reload.":E==="corrupt"?"The saved record\
+ could not be read. New progress can be saved; Reset progress removes the unread\
+able record.":"Completed quests and decisions, reading bonuses and streak dates/\
+counts are saved only in this browser."}let c=ma(),Se=new Set(G().filter(e=>e.earned).
+map(e=>e.id)),W=[],de=null,Je=null,Qe=null;function St(){const e=document.activeElement;
+if(e?.closest?.("#lessonDialog"))return Je;if(e?.closest?.("#infoDialog"))return Qe;
 if(e?.closest?.("#mainNav")&&window.matchMedia("(max-width: 800px)").matches)return{
 element:o("#menuToggle")};const t=Number(e?.dataset?.door);return Number.isInteger(
-t)&&t>=1&&t<=24?{selector:`[data-door="${t}"]`}:{element:e}}function B(e){const t=e?.
+t)&&t>=1&&t<=24?{selector:`[data-door="${t}"]`}:{element:e}}function j(e){const t=e?.
 selector?o(e.selector):e?.element;t&&t!==document.body&&t.isConnected!==!1&&(!t.
 getClientRects||t.getClientRects().length)?t.focus({preventScroll:!0}):o("#calen\
 darTitle").focus({preventScroll:!0})}function ue(e,t=!1){o(".site-header").classList.
 toggle("menu-open",e),o("#menuToggle").setAttribute("aria-expanded",String(e)),t&&
 o("#menuToggle").focus()}function Ct(){ue(!1),location.hash="#calendar";const e=o(
 "#calendarTitle");e.scrollIntoView?.({block:"start"}),e.focus({preventScroll:!0})}
-const D=o("#tourDialog");let xt=null,xe=0;function tt(e){const t=H("[data-tour-s\
-tep]",D),a=t[e];if(!a)return;xe=e,t.forEach((s,i)=>{s.hidden=i!==e}),o("#tourCou\
+const D=o("#tourDialog");let xt=null,Ce=0;function et(e){const t=H("[data-tour-s\
+tep]",D),a=t[e];if(!a)return;Ce=e,t.forEach((s,i)=>{s.hidden=i!==e}),o("#tourCou\
 nt").textContent=String(e+1)+" of "+t.length;const n=o("#tourProgress");n.max=t.
 length,n.value=e+1,o("#tourTip").textContent=a.dataset.tourTip,o("[data-tour-bac\
 k]",D).disabled=e===0,o("[data-tour-next]",D).textContent=e===t.length-1?"Finish":
 "Next",D.scrollTop=0,D.open&&o("h3",a).focus({preventScroll:!0})}function wa(e){
-D.open||(w(),xt={element:e},D.returnValue="",D.showModal(),tt(0))}let at="all",g=null,
-x="play",q=c.audience==="everyone"?"technical":c.audience,v=0,V={},z=null,M="",Rt=null,
-$a=null,y=null,Re="",Ie=null;const nt={cyber:"Cybersecurity",ai:"AI & agents",privacy:"\
-Privacy",governance:"Rules & standards",ot:"Connected world"},te="This content h\
-as been developed using AI tools by members of the ENISA Ad Hoc Working Group (A\
-RCH AHWG) to support awareness-raising and cyber hygiene initiatives. It does no\
-t constitute official ENISA guidance or formal regulatory advice.",pe="https://w\
-ww.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-box";function It(){
-return`<div class="publisher-card"><img src="assets/winterwatch-mark.svg" alt=""\
- width="40" height="40"><p><b>${r(te)}</b><br><a href="${pe}" target="_blank" re\
-l="noopener noreferrer">Learn more about AR-in-a-Box →</a></p></div>`}const ka=(e=new Date)=>{
-const t=new Intl.DateTimeFormat("en-GB",{timeZone:"Etc/GMT-1",year:"numeric",month:"\
-2-digit",day:"2-digit"}).formatToParts(e);return Object.fromEntries(t.map(a=>[a.
-type,a.value]))},ae=(e=new Date)=>{const t=ka(e);return`${t.year}-${t.month}-${t.
-day}`};let Nt=null,ne=!1;function Lt(e=new Date){const t=Object.fromEntries(new Intl.
-DateTimeFormat("en-GB",{timeZone:"Etc/GMT-1",year:"numeric",month:"2-digit",day:"\
-2-digit"}).formatToParts(e).map(l=>[l.type,l.value])),a=Date.UTC(Number(t.year),
-Number(t.month)-1,Number(t.day)),n=Date.UTC(2026,11,1),s=Date.UTC(2026,11,24);if(a<
-n)return{phase:"before",day:0,remaining:24,untilStart:Math.round((n-a)/864e5)};if(a>
-s)return{phase:"after",day:24,remaining:0,untilStart:0};const i=Number(t.day);return{
-phase:"during",day:i,remaining:24-i,untilStart:0}}const Ot=(e=new Date)=>new Date(
-e.getTime()-9*36e5),se=(e=new Date)=>ae(Ot(e)),Ne=(e=new Date)=>Lt(Ot(e));function Aa(e=new Date){
-const t=se(e);return new Date(Date.parse(t+"T08:00:00Z")+864e5)}function Pt(e,t=new Date){
+!D||D.open||(w(),xt={element:e},D.returnValue="",D.showModal(),et(0))}let tt="al\
+l",g=null,x="play",q=c.audience==="everyone"?"technical":c.audience,v=0,V={},z=null,
+M="",Rt=null,$a=null,y=null,xe="",Re=null;const at={cyber:"Cybersecurity",ai:"AI\
+ & agents",privacy:"Privacy",governance:"Rules & standards",ot:"Connected world"},
+te="This content has been developed using AI tools by members of the ENISA Ad Ho\
+c Working Group (ARCH AHWG) to support awareness-raising and cyber hygiene initi\
+atives. It does not constitute official ENISA guidance or formal regulatory advi\
+ce.",pe="https://www.enisa.europa.eu/topics/awareness-and-cyber-hygiene/ar-in-a-\
+box";function It(){return`<div class="publisher-card"><img src="assets/winterwat\
+ch-mark.svg" alt="" width="40" height="40"><p><b>${r(te)}</b><br><a href="${pe}"\
+ target="_blank" rel="noopener noreferrer">Learn more about AR-in-a-Box →</a></p\
+></div>`}const ka=(e=new Date)=>{const t=new Intl.DateTimeFormat("en-GB",{timeZone:"\
+Etc/GMT-1",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(e);return Object.
+fromEntries(t.map(a=>[a.type,a.value]))},ae=(e=new Date)=>{const t=ka(e);return`${t.
+year}-${t.month}-${t.day}`};let Nt=null,ne=!1;function Lt(e=new Date){const t=Object.
+fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Etc/GMT-1",year:"numeric",
+month:"2-digit",day:"2-digit"}).formatToParts(e).map(l=>[l.type,l.value])),a=Date.
+UTC(Number(t.year),Number(t.month)-1,Number(t.day)),n=Date.UTC(2026,11,1),s=Date.
+UTC(2026,11,24);if(a<n)return{phase:"before",day:0,remaining:24,untilStart:Math.
+round((n-a)/864e5)};if(a>s)return{phase:"after",day:24,remaining:0,untilStart:0};
+const i=Number(t.day);return{phase:"during",day:i,remaining:24-i,untilStart:0}}const Pt=(e=new Date)=>new Date(
+e.getTime()-9*36e5),se=(e=new Date)=>ae(Pt(e)),Ie=(e=new Date)=>Lt(Pt(e));function Aa(e=new Date){
+const t=se(e);return new Date(Date.parse(t+"T08:00:00Z")+864e5)}function Ot(e,t=new Date){
 return ae(e)===ae(t)?"Come back at 09:00 CET.":"Come back tomorrow at 09:00 CET."}
-function st(e=new Date){const t=e.getTime();return A.filter(a=>Date.UTC(2026,11,
+function nt(e=new Date){const t=e.getTime();return A.filter(a=>Date.UTC(2026,11,
 a.id,8)>=t)}function he(e,t){return Object.freeze({src:"assets/ambassador-"+e+".\
 webp",alt:"NESTOR "+t+" on the Awareness Raising Ambassador badge. Cybersecurity\
 . Powered by ENISA."})}const Ta=he("family","in adult and child forms"),Mt=Object.
 freeze([he("adult-female","in adult female form wearing a burgundy sweater"),he(
 "adult-male","in adult male form wearing a green sweater"),he("child-female","in\
  child female form with a red sweater and pink flower"),he("child-male","in chil\
-d male form wearing a blue sweater")]),Da={};function Ea(e=new Date){const t=Ne(
+d male form wearing a blue sweater")]),Da={};function Ea(e=new Date){const t=Ie(
 e),a=t.phase==="during"?A.find(n=>n.id===t.day):null;return{...t,lesson:a,host:a?
 Mt[(a.id-1)%Mt.length]:Ta,brief:a?Da[a.id]||a.takeaway:""}}function Sa(e=new Date){
 const t=Ea(e),a=t.lesson,n=(l,d)=>{const u=o(l);u&&u.textContent!==d&&(u.textContent=
@@ -110,14 +110,14 @@ a?`DAY ${a.id} WITH NESTOR`:"ONE NESTOR. MANY FORMS."),n("#nestorRibbonDate",a?`
 id} December 2026`:"1–24 December 2026");const i=o("#adventHostImage");i&&i.getAttribute(
 "src")!==t.host.src&&(window.WINTERWATCH_PORTRAIT?.select(t.host.src),i.setAttribute(
 "src",t.host.src),i.setAttribute("alt",t.host.alt))}function fe(e=new Date){Sa(e);
-const t=Lt(e),a=Math.max(0,24-c.completed.length),n=st(e),s=(u,p)=>{const h=o(u),
+const t=Lt(e),a=Math.max(0,24-c.completed.length),n=nt(e),s=(u,p)=>{const h=o(u),
 f=String(p);h&&h.textContent!==f&&(h.textContent=f)},i=t.phase==="before"?"Start\
 s 1 December":t.phase==="after"?"Advent complete":`Day ${t.day} of 24`,l=t.phase===
 "before"?"Advent days ahead":t.phase==="during"?"Days remaining after today":"Ad\
 vent days remaining";s("#adventCurrentDay",i),s("#adventDaysRemaining",t.remaining),
 s("#adventRemainingLabel",l),s("#adventQuestsRemaining",a),s("#adventTiming",t.phase===
 "before"?`${t.untilStart} ${t.untilStart===1?"day":"days"} until Day 1 · 1–24 De\
-cember 2026 · CET.`:t.phase==="after"?Ne(e).phase==="during"?"The final Advent \
+cember 2026 · CET.`:t.phase==="after"?Ie(e).phase==="during"?"The final Advent \
 door is released. All 24 lessons are available.":"All 24 lessons are available. \
 Revisit any day or finish missed lessons at your own pace.":`${t.day===24?"The f\
 inal Advent day is here.":`Today is Day ${t.day}.`} Doors unlock at 09:00 CET; q\
@@ -129,44 +129,44 @@ s("#adventStatusAnnouncement",`${i}. ${t.remaining} Advent ${t.remaining===1?"da
 y":"days"} remaining${t.phase==="during"?" after today":""}. ${a} ${a===1?"quest":
 "quests"} left to complete.`)}function Ht(){const e=new Date;fe(e),ct(),clearTimeout(
 Nt),Nt=setTimeout(Ht,6e4-e.getTime()%6e4)}function _(){ya(),ie();const e=G().filter(
-t=>t.earned&&!Ce.has(t.id));for(const t of e)Ce.add(t.id);e.length&&(W.push(...e),
+t=>t.earned&&!Se.has(t.id));for(const t of e)Se.add(t.id);e.length&&(W.push(...e),
 Wt())}function Wt(){clearTimeout(de),de=setTimeout(()=>{const e=W;W=[],sa(e)},3200)}
-function ge(){return T.xp(c)}function $(e){o("#toast").textContent=e;const t=o("\
+function st(){return T.xp(c)}function $(e){o("#toast").textContent=e;const t=o("\
 dialog[open] [data-dialog-status]");t&&(t.textContent=e),o("#toast").classList.add(
 "show"),clearTimeout(Rt),Rt=setTimeout(()=>o("#toast").classList.remove("show"),
-3200)}function Le(e=new Date){const t=Ne(e);return{...t,releasedThrough:t.phase===
-"before"?0:t.day}}function be(e,t=new Date){return e>(window.WINTERWATCH_PUBLISHED_THROUGH??
+3200)}function Ne(e=new Date){const t=Ie(e);return{...t,releasedThrough:t.phase===
+"before"?0:t.day}}function ge(e,t=new Date){return e>(window.WINTERWATCH_PUBLISHED_THROUGH??
 24)?!1:Number.isInteger(e)&&e>=1&&e<=24&&Number.isFinite(t.getTime())&&t.getTime()>=
-Date.UTC(2026,11,e,8)}function R(e,t=new Date){return be(e,t)}function Ut(e=new Date){
-const t=Le(e);return t.day>(window.WINTERWATCH_PUBLISHED_THROUGH??24)?"Refresh t\
+Date.UTC(2026,11,e,8)}function R(e,t=new Date){return ge(e,t)}function Ut(e=new Date){
+const t=Ne(e);return t.day>(window.WINTERWATCH_PUBLISHED_THROUGH??24)?"Refresh t\
 he calendar for the latest published door. Earlier released lessons stay availab\
 le.":t.phase==="before"?"Our first door opens on 1 December 2026 at 09:00 CET. S\
-ee you then!":be(24,e)&&c.completed.length===24?"You did it! All 24 days are com\
+ee you then!":ge(24,e)&&c.completed.length===24?"You did it! All 24 days are com\
 plete. You can revisit any lesson whenever you like.":t.phase==="during"&&t.day<
 24?`${t.day===1?"Day 1 is ready.":`Doors 1–${t.day} are available.`} You can p\
-lay any released lesson, including days you missed. ${Pt(Aa(e),e)} Day ${t.day+1}\
+lay any released lesson, including days you missed. ${Ot(Aa(e),e)} Day ${t.day+1}\
  opens on ${t.day+1} December 2026.`:"All 24 doors are available. Play any misse\
-d lesson or revisit a reviewed day at your own pace."}function Oe(e,t=new Date){
+d lesson or revisit a reviewed day at your own pace."}function Le(e,t=new Date){
 if(!Number.isInteger(e)||e<1||e>24||!Number.isFinite(t.getTime()))return"";const a=Math.
 max(0,Math.ceil((Date.UTC(2026,11,e,8)-t.getTime())/1e3));if(!a&&e>(window.WINTERWATCH_PUBLISHED_THROUGH??
 24))return"Refresh the calendar for the latest published door.";if(!a)return"Thi\
 s door is ready to open.";const n=Math.floor(a/86400),s=i=>String(i).padStart(2,
 "0");return`Come back in: ${n} ${n===1?"day":"days"} ${s(Math.floor(a%86400/3600))}\
-:${s(Math.floor(a%3600/60))}:${s(a%60)}.`}function Ft(e,t=new Date){const a=Le(t);
-return be(e,t)?`Day ${e} is available. You can play this lesson now.`:`${a.phase===
-"during"&&e===a.day+1?Pt(new Date(Date.UTC(2026,11,e,8)),t)+" ":""}Day ${e} open\
-s on ${e} December 2026 at 09:00 CET. ${Oe(e,t)} All released lessons remain ava\
+:${s(Math.floor(a%3600/60))}:${s(a%60)}.`}function Ft(e,t=new Date){const a=Ne(t);
+return ge(e,t)?`Day ${e} is available. You can play this lesson now.`:`${a.phase===
+"during"&&e===a.day+1?Ot(new Date(Date.UTC(2026,11,e,8)),t)+" ":""}Day ${e} open\
+s on ${e} December 2026 at 09:00 CET. ${Le(e,t)} All released lessons remain ava\
 ilable.`}function ot(e,t=new Date){const a=R(e,t),n=a?`Day ${e} is now open. Clo\
 se this note to explore it.`:Ft(e,t),s=o("#doorLockMessage");if(s.textContent=n,
-a){s.innerHTML=`<p id="doorLockSchedule">${r(n)}</p>`;return}const i=Oe(e,t),l=n.
+a){s.innerHTML=`<p id="doorLockSchedule">${r(n)}</p>`;return}const i=Le(e,t),l=n.
 split(i);if(l.length!==2)return;const d=i.replace(/^Come back in: /,"").replace(
 /\.$/,"");s.innerHTML=`<p id="doorLockSchedule">${r(l[0].trim())}</p><div class=\
 "locked-countdown"><span>Come back in:</span> <strong role="timer" aria-live="of\
 f">${r(d)}</strong></div><p>${r(l[1].trim())}</p>`}function oe(){if(clearTimeout(
-Ie),Ie=null,document.hidden)return;(o("#doorLockDialog").open&&!R(Pe)||Re==="loc\
-ked"&&y!==null)&&(Ie=setTimeout(Ca,1e3-new Date().getTime()%1e3))}function Ca(){
-const e=new Date;if(o("#doorLockDialog").open&&ot(Pe,e),Re==="locked")if(R(y,e))
-N();else{const t=o("#santaCountdown");t&&(t.textContent=Oe(y,e))}lt!==se(e)&&ct(),
+Re),Re=null,document.hidden)return;(o("#doorLockDialog").open&&!R(Pe)||xe==="loc\
+ked"&&y!==null)&&(Re=setTimeout(Ca,1e3-new Date().getTime()%1e3))}function Ca(){
+const e=new Date;if(o("#doorLockDialog").open&&ot(Pe,e),xe==="locked")if(R(y,e))
+N();else{const t=o("#santaCountdown");t&&(t.textContent=Le(y,e))}lt!==se(e)&&ct(),
 oe()}let it=null,Pe=null;function rt(e){w();const t=o("#doorLockDialog");if(Pe=e,
 !t.open){const a=document.activeElement,n=Number(a?.dataset?.door);it=Number.isInteger(
 n)&&n>=1&&n<=24?{selector:`[data-door="${n}"]`}:{element:a}}ot(e),o("#doorLockLi\
@@ -176,103 +176,105 @@ wledge").focus({preventScroll:!0}),oe()}function xa(){if(o("#lessonDialog").open
 const e=it?.element;e?.isConnected!==!1&&e?.closest?.("#lessonDialog")?e.focus({
 preventScroll:!0}):o("#lessonDialog [data-close]")?.focus({preventScroll:!0})}else
 o("#infoDialog").open?o("#infoDialog [data-close-info]")?.focus({preventScroll:!0}):
-B(it)}let lt="";function ct(){if(o("#holidayDialog").open&&!Vt()&&o("#holidayDia\
-log").close(),o("#welcomeDialog").open&&!Me()&&o("#welcomeDialog").close(),o("#d\
+j(it)}let lt="";function ct(){if(o("#holidayDialog").open&&!Vt()&&o("#holidayDia\
+log").close(),o("#welcomeDialog").open&&!Oe()&&o("#welcomeDialog").close(),o("#d\
 oorLockDialog").open&&ot(Pe),o("#nestorDoorMessage").textContent=Ut(),lt===se()){
-He();return}const e=Number(document.activeElement?.dataset?.door);N(),o("#lesson\
+Me();return}const e=Number(document.activeElement?.dataset?.door);N(),o("#lesson\
 Dialog").open&&!R(g)?(o("#lessonDialog").close(),rt(g)):Number.isInteger(e)&&e>=
-1&&e<=24&&o(`[data-door="${e}"]`)?.focus({preventScroll:!0}),He()}function U(){return R(
+1&&e<=24&&o(`[data-door="${e}"]`)?.focus({preventScroll:!0}),Me()}function U(){return R(
 g)?!0:(o("#lessonDialog").open&&o("#lessonDialog").close(),rt(g),!1)}function ie(){
-o("#navCount").textContent=`${ge().toLocaleString()} XP`,o(".progress-button sma\
-ll").textContent=`${c.completed.length} of 24 quests · ${Dt()}`,o("#progressRin\
-g").style.setProperty("--progress",`${ge()/24}%`),o("#progressButton").setAttribute(
-"aria-label",`View progress: ${ge()} XP, ${c.completed.length} of 24 quests comp\
-lete`),fe()}const Ra=e=>{const t={tree:'<path d="M32 5 18 23h8L13 39h11L9 55h46L\
-40 39h11L38 23h8L32 5Z"/><path d="M29 55v8h6v-8M32 15v29"/><path d="m23 30 9 5 9\
--5m-22 15 13 5 14-5"/><circle cx="32" cy="8" r="2"/>',gift:'<path d="M10 30h44v2\
-9H10zM6 21h52v10H6zM28 21h8v38"/><path d="M32 21C9 23 10 4 21 9c6 2 11 12 11 12Z\
-m0 0C55 23 54 4 43 9c-6 2-11 12-11 12Z"/><path d="m31 21-9 13m11-13 9 13"/>',snowflake:'\
-<path d="M32 5v54M8.6 18.5l46.8 27M8.6 45.5l46.8-27M24 10l8 8 8-8M24 54l8-8 8 8M\
-10 28l11-3-3-11M54 36l-11 3 3 11M18 50l3-11-11-3M46 14l-3 11 11 3"/><circle cx="\
-32" cy="32" r="7"/>',bell:'<path d="M15 46h34l-6-8V26c0-9-5-15-11-15s-11 6-11 15\
-v12l-6 8ZM12 47h40M26 50c0 8 12 8 12 0M29 11V7h6v4"/><path d="M17 16c-5 4-7 8-7 \
-14m37-14c5 4 7 8 7 14M21 41h23"/>',mug:'<path d="M13 25h32v23c0 11-32 11-32 0V25\
-ZM45 29h5c13 0 10 18-5 18M9 58h41M22 17c-6-7 6-8 0-15m11 15c-6-7 6-8 0-15"/><pat\
-h d="m23 37 6 6 9-12"/>',shield:'<path d="M32 5 52 14v19c0 16-20 27-20 27S12 49 \
-12 33V14L32 5Z"/><path d="m23 32 7 7 13-17M32 11l14 7v15c0 10-14 20-14 20"/><pat\
-h d="m7 8 2 4 4 1-4 1-2 4-1-4-4-1 4-1Z"/>',key:'<circle cx="24" cy="23" r="13"/>\
-<circle cx="24" cy="23" r="5"/><path d="m33 33 21 21-6 6-7-7 3-3-6-6-3 3-8-8M15 \
-7l-3-5m-6 15-5-1m43 1 6-2"/>',star:'<path d="m32 5 7 19 20 1-16 13 5 20-16-11-17\
- 11 6-20L5 25l20-1L32 5Z"/><path d="m32 18 4 11 12 1-9 7 2 11-9-6-10 6 3-11-9-7 \
-12-1 4-11Z"/>',clock:'<circle cx="32" cy="35" r="22"/><circle cx="32" cy="35" r=\
-"17"/><path d="M32 22v14l9 6M26 7h12M32 7v6M50 15l4-4M14 15l-4-4"/>',sparkle:'<p\
-ath d="M31 5c3 16 7 20 22 25-15 4-19 9-22 26-4-17-8-22-23-26 15-5 19-9 23-25Z"/>\
-<path d="M51 2c1 7 3 10 9 12-6 2-8 5-9 11-2-6-4-9-10-11 6-2 8-5 10-12ZM12 46c1 5\
- 3 7 7 8-4 1-6 3-7 8-1-5-3-7-7-8 4-1 6-3 7-8Z"/>'};return`<svg viewBox="0 0 64 6\
-6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" s\
-troke-linejoin="round" aria-hidden="true">${t[e]||t.star}</svg>`};function Ia(e,t=new Date){
-if(!A.find(i=>i.id===e))return{status:"empty"};if(!R(e,t))return{id:e,status:"lo\
-cked",done:0};const n=c.completed.includes(e),s=c.opened.includes(e);return{id:e,
-status:n?"reviewed":s?"in-progress":"not-started",done:s?Math.min(3,(c.solved[e]||
-[]).length):0}}function Yt(){const e=document.activeElement,t=!!e?.closest?.("#s\
-antaListContent"),a=e?.id==="santaDayPicker"?"#santaDayPicker":e?.hasAttribute?.(
-"data-listen-santa")?"[data-listen-santa]":"[data-open]",n=new Date,s=A.filter(f=>R(
-f.id,n)),i=c.opened.filter(f=>R(f,n));A.some(f=>f.id===y)||(y=i[i.length-1]||Le(
-n).releasedThrough||1);const l=Ia(y,n),d=A.find(f=>f.id===y);Re=l.status;const u={
-locked:"UPCOMING DOOR","not-started":"NOT OPENED YET","in-progress":"LESSON IN P\
-ROGRESS",reviewed:"REVIEWED"}[l.status];let p="";if(l.status==="locked")p=`<h3>A\
- new habit awaits.</h3><p>Day ${y} opens on ${y} December 2026 at 09:00 CET.</p>\
-<p id="santaCountdown" class="santa-countdown" role="timer" aria-live="off">${r(
-Oe(y,n))}</p><p>Play any released door while you wait.</p><button type="button" \
-class="button button-green" data-open="${y}">Opening details for Day ${y}</butto\
-n>`;else if(l.status==="reviewed"){const f=C[y].habit,O=f.filter(m=>/^Do:/i.test(
-m)).map(m=>m.replace(/^Do:\s*/i,"")),k=f.filter(m=>/^Do not:/i.test(m)).map(m=>m.
-replace(/^Do not:\s*/i,""));p=`<h3>${r(d.short)}</h3><section class="santa-habit\
-s"><h4><span aria-hidden="true">✓</span> Nice habits</h4><ul>${O.map(m=>`<li>${r(
-m)}</li>`).join("")}</ul><h4><span aria-hidden="true">×</span> Naughty traps</h4\
-><ul>${k.map(m=>`<li>${r(m)}</li>`).join("")}</ul></section><p class="santa-sign\
-off">Even Santa verifies twice.</p><button type="button" class="button button-gr\
-een" data-open="${y}">Revisit Day ${y}</button>`}else{const f=l.status==="in-pro\
-gress";p=`<h3>${r(d.short)}</h3>${f?`<p class="santa-progress">${l.done} of 3 de\
-cisions complete</p><progress max="3" value="${l.done}" aria-label="Day ${y} dec\
-isions complete">${l.done} of 3</progress><p>${r(E==="saved"?"Your progress is s\
-aved on this device.":Et())}</p>`:"<p>This door is still ready for you. Open it \
-whenever you’re ready.</p>"}<div class="santa-waiting"><h4>Your habit recap is\
- waiting.</h4><p>Finish the lesson to reveal its Nice habits and Naughty traps.<\
-/p></div><button type="button" class="button button-green" data-open="${y}">${f?
-"Continue":"Open"} Day ${y}</button>`}o("#santaListContent").innerHTML=`<label c\
-lass="santa-picker" for="santaDayPicker">Choose a door<select id="santaDayPicker\
-" data-santa-select>${A.map(f=>`<option value="${f.id}" ${f.id===y?"selected":""}\
->Day ${f.id} · ${R(f.id,n)?c.completed.includes(f.id)?"reviewed":c.opened.includes(
-f.id)?"in progress":"ready":"upcoming"}</option>`).join("")}</select></label><p \
-class="santa-day"><span aria-hidden="true">${String(y).padStart(2,"0")}</span> D\
-ay ${y} · ${r(u)}</p>${p}<button type="button" class="santa-listen" data-listen\
--santa data-listen="${y}" aria-label="Listen to Day ${y}" aria-pressed="false">${$e(
-"Listen")}</button>`;for(const f of H("[data-chalet-day]"))f.classList.toggle("i\
-s-santa-selected",Number(f.dataset.chaletDay)===y);const h=o("#santaDayPicker");
-h&&(h.value=String(y)),o("#santaStatusAnnouncement").textContent=`Santa’s list: \
-Day ${y}, ${u.toLowerCase()}.`,t&&(o(a,o("#santaListContent"))||o("#santaDayPick\
-er"))?.focus({preventScroll:!0}),oe()}function Na(e){const t=e.contexts??C[e.id]?.
-contexts;return c.context==="all"||t?.includes(c.context)}function La(e){return Object.
-fromEntries(["all",...Object.keys(nt)].map(t=>[t,e.filter(a=>t==="all"||a.category===
-t).length]))}function N(){w();const e=A.filter(Na);for(const[n,s]of Object.entries(
-La(e))){const i=o(`[data-category="${n}"] [data-category-count]`);i&&(i.textContent=
-n==="all"?String(s):`(${s})`)}const t=Le();y===null&&(y=c.opened.filter(n=>R(n)).
-slice(-1)[0]||t.releasedThrough||1);const a=e.filter(n=>at==="all"||n.category===
-at);o("#doorsGrid").innerHTML=a.map(n=>{const s=R(n.id),i=!s,l=s&&c.opened.includes(
-n.id),d=s&&c.completed.includes(n.id),u=t.phase==="during"&&t.day===n.id,p=c.audience===
-"everyone"?C[n.id]?.role||"Upcoming door":`${c.audience} perspective`,h=d?"compl\
-eted":i?"upcoming":u?"today":l?"opened":"available",f=d?c.readings.includes(n.id)?
-"Reviewed · source bonus earned":"Reviewed · lesson complete":"Opened · lesson\
- to finish",O=`Opens ${n.id} Dec · 09:00 CET`,k=d?"Reviewed":l?"In progress":i?
-"Upcoming":u?"Today’s door":"Ready to open",m=i?Ft(n.id):l||d?`${f}. ${p}.`:"O\
-pen this lesson.",Tn=String(n.id).padStart(2,"0"),ha=`tone-${(n.id-1)%8}`;return`\
-<div class="door-card ${ha}${n.id===y?" is-santa-selected":""}${i?" is-upcoming":
-""}" data-chalet-day="${n.id}">
+const e=st(),t=c.completed.length,a=Dt(),n=`${e.toLocaleString()} XP`,s=`${t} of\
+ 24 quests`;o("#navCount").textContent=n,o(".progress-button small").textContent=
+`${s} · ${a}`,o("#progressRing").style.setProperty("--progress",`${e/24}%`),o("\
+#progressButton").setAttribute("aria-label",`View progress: ${n}, ${s} complete`),
+o("#calendarProgress")&&(o("#calendarProgressCount").textContent=`${s} complete`,
+o("#calendarProgressXp").textContent=n,o("#calendarProgressBar").value=t,o("#cal\
+endarProgressStorage").textContent=a),fe()}const Ra=e=>{const t={tree:'<path d="\
+M32 5 18 23h8L13 39h11L9 55h46L40 39h11L38 23h8L32 5Z"/><path d="M29 55v8h6v-8M3\
+2 15v29"/><path d="m23 30 9 5 9-5m-22 15 13 5 14-5"/><circle cx="32" cy="8" r="2\
+"/>',gift:'<path d="M10 30h44v29H10zM6 21h52v10H6zM28 21h8v38"/><path d="M32 21C\
+9 23 10 4 21 9c6 2 11 12 11 12Zm0 0C55 23 54 4 43 9c-6 2-11 12-11 12Z"/><path d=\
+"m31 21-9 13m11-13 9 13"/>',snowflake:'<path d="M32 5v54M8.6 18.5l46.8 27M8.6 45\
+.5l46.8-27M24 10l8 8 8-8M24 54l8-8 8 8M10 28l11-3-3-11M54 36l-11 3 3 11M18 50l3-\
+11-11-3M46 14l-3 11 11 3"/><circle cx="32" cy="32" r="7"/>',bell:'<path d="M15 4\
+6h34l-6-8V26c0-9-5-15-11-15s-11 6-11 15v12l-6 8ZM12 47h40M26 50c0 8 12 8 12 0M29\
+ 11V7h6v4"/><path d="M17 16c-5 4-7 8-7 14m37-14c5 4 7 8 7 14M21 41h23"/>',mug:'<\
+path d="M13 25h32v23c0 11-32 11-32 0V25ZM45 29h5c13 0 10 18-5 18M9 58h41M22 17c-\
+6-7 6-8 0-15m11 15c-6-7 6-8 0-15"/><path d="m23 37 6 6 9-12"/>',shield:'<path d=\
+"M32 5 52 14v19c0 16-20 27-20 27S12 49 12 33V14L32 5Z"/><path d="m23 32 7 7 13-1\
+7M32 11l14 7v15c0 10-14 20-14 20"/><path d="m7 8 2 4 4 1-4 1-2 4-1-4-4-1 4-1Z"/>',
+key:'<circle cx="24" cy="23" r="13"/><circle cx="24" cy="23" r="5"/><path d="m33\
+ 33 21 21-6 6-7-7 3-3-6-6-3 3-8-8M15 7l-3-5m-6 15-5-1m43 1 6-2"/>',star:'<path d\
+="m32 5 7 19 20 1-16 13 5 20-16-11-17 11 6-20L5 25l20-1L32 5Z"/><path d="m32 18 \
+4 11 12 1-9 7 2 11-9-6-10 6 3-11-9-7 12-1 4-11Z"/>',clock:'<circle cx="32" cy="3\
+5" r="22"/><circle cx="32" cy="35" r="17"/><path d="M32 22v14l9 6M26 7h12M32 7v6\
+M50 15l4-4M14 15l-4-4"/>',sparkle:'<path d="M31 5c3 16 7 20 22 25-15 4-19 9-22 2\
+6-4-17-8-22-23-26 15-5 19-9 23-25Z"/><path d="M51 2c1 7 3 10 9 12-6 2-8 5-9 11-2\
+-6-4-9-10-11 6-2 8-5 10-12ZM12 46c1 5 3 7 7 8-4 1-6 3-7 8-1-5-3-7-7-8 4-1 6-3 7-\
+8Z"/>'};return`<svg viewBox="0 0 64 66" fill="none" stroke="currentColor" stroke\
+-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${t[e]||
+t.star}</svg>`};function Ia(e,t=new Date){if(!A.find(i=>i.id===e))return{status:"\
+empty"};if(!R(e,t))return{id:e,status:"locked",done:0};const n=c.completed.includes(
+e),s=c.opened.includes(e);return{id:e,status:n?"reviewed":s?"in-progress":"not-s\
+tarted",done:s?Math.min(3,(c.solved[e]||[]).length):0}}function Yt(){const e=document.
+activeElement,t=!!e?.closest?.("#santaListContent"),a=e?.id==="santaDayPicker"?"\
+#santaDayPicker":e?.hasAttribute?.("data-listen-santa")?"[data-listen-santa]":"[\
+data-open]",n=new Date,s=A.filter(f=>R(f.id,n)),i=c.opened.filter(f=>R(f,n));A.some(
+f=>f.id===y)||(y=i[i.length-1]||Ne(n).releasedThrough||1);const l=Ia(y,n),d=A.find(
+f=>f.id===y);xe=l.status;const u={locked:"UPCOMING DOOR","not-started":"NOT OPEN\
+ED YET","in-progress":"LESSON IN PROGRESS",reviewed:"REVIEWED"}[l.status];let p="";
+if(l.status==="locked")p=`<h3>A new habit awaits.</h3><p>Day ${y} opens on ${y} \
+December 2026 at 09:00 CET.</p><p id="santaCountdown" class="santa-countdown" ro\
+le="timer" aria-live="off">${r(Le(y,n))}</p><p>Play any released door while you \
+wait.</p><button type="button" class="button button-green" data-open="${y}">Open\
+ing details for Day ${y}</button>`;else if(l.status==="reviewed"){const f=C[y].habit,
+P=f.filter(m=>/^Do:/i.test(m)).map(m=>m.replace(/^Do:\s*/i,"")),k=f.filter(m=>/^Do not:/i.
+test(m)).map(m=>m.replace(/^Do not:\s*/i,""));p=`<h3>${r(d.short)}</h3><section \
+class="santa-habits"><h4><span aria-hidden="true">✓</span> Nice habits</h4><ul>${P.
+map(m=>`<li>${r(m)}</li>`).join("")}</ul><h4><span aria-hidden="true">×</span> N\
+aughty traps</h4><ul>${k.map(m=>`<li>${r(m)}</li>`).join("")}</ul></section><p c\
+lass="santa-signoff">Even Santa verifies twice.</p><button type="button" class="\
+button button-green" data-open="${y}">Revisit Day ${y}</button>`}else{const f=l.
+status==="in-progress";p=`<h3>${r(d.short)}</h3>${f?`<p class="santa-progress">${l.
+done} of 3 decisions complete</p><progress max="3" value="${l.done}" aria-label=\
+"Day ${y} decisions complete">${l.done} of 3</progress><p>${r(E==="saved"?"Your \
+progress is saved on this device.":Et())}</p>`:"<p>This door is still ready for \
+you. Open it whenever you’re ready.</p>"}<div class="santa-waiting"><h4>Your h\
+abit recap is waiting.</h4><p>Finish the lesson to reveal its Nice habits and Na\
+ughty traps.</p></div><button type="button" class="button button-green" data-ope\
+n="${y}">${f?"Continue":"Open"} Day ${y}</button>`}o("#santaListContent").innerHTML=
+`<label class="santa-picker" for="santaDayPicker">Choose a door<select id="santa\
+DayPicker" data-santa-select>${A.map(f=>`<option value="${f.id}" ${f.id===y?"sel\
+ected":""}>Day ${f.id} · ${R(f.id,n)?c.completed.includes(f.id)?"reviewed":c.opened.
+includes(f.id)?"in progress":"ready":"upcoming"}</option>`).join("")}</select></\
+label><p class="santa-day"><span aria-hidden="true">${String(y).padStart(2,"0")}\
+</span> Day ${y} · ${r(u)}</p>${p}<button type="button" class="santa-listen" da\
+ta-listen-santa data-listen="${y}" aria-label="Listen to Day ${y}" aria-pressed=\
+"false">${we("Listen")}</button>`;for(const f of H("[data-chalet-day]"))f.classList.
+toggle("is-santa-selected",Number(f.dataset.chaletDay)===y);const h=o("#santaDay\
+Picker");h&&(h.value=String(y)),o("#santaStatusAnnouncement").textContent=`Santa\
+’s list: Day ${y}, ${u.toLowerCase()}.`,t&&(o(a,o("#santaListContent"))||o("#s\
+antaDayPicker"))?.focus({preventScroll:!0}),oe()}function Na(e){const t=e.contexts??
+C[e.id]?.contexts;return c.context==="all"||t?.includes(c.context)}function La(e){
+return Object.fromEntries(["all",...Object.keys(at)].map(t=>[t,e.filter(a=>t==="\
+all"||a.category===t).length]))}function N(){w();const e=A.filter(Na);for(const[
+n,s]of Object.entries(La(e))){const i=o(`[data-category="${n}"] [data-category-c\
+ount]`);i&&(i.textContent=n==="all"?String(s):`(${s})`)}const t=Ne();y===null&&(y=
+c.opened.filter(n=>R(n)).slice(-1)[0]||t.releasedThrough||1);const a=e.filter(n=>tt===
+"all"||n.category===tt);o("#doorsGrid").innerHTML=a.map(n=>{const s=R(n.id),i=!s,
+l=s&&c.opened.includes(n.id),d=s&&c.completed.includes(n.id),u=t.phase==="during"&&
+t.day===n.id,p=c.audience==="everyone"?C[n.id]?.role||"Upcoming door":`${c.audience}\
+ perspective`,h=d?"completed":i?"upcoming":u?"today":l?"opened":"available",f=d?
+c.readings.includes(n.id)?"Reviewed · source bonus earned":"Reviewed · lesson c\
+omplete":"Opened · lesson to finish",P=`Opens ${n.id} Dec · 09:00 CET`,k=d?"Re\
+viewed":l?"In progress":i?"Upcoming":u?"Today’s door":"Ready to open",m=i?Ft(n.
+id):l||d?`${f}. ${p}.`:"Open this lesson.",Tn=String(n.id).padStart(2,"0"),ha=`t\
+one-${(n.id-1)%8}`;return`<div class="door-card ${ha}${n.id===y?" is-santa-selec\
+ted":""}${i?" is-upcoming":""}" data-chalet-day="${n.id}">
         <button class="advent-door ${ha}${l||d?" is-unwrapped":""}${u&&!d?" is-t\
 oday":""}${i?" is-upcoming":""}" data-door="${n.id}" data-door-status="${h}" typ\
 e="button"
-          aria-label="Day ${n.id}: ${r(n.short)}. ${r(m)}" title="${r(i?O:n.title)}\
+          aria-label="Day ${n.id}: ${r(n.short)}. ${r(m)}" title="${r(i?P:n.title)}\
 "${i?' aria-disabled="true"':""}>
           <span class="chalet-door-number">${Tn}</span>
           <span class="chalet-door-title">${r(n.short)}</span>
@@ -280,7 +282,7 @@ e="button"
  ':""}${k}</span>
         </button>
         <button type="button" class="door-listen" data-listen="${n.id}" aria-lab\
-el="Listen to Day ${n.id}" aria-pressed="false">${$e("Listen")}</button>
+el="Listen to Day ${n.id}" aria-pressed="false">${we("Listen")}</button>
       </div>`}).join(""),Yt(),o("#emptyState").hidden=a.length>0,o("#announcer").
 textContent=`${a.length} lessons shown`,o("#modeLabel").textContent=t.phase==="b\
 efore"?"A daily December tradition.":t.phase==="during"?`Day ${t.day} of 24 · da\
@@ -291,32 +293,32 @@ audience]").forEach(n=>{const s=n.dataset.audience===c.audience;n.classList.togg
 "active",s),n.setAttribute("aria-pressed",s)})}function X(e){if(w(),!A.find(s=>s.
 id===e))return;if(y=e,Yt(),!R(e)){rt(e),!o("#lessonDialog").open&&/^#day=/.test(
 location.hash)&&history.replaceState(null,"","#calendar");return}o("#lessonDialo\
-g").open||(Qe=St()),o("#welcomeDialog").open&&o("#welcomeDialog").close(),o("#ho\
+g").open||(Je=St()),o("#welcomeDialog").open&&o("#welcomeDialog").close(),o("#ho\
 lidayDialog").open&&dt==="christmas"&&o("#holidayDialog").close(),ue(!1);const a=c.
 opened.includes(e);a||(c.opened.push(e),_(),$("+10 XP · A little wiser already.")),
 o("#infoDialog").open&&o("#infoDialog").close(),g=e,x="play",v=T.firstUnsolved(c,
 e),z=null,q=c.audience==="everyone"?"technical":c.audience,I(),o("#lessonDialog").
 open||o("#lessonDialog").showModal(),history.replaceState(null,"",`#day=${e}`),N(),
-e===24&&!Gt?pt():e===1&&!a&&!ut&&Me()&&zt()}let Gt=!1,jt=!1,me=null,dt="lesson",
-ut=!1,Bt=null,qt=!1;function Me(e=new Date){const t=Ne(e);return t.phase==="duri\
-ng"&&t.day===1&&be(1,e)}function Vt(e=dt,t=new Date){return e==="christmas"?ae(t)===
-"2026-12-25"&&be(24,t):e==="lesson"&&g===24&&o("#lessonDialog").open&&R(24,t)}function pt(e="\
-lesson"){if(!Vt(e))return;w();const t=o("#holidayDialog");t.open||(me=document.activeElement),
-dt=e,Gt=!0,ae()==="2026-12-25"&&(jt=!0),o("#holidayKicker").textContent=e==="chr\
+e===24&&!Gt?pt():e===1&&!a&&!ut&&Oe()&&zt()}let Gt=!1,Bt=!1,be=null,dt="lesson",
+ut=!1,jt=null,qt=!1;function Oe(e=new Date){const t=Ie(e);return t.phase==="duri\
+ng"&&t.day===1&&ge(1,e)}function Vt(e=dt,t=new Date){return e==="christmas"?ae(t)===
+"2026-12-25"&&ge(24,t):e==="lesson"&&g===24&&o("#lessonDialog").open&&R(24,t)}function pt(e="\
+lesson"){if(!Vt(e))return;w();const t=o("#holidayDialog");t.open||(be=document.activeElement),
+dt=e,Gt=!0,ae()==="2026-12-25"&&(Bt=!0),o("#holidayKicker").textContent=e==="chr\
 istmas"?"25 DECEMBER · A FESTIVE HELLO FROM NESTOR":"DAY 24 · A FESTIVE HELLO F\
 ROM NESTOR",o("#holidayAcknowledge").textContent=e==="christmas"?"Continue the c\
 alendar":"Back to Day 24",t.open||t.showModal(),t.scrollTop=0,o("#holidayClose").
-focus({preventScroll:!0})}function Oa(){o("#lessonDialog").open?me?.isConnected!==
-!1&&me?.closest?.("#lessonDialog")?me.focus({preventScroll:!0}):o("#lessonDialog\
- [data-holiday-greeting]")?.focus({preventScroll:!0}):B({element:me})}function zt(){
-if(!Me())return;w();const e=o("#welcomeDialog");e.open||(Bt=document.activeElement),
+focus({preventScroll:!0})}function Pa(){o("#lessonDialog").open?be?.isConnected!==
+!1&&be?.closest?.("#lessonDialog")?be.focus({preventScroll:!0}):o("#lessonDialog\
+ [data-holiday-greeting]")?.focus({preventScroll:!0}):j({element:be})}function zt(){
+if(!Oe())return;w();const e=o("#welcomeDialog");e.open||(jt=document.activeElement),
 ut=!0,e.open||e.showModal(),e.scrollTop=0,o("#welcomeClose").focus({preventScroll:!0})}
-function Pa(){o("#lessonDialog").open?o("#lessonDialog [data-close]")?.focus({preventScroll:!0}):
-B({element:Bt})}function He(){if(!(!qt||D.open||["#lessonDialog","#infoDialog","\
-#doorLockDialog","#holidayDialog","#welcomeDialog","#accessibilityDialog"].some(
-e=>o(e).open))){if(ae()==="2026-12-25"&&!jt){pt("christmas");return}Me()&&!ut&&!c.
+function Oa(){o("#lessonDialog").open?o("#lessonDialog [data-close]")?.focus({preventScroll:!0}):
+j({element:jt})}function Me(){if(!(!qt||D?.open||["#lessonDialog","#infoDialog",
+"#doorLockDialog","#holidayDialog","#welcomeDialog","#accessibilityDialog"].some(
+e=>o(e).open))){if(ae()==="2026-12-25"&&!Bt){pt("christmas");return}Oe()&&!ut&&!c.
 opened.includes(1)&&!c.completed.includes(1)&&zt()}}function Z(){queueMicrotask(
-He)}function Ma(e){return typeof e=="string"&&/^assets\/lessons\/[a-z0-9-]+\.webp$/.
+Me)}function Ma(e){return typeof e=="string"&&/^assets\/lessons\/[a-z0-9-]+\.webp$/.
 test(e)?e:""}function F(e){const t=ga[e.id],a=t&&fa[t.artwork];return a&&Ma(a.src)?
 {...t,...a}:null}function Ha(e){const t=F(e);return t?`<figure class="lesson-vis\
 ual"><div class="lesson-visual-image"><img src="${r(t.src)}" alt="${r(t.alt)}" w\
@@ -330,11 +332,11 @@ t photograph.</small></figcaption></figure>`:""}function Wa(e){const t=F(e);retu
 th="93" height="62" loading="lazy"><span>Your lesson illustration is included in\
  both card formats.<small>Square: 1080 × 1080 · Status: 1080 × 1920 · labelled A\
 I-generated.</small></span></div>`:""}const Ua=Math.floor(Math.random()*4294967296)||
-1;function We(e,t){const a=Array.from({length:e},(n,s)=>s);t=(t^Ua)>>>0||1,t=Math.
+1;function He(e,t){const a=Array.from({length:e},(n,s)=>s);t=(t^Ua)>>>0||1,t=Math.
 imul(t^t>>>16,73244475)>>>0,t=Math.imul(t^t>>>16,73244475)>>>0,t=(t^t>>>16)>>>0||
 1;for(let n=e-1;n>0;n--){t^=t<<13,t^=t>>>17,t^=t<<5;const s=Math.floor((t>>>0)/4294967296*
-(n+1));[a[n],a[s]]=[a[s],a[n]]}return a}function _t(e,t){return We(e.options.length,
-t)}function Fa(e,t){const a=We(e,t);return e>1&&a.every((n,s)=>n===s)&&([a[0],a[1]]=
+(n+1));[a[n],a[s]]=[a[s],a[n]]}return a}function _t(e,t){return He(e.options.length,
+t)}function Fa(e,t){const a=He(e,t);return e>1&&a.every((n,s)=>n===s)&&([a[0],a[1]]=
 [a[1],a[0]]),a}function Y(e,t,a=!1){const n=`${e}-${t}`,s=C[e].steps[t];if(!V[n]){
 const i=!a&&c.solved[e]?.includes(t);V[n]={selected:[],order:s.kind==="order"?Fa(
 s.items.length,e*97+t*19):[],habits:s.kind==="habits"?s.cards.map(l=>null):[],hint:!1,
@@ -345,13 +347,13 @@ iv>`}function Ga(e,t){if(!t.result)return"";{const a=t.result,n=a.correct?'<butt
 on class="button button-green" data-next-stage>Continue →</button>':'<button c\
 lass="button button-green" data-retry-step>Try again →</button>';return`<div c\
 lass="decision-feedback" role="status" tabindex="-1"><p>${r(a.feedback||(a.correct?
-"Decision completed.":"Try again."))}</p>${n}</div>`}}function ja(e){const t=C[e.
+"Decision completed.":"Try again."))}</p>${n}</div>`}}function Ba(e){const t=C[e.
 id],a=F(e),n=c.completed.includes(e.id),s=c.readings.includes(e.id),i=`<div clas\
 s="game-stage-track" aria-label="Daily decision progress">${t.steps.map((k,m)=>`\
 <button data-stage="${m}" ${m>T.firstUnsolved(c,e.id)?"disabled":""} class="${c.
 solved[e.id]?.includes(m)?"solved":""} ${v===m?"current":""}"><span>${c.solved[e.
 id]?.includes(m)?"✦":String(m+1).padStart(2,"0")}</span><small>${r(["Understan\
-d","Decide","Protect"][m])}</small></button>`).join("")}<div><b>${ye(e.id)}</b><\
+d","Decide","Protect"][m])}</small></button>`).join("")}<div><b>${me(e.id)}</b><\
 small>/100 XP</small></div></div>`,l=`<div class="game-cover">${a?`<img src="${r(
 a.src)}" alt="${r(a.alt)}" width="400" height="267" decoding="async">`:""}<div><\
 span class="game-role">${r(t.role)}</span><p>${r(t.setup)}</p><small>Illustrativ\
@@ -366,14 +368,14 @@ class="reward-buttons"><button class="button button-green" data-tab="sources">${
 ton class="button button-soft" data-replay-day>Replay decisions</button></div><b\
 utton class="subtle-button" data-celebrate="day">Replay the celebration ✧</butto\
 n></section>${Ya(e)}`;const d=Math.min(v,2),u=t.steps[d],p=Y(e.id,d),h=!!p.result;
-let f="";const O={select:"Check my decision",order:"Check the sequence",habits:"\
+let f="";const P={select:"Check my decision",order:"Check the sequence",habits:"\
 Check my habits"}[u.kind];return u.kind==="choice"&&(f=`<div class="decision-opt\
 ions">${_t(u,e.id*13+d*7).map((k,m)=>`<button data-game-choice="${k}" ${h?"disab\
 led":""} class="${h&&p.response===k?"chosen":""}"><span>${String.fromCharCode(65+
 m)}</span><span class="decision-option-text">${r(u.options[k].text)}</span><i ar\
 ia-hidden="true">↗</i></button>`).join("")}</div>`),u.kind==="select"&&(f=`<p \
 class="interaction-hint">Choose every useful option, then check your decision.</\
-p><div class="evidence-options">${We(u.options.length,e.id*13+d*7).map(k=>`<butt\
+p><div class="evidence-options">${He(u.options.length,e.id*13+d*7).map(k=>`<butt\
 on role="checkbox" aria-checked="${p.selected.includes(k)}" data-evidence-option\
 ="${k}" ${h?"disabled":""}><span>${p.selected.includes(k)?"✓":"+"}</span>${r(u.
 options[k].text)}</button>`).join("")}</div>`),u.kind==="order"&&(f=`<p class="i\
@@ -385,7 +387,7 @@ order-from="${m}" data-order-direction="-1" ${h||m===0?"disabled":""} aria-label
 ection="1" ${h||m===p.order.length-1?"disabled":""} aria-label="Move item ${m+1}\
  down">↓</button></div></li>`).join("")}</ol>`),u.kind==="habits"&&(f=`<p clas\
 s="interaction-hint">Mark each move as a habit to do or a habit to avoid.</p><di\
-v class="habit-round">${We(u.cards.length,e.id*71+d*29).map(k=>{const m=u.cards[k];
+v class="habit-round">${He(u.cards.length,e.id*71+d*29).map(k=>{const m=u.cards[k];
 return`<div><p>${r(m.text)}</p><div role="group" aria-label="${r(m.text)}"><butt\
 on data-habit-index="${k}" data-habit-value="do" aria-pressed="${p.habits[k]===!0}\
 " ${h?"disabled":""}>Do ✓</button><button data-habit-index="${k}" data-habit-v\
@@ -394,8 +396,8 @@ ton></div></div>`}).join("")}</div>`),`${i}${l}<section class="decision-round"><
 div class="decision-kicker"><span>DECISION ${d+1} OF 3</span><b>${c.solved[e.id]?.
 includes(d)?"20 XP earned":"20 XP to discover"}</b></div><h3 tabindex="-1" data-\
 decision-title>${r(u.title)}</h3><p>${r(u.body)}</p>${f}${h?"":`<div class="deci\
-sion-actions">${O?`<button type="button" class="button button-green check-decisi\
-on" data-check-step>${r(O)} →</button>`:""}<button type="button" class="clue-b\
+sion-actions">${P?`<button type="button" class="button button-green check-decisi\
+on" data-check-step>${r(P)} →</button>`:""}<button type="button" class="clue-b\
 utton" data-game-hint aria-expanded="${!!p.hint}" aria-controls="gameClue">${p.hint?
 "Hide the clue":"A little clue?"} ✧</button></div><div class="game-clue" id="gam\
 eClue" ${p.hint?"":"hidden"}>${r(u.hint)}</div>`}${Ga(u,p)}${window.WINTERWATCH_GRADER?
@@ -413,12 +415,12 @@ result)return;const s=a.kind==="choice"?e:a.kind==="select"?n.selected:a.kind===
 a.options.length))){if(a.kind==="habits"&&s.some(i=>typeof i!="boolean")){$("Cla\
 ssify each habit before checking.");return}if(a.kind==="select"&&!s.length){$("C\
 hoose the evidence you would use.");return}n.response=Array.isArray(s)?[...s]:s;
-{if(n.pending)return;n.pending=!0;const i=v,l=P,d=await Xt(t.id,i,n.response);if(n.
-pending=!1,!d||g!==t.id||v!==i||P!==l||!U()||V[t.id+"-"+i]!==n)return;n.result={
+{if(n.pending)return;n.pending=!0;const i=v,l=O,d=await Xt(t.id,i,n.response);if(n.
+pending=!1,!d||g!==t.id||v!==i||O!==l||!U()||V[t.id+"-"+i]!==n)return;n.result={
 ...T.recordStep(c,t.id,i,d.correct),feedback:d.feedback}}n.result.completed&&T.recordLearningDay(
 c,se()),_(),I(),N(),o(".decision-feedback")?.focus({preventScroll:!0}),n.result.
 completed?ht("day"):n.result.earned&&$(`+${n.result.earned} XP · Decision unlock\
-ed.`)}}function Ba(){U()&&(v=Math.min(3,v+1),I(),o("#lessonDialog").scrollTop=0,
+ed.`)}}function ja(){U()&&(v=Math.min(3,v+1),I(),o("#lessonDialog").scrollTop=0,
 v===3?o("[data-day-reward]")?.focus({preventScroll:!0}):o("[data-decision-title]")?.
 focus({preventScroll:!0}))}function qa(e){const t=C[e.id].reading,a=S[t.source],
 n=c.readings.includes(e.id);return`<section class="reading-quest ${n?"reading-wo\
@@ -435,12 +437,12 @@ bonus earned. "+r(z||"Reading completed."):z?r(z):"Read, connect the evidence an
 d choose the best answer. Points reward the answer, not a claim that an external\
  page was read."}</div>${n?'<button class="subtle-button" data-celebrate="readin\
 g">Replay the reading celebration ✧</button>':""}</section>`}async function Va(e){
-const t=A.find(s=>s.id===g);if(!t||!U())return;const a=C[t.id].reading;let n;{const s=P,
-i=await Xt(t.id,3,e);if(!i||g!==t.id||s!==P||!U())return;n=T.recordReading(c,t.id,
+const t=A.find(s=>s.id===g);if(!t||!U())return;const a=C[t.id].reading;let n;{const s=O,
+i=await Xt(t.id,3,e);if(!i||g!==t.id||s!==O||!U())return;n=T.recordReading(c,t.id,
 i.correct),z=i.feedback}n.earned&&(_(),N()),I(),o(".reading-feedback")?.focus({preventScroll:!0}),
 n.earned&&ht("reading")}function ht(e,t=!1){if(!["day","reading"].includes(e)||(W.
 length&&Wt(),$(t?"Celebration replayed · your earned points stay the same.":e===
-"day"?`Day ${g} complete · ${ye(g)} XP earned.`:"Evidence bonus unlocked · +20 \
+"day"?`Day ${g} complete · ${me(g)} XP earned.`:"Evidence bonus unlocked · +20 \
 XP."),re()))return;const a=document.createElement("div");a.className=`celebratio\
 n-layer ${e==="reading"?"reading-celebration":"day-celebration"}`,a.setAttribute(
 "aria-hidden","true"),a.innerHTML=`<div class="celebration-emblem">${e==="readin\
@@ -471,28 +473,28 @@ p>Select a country on the map or in the list. Then match the incident to the rou
 te below and confirm the responsible authority, entity and sector. Your choice s\
 tays in this page; it does not detect your location.</p></div><label class="coun\
 try-select">Country for this exercise <select data-country-select><option value=\
-"" disabled ${c.country?"":"selected"}>Select your country…</option>${Te.map(t=>`\
+"" disabled ${c.country?"":"selected"}>Select your country…</option>${Ae.map(t=>`\
 <option value="${t.id}" ${t.id===c.country?"selected":""}>${r(t.name)}</option>`).
 join("")}</select></label><details class="country-atlas-inline" ${e?"open":""}><\
 summary>About the eight detailed country profiles</summary>${_a()}</details>`}function gt(){
-const e=Te.find(a=>a.id===c.country),t=le.find(a=>a.id===c.country);return e?`<s\
+const e=Ae.find(a=>a.id===c.country),t=le.find(a=>a.id===c.country);return e?`<s\
 ection class="country-card"><p class="country-selection-status" role="status">Sh\
 owing contact routes for <b>${r(e.name)}</b>.</p><h3>Match the issue to the resp\
 onsible party.</h3>${t?"":`<p>This edition has no detailed NIS2 profile for ${r(
 e.name)}. Use the official directories below to find its current authorities; no\
  national commencement or deadline is assumed.</p>`}<div class="stakeholder-card\
 s"><article><b>Cyber incident · national CSIRT / competent authority</b><p>${t?
-`${r(t.authority)}. <a href="${r(De(t.report))}" target="_blank" rel="noopener n\
+`${r(t.authority)}. <a href="${r(Te(t.report))}" target="_blank" rel="noopener n\
 oreferrer">${r(t.reportLabel)} ↗</a>`:`${b("csirts","Open the national CSIRT d\
 irectory")} and find ${r(e.name)}`}. Confirm the designated reporting channel, s\
 ignificance threshold and entity scope.</p></article><article><b>Personal-data b\
-reach · competent DPA</b><p>${t?`<a href="${r(De(t.privacy))}" target="_blank" \
+reach · competent DPA</b><p>${t?`<a href="${r(Te(t.privacy))}" target="_blank" \
 rel="noopener noreferrer">${r(t.privacyLabel)} ↗</a>`:`${b("dpas","Open the ED\
 PB authority directory")} and find ${r(e.name)}`}. Confirm competence for the co\
 ntroller and any cross-border processing; a processor informs its controller.</p\
 ></article><article><b>Financial services · sector authority</b><p>Covered finan\
 cial entities use their competent authority’s DORA process${t?.financial?` · <\
-a href="${r(De(t.financial))}" target="_blank" rel="noopener noreferrer">${r(t.financialLabel)}\
+a href="${r(Te(t.financial))}" target="_blank" rel="noopener noreferrer">${r(t.financialLabel)}\
  ↗</a>`:""}. Confirm the entity’s supervisor and current reporting procedure.<\
 /p></article><article><b>Connected product · manufacturer reporting</b><p>Applic\
 able manufacturers follow the ${b("cra","CRA Single Reporting Platform guidance")}\
@@ -539,8 +541,8 @@ angements. A processor informs its controller without undue delay where Article 
 33(2) applies. ${b("gdpr","GDPR roles")}</p></article></div><p class="source-not\
 e">Facts and assistance can be shared before the root cause is final. Use secure\
  channels and minimise unnecessary personal data or secrets.</p></div></details>`}
-function Ka(e){return x==="play"||x==="mission"?ja(e):x==="briefing"?`<button ty\
-pe="button" class="briefing-listen" data-listen-panel aria-pressed="false">${$e(
+function Ka(e){return x==="play"||x==="mission"?Ba(e):x==="briefing"?`<button ty\
+pe="button" class="briefing-listen" data-listen-panel aria-pressed="false">${we(
 "Listen to this briefing")}</button>${Ha(e)}<div class="briefing-layout"><div><h\
 3>What happened?</h3><p>${r(e.summary)}</p><h4>What went wrong or could go wrong\
 ?</h4><p>${r(e.failure)}</p><p class="source-note">Evidence: ${e.sources.slice(0,
@@ -596,7 +598,7 @@ eeded for exact requirements. Legal scope, national procedures and later changes
  need checking for an actual organisation.</p><div class="share-box"><div class=\
 "lab-kicker">GOOD IDEAS ARE BETTER SHARED</div><h3>Send a little wisdom.</h3>${Wa(
 e)}<label class="share-label" for="shareDraft">Public lesson post</label><textar\
-ea id="shareDraft" rows="7" readonly autocomplete="off" spellcheck="false">${r(Fe(
+ea id="shareDraft" rows="7" readonly autocomplete="off" spellcheck="false">${r(Ue(
 e))}</textarea><div class="share-actions"><button class="button button-green" da\
 ta-linkedin>in &nbsp; LinkedIn ↗</button><button data-copy-post>Copy post</butto\
 n><button data-card="square">Square card ↓</button><button data-card="status">St\
@@ -606,15 +608,15 @@ n LinkedIn opens this public lesson. If a popup is blocked, use the link below. 
 Edit it in your social app. Source and social platforms handle visits under thei\
 r own privacy terms. Nothing posts automatically.</p><p class="source-note"><a h\
 ref="${r(Jt(e))}" target="_blank" rel="noopener noreferrer">Open LinkedIn after \
-copying the post ↗</a></p></div>`}function ye(e){return T.dayXp(c,e)}function I(){
+copying the post ↗</a></p></div>`}function me(e){return T.dayXp(c,e)}function I(){
 w();const e=A.find(a=>a.id===g);if(!e||!U())return;const t=c.completed.includes(
 e.id);o("#lessonContent").innerHTML=`<p class="sr-only" data-dialog-status role=\
 "status" aria-live="polite"></p><div class="modal-heading"><button class="close-\
 dialog" data-close aria-label="Close lesson">×</button><div class="modal-topline\
-">DAY ${String(e.id).padStart(2,"0")} / 24 <span>·</span> ${r(nt[e.category].toUpperCase())}\
+">DAY ${String(e.id).padStart(2,"0")} / 24 <span>·</span> ${r(at[e.category].toUpperCase())}\
 <span class="status-badge">${r(e.kind)}</span></div><h2 id="lessonTitle">${r(e.title)}\
 </h2><div class="lesson-access-tools"><button type="button" data-listen-panel ar\
-ia-pressed="false">${$e("Listen")}</button><button type="button" data-accessibil\
+ia-pressed="false">${we("Listen")}</button><button type="button" data-accessibil\
 ity aria-label="Accessibility" aria-haspopup="dialog" aria-controls="accessibili\
 tyDialog"><svg class="control-icon accessibility-icon" viewBox="0 0 24 24" fill=\
 "none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-li\
@@ -623,7 +625,7 @@ nejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="1
 1v5m0-2-3 4m3-4 3 4"/></svg><span class="accessibility-label">Accessibility</spa\
 n></button></div><p class="listen-status" data-listen-status role="status" aria-\
 live="polite"></p><p>${r(e.takeaway)} <span class="lesson-duration">${e.minutes}\
- min · ${ye(e.id)} / 100 XP</span></p>${e.id===24?'<button type="button" class=\
+ min · ${me(e.id)} / 100 XP</span></p>${e.id===24?'<button type="button" class=\
 "holiday-replay" data-holiday-greeting>Nestor’s holiday hello</button>':""}</d\
 iv><div class="lesson-tabs" role="tablist" aria-label="Lesson sections">${[["pla\
 y","Play the day"],["briefing","Case file"],["timeline","The story"],["lab","Def\
@@ -634,17 +636,17 @@ ndex="${x===a?"0":"-1"}" data-tab="${a}" class="${x===a?"active":""}">${n}${a===
 join("")}</div><div class="tab-content" id="lessonPanel" role="tabpanel" aria-la\
 belledby="tab-${x}" tabindex="0">${Ka(e)}</div><div class="modal-footer"><button\
  class="complete-button ${t?"done":""}" data-return-game>${t?"✦ Day protected · "+
-ye(e.id)+" XP":"→ Resume the decisions"}</button><div class="day-navigation"><\
+me(e.id)+" XP":"→ Resume the decisions"}</button><div class="day-navigation"><\
 button data-prev ${e.id===1?"disabled":""} aria-label="Previous day"><span class\
 ="day-nav-arrow" aria-hidden="true">←</span></button><small><strong>Day ${e.id}\
 </strong> of 24</small><button data-next ${e.id===24?"disabled":""} aria-label="\
 Next day"><span>Next</span><span class="day-nav-arrow" aria-hidden="true">→</spa\
-n></button></div></div>`}function ve(e){U()&&(e==="mission"&&(e="play"),["play",
+n></button></div></div>`}function ye(e){U()&&(e==="mission"&&(e="play"),["play",
 "briefing","timeline","lab","playbook","sources"].includes(e)&&(x=e,I(),o("#less\
 onDialog").scrollTop=0,o(`[role="tab"][data-tab="${e}"]`).focus({preventScroll:!0})))}
-const bt="https://aware-by-design.github.io/Winterwatch-site/",Ue=e=>`${bt}#day=${e}`,
+const bt="https://aware-by-design.github.io/Winterwatch-site/",We=e=>`${bt}#day=${e}`,
 Jt=e=>"https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(
-Ue(e.id));function Fe(e){return`Day ${e.id}/24 · Winterwatch Cyber & AI Advent
+We(e.id));function Ue(e){return`Day ${e.id}/24 · Winterwatch Cyber & AI Advent
 
 ${e.title}
 
@@ -656,16 +658,16 @@ ${/fictional/i.test(e.kind)?"Fictional training scenario, informed by "+S[e.sour
 org+".":`Source: ${S[e.sources[0]].org}.`}
 ${S[e.sources[0]].url}
 
-Play this lesson: ${Ue(e.id)}
+Play this lesson: ${We(e.id)}
 
 #CyberSecurity #AI #Privacy #Winterwatch
 
 ${te}
-Learn more about AR-in-a-Box: ${pe}`}async function Ye(e,t="Copied."){try{return await navigator.
+Learn more about AR-in-a-Box: ${pe}`}async function Fe(e,t="Copied."){try{return await navigator.
 clipboard.writeText(e),$(t),!0}catch{return $("Clipboard unavailable. Select and\
- copy the text shown."),!1}}function Ge(e,t){const a=URL.createObjectURL(e),n=document.
+ copy the text shown."),!1}}function Ye(e,t){const a=URL.createObjectURL(e),n=document.
 createElement("a");n.href=a,n.download=t,document.body.append(n),n.click(),n.remove(),
-setTimeout(()=>URL.revokeObjectURL(a),3e4)}function Qt(e,t){Ge(new Blob([e],{type:"\
+setTimeout(()=>URL.revokeObjectURL(a),3e4)}function Qt(e,t){Ye(new Blob([e],{type:"\
 text/calendar;charset=utf-8"}),t)}function Ja(e){return Number.isInteger(e)&&e>=
 1&&e<=24?`assets/playbooks/winterwatch-day-${String(e).padStart(2,"0")}-playbook\
 .pdf?edition=ai-attribution-20261125`:""}function Qa(e){const t=Ja(e?.id);if(!t){
@@ -725,17 +727,17 @@ eed scope.
 
 ${te}
 Learn more about AR-in-a-Box: ${pe}
-`}const je=new Map;function ea(e){const t=F(e);return t?(je.has(t.src)||je.set(t.
+`}const Ge=new Map;function ea(e){const t=F(e);return t?(Ge.has(t.src)||Ge.set(t.
 src,new Promise(a=>{const n=new Image;n.decoding="async",n.onload=()=>a(n),n.onerror=
-()=>{je.delete(t.src),a(null)},n.src=t.src})),je.get(t.src)):Promise.resolve(null)}
+()=>{Ge.delete(t.src),a(null)},n.src=t.src})),Ge.get(t.src)):Promise.resolve(null)}
 function tn(e,t,a){const n=[];let s="";for(const i of String(t).split(/\s+/)){const l=s?
 s+" "+i:i;s&&e.measureText(l).width>a?(n.push(s),s=i):s=l}return s&&n.push(s),n}
 function L(e,t,a,{size:n=24,minSize:s=16,family:i="Arial",color:l="#e8e5ce",spacing:d=1.25}={}){
 let u=n,p;do{if(e.font=`${u}px ${i}`,p=tn(e,t,a.w),p.length*u*d<=a.h||u<=s)break;
 u-=1}while(u>=s);const h=Math.max(1,Math.floor(a.h/(u*d)));if(p.length>h){p=p.slice(
 0,h);let f=p[h-1];for(;f&&e.measureText(f+"…").width>a.w;)f=f.slice(0,-1);p[h-
-1]=f+"…"}e.fillStyle=l,e.textBaseline="top",p.forEach((f,O)=>e.fillText(f,a.x,
-a.y+O*u*d))}function an(e,t,a){const n=Math.min(a.w/t.naturalWidth,a.h/t.naturalHeight),
+1]=f+"…"}e.fillStyle=l,e.textBaseline="top",p.forEach((f,P)=>e.fillText(f,a.x,
+a.y+P*u*d))}function an(e,t,a){const n=Math.min(a.w/t.naturalWidth,a.h/t.naturalHeight),
 s=t.naturalWidth*n,i=t.naturalHeight*n;e.drawImage(t,a.x+(a.w-s)/2,a.y+(a.h-i)/2,
 s,i)}function ta(e,t,a,n,{size:s=18,color:i="#c9d2bc",tracking:l=6,family:d="Ari\
 al"}={}){e.font=`${s}px ${d}`,e.fillStyle=i,e.textBaseline="top";let u=a;for(const p of t)
@@ -755,7 +757,7 @@ l.fillStyle="#163c31",l.fillRect(0,0,1080,i.height);const d=l.createRadialGradie
 l.lineWidth=2,l.strokeRect(38,38,1004,i.height-76),l.strokeRect(48,48,984,i.height-
 96);const u=t==="status"?90:80;ta(l,"✳ WINTERWATCH",u,a.headerY,{size:26,color:"\
 #bda16a",tracking:8}),ta(l,"A CYBER & AI ADVENT",u,a.subY,{size:18,color:"#c9d2b\
-c",tracking:6}),L(l,`DAY ${String(e.id).padStart(2,"0")} / 24     ·     ${nt[e.
+c",tracking:6}),L(l,`DAY ${String(e.id).padStart(2,"0")} / 24     ·     ${at[e.
 category].toUpperCase()}`,{x:u,y:a.dayY,w:920,h:35},{size:22,minSize:18,color:"#\
 c3a56c"}),L(l,e.title,a.title,{size:t==="status"?80:58,minSize:t==="status"?58:42,
 family:"Georgia",color:"#f5eedc",spacing:1.12}),s&&an(l,s,a.image),L(l,"AI-gener\
@@ -776,9 +778,9 @@ async function mt(e,t=!1){const a=A.find(i=>i.id===g);if(!a)return;const n=await
 a,e);if(!n){$("Card export could not complete. Copy the post instead.");return}const s=new File(
 [n],`winterwatch-day-${String(a.id).padStart(2,"0")}-${e}.png`,{type:"image/png"});
 if(t&&navigator.canShare?.({files:[s]}))try{await navigator.share({files:[s],title:a.
-title,text:Fe(a)});return}catch(i){if(i.name==="AbortError")return}Ge(n,s.name),
+title,text:Ue(a)});return}catch(i){if(i.name==="AbortError")return}Ye(n,s.name),
 $(e==="status"?"1080 × 1920 status card downloaded.":"1080 × 1080 social card d\
-ownloaded.")}function K(e,t,a){w(),o("#infoDialog").open||(et=St()),ue(!1),M="",
+ownloaded.")}function K(e,t,a){w(),o("#infoDialog").open||(Qe=St()),ue(!1),M="",
 o("#lessonDialog").open&&o("#lessonDialog").close(),o("#infoContent").innerHTML=
 `<p class="sr-only" data-dialog-status role="status" aria-live="polite"></p><div\
  class="modal-heading"><button class="close-dialog" data-close-info aria-label="\
@@ -933,7 +935,7 @@ ind them in Your progress.`:a[0].desc,s.append(u),n.append(s),H(".celebration-la
 yer").forEach(p=>p.remove()),(o("#lessonDialog").open?o("#lessonDialog"):o("#inf\
 oDialog").open?o("#infoDialog"):document.body).append(n),setTimeout(()=>n.remove(),
 2600)}function oa(){K("Your progress.",Dt(),`<div class="progress-stats"><div cl\
-ass="progress-stat"><strong>${ge().toLocaleString()}</strong><span>of 2,400 XP</\
+ass="progress-stat"><strong>${st().toLocaleString()}</strong><span>of 2,400 XP</\
 span></div><div class="progress-stat"><strong>${c.completed.length}<small>/24</s\
 mall></strong><span>quests complete</span></div><div class="progress-stat"><stro\
 ng>${c.readings.length}<small>/24</small></strong><span>source bonuses earned</s\
@@ -941,7 +943,7 @@ pan></div><div class="progress-stat"><strong>${T.streakCount(c,se())}</strong><s
 pan>day learning streak</span></div></div><p class="streak-note">Complete a new \
 quest on consecutive learning days to build your streak. Learning days begin at \
 09:00 CET. Best streak: <b>${c.streak.best} day${c.streak.best===1?"":"s"}</b>. \
-Saved streaks survive reloads.</p><div class="xp-track"><span style="width:${ge()/
+Saved streaks survive reloads.</p><div class="xp-track"><span style="width:${st()/
 24}%"></span></div><p class="reading-progress">${Object.values(c.solved).reduce(
 (e,t)=>e+t.length,0)} / 72 decision rounds resolved</p><h3>A mantelpiece of mile\
 stones.</h3><p>${G().filter(e=>e.earned).length} of ${G().length} badges unlocke\
@@ -954,7 +956,7 @@ button" data-badge-celebrate="${e.id}" aria-label="Replay celebration for ${r(e.
 name)}">Celebrate again ✦</button>`:""}</article>`).join("")}</div><h3>Choose \
 your next discovery.</h3><div class="completion-list">${A.map(e=>`<button class=\
 "${c.completed.includes(e.id)?"done":""}" data-open="${e.id}"><span>${String(e.id).
-padStart(2,"0")}</span>${r(e.short)}<small>${ye(e.id)} XP</small></button>`).join(
+padStart(2,"0")}</span>${r(e.short)}<small>${me(e.id)} XP</small></button>`).join(
 "")}</div><p class="source-note">${r(Et())} Progress is not uploaded or included\
  in shared lessons. Browser settings control retention; clearing site data or us\
 ing another browser starts a fresh journey.</p><div class="guide-actions progres\
@@ -1069,7 +1071,7 @@ ne day. One useful habit.</h1>
       <div style="padding:20px 24px">
         <p style="margin:0 0 14px;font-size:14px;font-weight:bold">${e.id} Decem\
 ber 2026 · 09:00–09:10 CET</p>
-        <a href="${Ue(e.id)}" aria-label="Open door ${e.id} · ${n}" style="disp\
+        <a href="${We(e.id)}" aria-label="Open door ${e.id} · ${n}" style="disp\
 lay:block;position:relative;padding:15px 14px;color:#374b3d;background:#dfe3d8;b\
 order:4px double #987337;border-radius:9px;text-align:center;text-decoration:non\
 e">
@@ -1111,11 +1113,11 @@ e.id).padStart(2,"0")} WITH NESTOR`,27,34),L(s,e.short,{x:27,y:64,w:367,h:103},{
 size:29,minSize:22,family:"Georgia",color:"#fff8e6",spacing:1.12}),s.fillStyle="\
 #e8ca8e",s.font="14px Arial",s.fillText(`${e.id} DECEMBER 2026  ·  10 MINUTES`,
 27,189),n}function hn(e=new Date,t=new Map){const a=i=>String(i).replace(/\\/g,"\
-\\\\").replace(/\r\n|\r|\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;"),n=st(
+\\\\").replace(/\r\n|\r|\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;"),n=nt(
 e);if(!n.length)return"";const s=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//ENI\
 SA ARCH-AHWG//Winterwatch Advent 2026//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH",
 "X-WR-CALNAME:Winterwatch Advent 2026","X-WR-TIMEZONE:CET"];for(const i of n){const l=String(
-i.id).padStart(2,"0"),d=`202612${l}`,u=t.get(i.id),p=Ue(i.id),h=[`Day ${i.id} wi\
+i.id).padStart(2,"0"),d=`202612${l}`,u=t.get(i.id),p=We(i.id),h=[`Day ${i.id} wi\
 th Nestor · ${i.short}`,`Open door ${i.id}: ${p}
 Full Winterwatch calendar: ${bt}`,`${i.id} December 2026 · 09:00–09:10 CET. ${ra}`,
 ...vt(u)?["AI-assisted conceptual illustration; not incident evidence."]:[],`${te}\
@@ -1137,34 +1139,34 @@ e,i,l);if(!d)return null;for(const u of[.82,.7,.56,.42]){const p=d.toDataURL("im
 age/jpeg",u);if(p.startsWith("data:image/jpeg;base64,")&&p.length-23<=14e3)return{
 type:"image/jpeg",data:p.slice(23)}}}return null}catch{return null}finally{clearTimeout(
 s)}})());const n=await Be.get(a);return n||Be.delete(a),n}async function gn(){if(ne)
-return;const e=new Date,t=st(e),a=t.length;if(!a){$("The 2026 reminder schedule \
+return;const e=new Date,t=nt(e),a=t.length;if(!a){$("The 2026 reminder schedule \
 has ended. All 24 lessons remain available.");return}ne=!0,fe(e);try{const n=await Promise.
 all(t.map(async l=>[l.id,await fn(l)])),s=new Map(n.filter(([,l])=>l));Qt(hn(e,s),
 "winterwatch-advent-2026-reminders.ics");const i=t.some(l=>F(l)&&!s.has(l.id));$(
 `${a} daily ${a===1?"reminder":"reminders"} downloaded.${i?" Some images could n\
-ot be included.":""}`)}finally{ne=!1,fe()}}function bn(){if(!Te.some(e=>e.id===c.
+ot be included.":""}`)}finally{ne=!1,fe()}}function bn(){if(!Ae.some(e=>e.id===c.
 country)){$("Choose a country first.");return}Qt(dn(),`winterwatch-eu-${c.country}\
 -milestones.ics`),$(le.some(e=>e.id===c.country)?"EU and selected-country milest\
 ones downloaded. Review applicability before adding them.":"EU milestones downlo\
 aded. This country has no detailed national milestone profile in this edition.")}
-const wt=window.WINTERWATCH_DISPLAY;let{textSize:qe,highContrast:Ve,easierReading:ze,
-pauseAnimations:_e}=wt.read(),la=null,we=0,Xe="",ca=null;const mn={advent:"the d\
-aily welcome",welcome:"the welcome message",holiday:"the holiday message"},re=()=>_e||
-window.matchMedia("(prefers-reduced-motion: reduce)").matches;function $e(e){return`\
+const wt=window.WINTERWATCH_DISPLAY;let{textSize:je,highContrast:qe,easierReading:Ve,
+pauseAnimations:ze}=wt.read(),la=null,ve=0,_e="",ca=null;const mn={advent:"the d\
+aily welcome",welcome:"the welcome message",holiday:"the holiday message"},re=()=>ze||
+window.matchMedia("(prefers-reduced-motion: reduce)").matches;function we(e){return`\
 <svg class="control-icon speaker-icon" viewBox="0 0 24 24" fill="none" stroke="c\
 urrentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" a\
 ria-hidden="true" focusable="false"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M\
 15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg><span>${r(e)}</span>`}function da(e,t){
 const a=e.hasAttribute("data-listen-panel")&&e.classList.contains("briefing-list\
-en");if(e.setAttribute("aria-pressed",String(t)),e.innerHTML=$e(t?"Stop listenin\
+en");if(e.setAttribute("aria-pressed",String(t)),e.innerHTML=we(t?"Stop listenin\
 g":a?"Listen to this briefing":"Listen"),e.hasAttribute("data-listen-message")){
 e.setAttribute("aria-label",(t?"Stop listening to ":"Listen to ")+mn[e.dataset.listenMessage]);
 return}const n=Number(e.dataset.listen);e.setAttribute("aria-label",Number.isInteger(
 n)&&n>=1&&n<=24?`${t?"Stop listening to":"Listen to"} Day ${n}${e.id==="doorLock\
 Listen"?" opening message":""}`:t?"Stop listening":a?"Listen to this briefing":"\
-Listen to this lesson section")}function w(){we++,Xe="",ca=null;try{window.speechSynthesis?.
+Listen to this lesson section")}function w(){ve++,_e="",ca=null;try{window.speechSynthesis?.
 cancel()}catch{}H("[data-listen],[data-listen-panel],[data-listen-message]").forEach(
-e=>{da(e,!1)})}function ke(e,t){const a=e.closest?.("dialog")?.querySelector("[d\
+e=>{da(e,!1)})}function $e(e,t){const a=e.closest?.("dialog")?.querySelector("[d\
 ata-listen-status]");a?a.textContent=t:t&&$(t)}function J(...e){const t=[],a='[h\
 idden],[inert],[aria-hidden="true"],.sr-only,svg,script,style,progress,[data-lis\
 ten],[data-listen-panel],[data-listen-message],[data-listen-status],.lesson-acce\
@@ -1180,53 +1182,53 @@ childNodes)n(d);l&&t.push(`
 `)}for(const s of e)s&&(n(s),t.push(`
 `));return t.join("").split(/\n+/).map(s=>s.replace(/\s+/g," ").trim()).filter(Boolean).
 join(`
-`)}function Ae(e,t,a){if(Xe===t){w();return}w(),ke(a,"");const n=window.speechSynthesis,
-s=window.SpeechSynthesisUtterance;if(!n||typeof s!="function"){ke(a,"Read aloud \
+`)}function ke(e,t,a){if(_e===t){w();return}w(),$e(a,"");const n=window.speechSynthesis,
+s=window.SpeechSynthesisUtterance;if(!n||typeof s!="function"){$e(a,"Read aloud \
 is not available in this browser. You can use your device’s screen reader.");return}
 let i;try{i=n.getVoices().filter(h=>h.localService===!0)}catch{i=[]}const l=i.find(
-h=>/^en[-_]/i.test(h.lang))||i.find(h=>/^en$/i.test(h.lang));if(!l){ke(a,"No Eng\
+h=>/^en[-_]/i.test(h.lang))||i.find(h=>/^en$/i.test(h.lang));if(!l){$e(a,"No Eng\
 lish device voice is ready. Enable an English offline voice in your device setti\
 ngs, then try Listen again.");return}const d=[];for(let h of e.split(/\n+/)){for(h=
-h.trim();h.length>180;){const f=h.lastIndexOf(" ",180),O=f>0?f:180;d.push(h.slice(
-0,O)),h=h.slice(O).trimStart()}h&&d.push(h)}if(!d.length)return;Xe=t,da(a,!0);const u=we,
-p=()=>{if(u!==we)return;const h=d.shift();if(!h){w();return}const f=new s(h);ca=
-f,f.voice=l,f.lang=l.lang,f.rate=1,f.onend=()=>{u===we&&p()},f.onerror=()=>{u===
-we&&(w(),ke(a,"Your device could not read this text. Please try again or use a s\
-creen reader."))};try{n.speak(f)}catch{w(),ke(a,"Read aloud is unavailable on th\
-is device.")}};p()}function yn(e,t){if(t.id==="doorLockListen"){Ae(J(o(".door-lo\
-ck-banner")),"lock-"+e,t);return}const a=o(`[data-door="${e}"]`);a&&Ae("Day "+J(
-a).replace(/^0(?=\d\b)/,""),"door-"+e,t)}function vn(e){Ae(J(o(".santa-scroll")),
-"santa-"+y+"-"+Re,e)}function wn(e){if(!o("#lessonDialog").open||!U())return;const t=e.
+h.trim();h.length>180;){const f=h.lastIndexOf(" ",180),P=f>0?f:180;d.push(h.slice(
+0,P)),h=h.slice(P).trimStart()}h&&d.push(h)}if(!d.length)return;_e=t,da(a,!0);const u=ve,
+p=()=>{if(u!==ve)return;const h=d.shift();if(!h){w();return}const f=new s(h);ca=
+f,f.voice=l,f.lang=l.lang,f.rate=1,f.onend=()=>{u===ve&&p()},f.onerror=()=>{u===
+ve&&(w(),$e(a,"Your device could not read this text. Please try again or use a s\
+creen reader."))};try{n.speak(f)}catch{w(),$e(a,"Read aloud is unavailable on th\
+is device.")}};p()}function yn(e,t){if(t.id==="doorLockListen"){ke(J(o(".door-lo\
+ck-banner")),"lock-"+e,t);return}const a=o(`[data-door="${e}"]`);a&&ke("Day "+J(
+a).replace(/^0(?=\d\b)/,""),"door-"+e,t)}function vn(e){ke(J(o(".santa-scroll")),
+"santa-"+y+"-"+xe,e)}function wn(e){if(!o("#lessonDialog").open||!U())return;const t=e.
 classList.contains("briefing-listen"),a=o("#lessonPanel"),n=t?J(a):J(o("#lessonC\
-ontent .modal-heading"),o('#lessonContent [aria-selected="true"]'),a);Ae(n,(t?"b\
+ontent .modal-heading"),o('#lessonContent [aria-selected="true"]'),a);ke(n,(t?"b\
 riefing-":"panel-")+g+"-"+x,e)}function $n(e){const t=e.dataset.listenMessage,a=t===
 "advent"?J(o("#adventWelcomeCopy"),o(".nestor-day-ribbon")):J(o(t==="welcome"?"#\
-welcomeDialog .holiday-copy":"#holidayDialog .holiday-copy"));Ae(a,"message-"+t,
-e)}function j(e=!1){const t={textSize:qe,highContrast:Ve,easierReading:ze,pauseAnimations:_e};
+welcomeDialog .holiday-copy":"#holidayDialog .holiday-copy"));ke(a,"message-"+t,
+e)}function B(e=!1){const t={textSize:je,highContrast:qe,easierReading:Ve,pauseAnimations:ze};
 wt.apply(t,window.matchMedia("(prefers-reduced-motion: reduce)").matches),e===!0&&
-wt.save(t),o("#accessTextSize").value=qe,o("#accessContrast").checked=Ve,o("#acc\
-essReading").checked=ze,o("#accessMotion").checked=re(),o("#accessMotion").disabled=
-window.matchMedia("(prefers-reduced-motion: reduce)").matches,Ze()}function kn(){
-w(),qe="normal",Ve=!1,ze=!1,_e=!1,c.ambience=!0,j(!0),o("#accessibilityStatus").
+wt.save(t),o("#accessTextSize").value=je,o("#accessContrast").checked=qe,o("#acc\
+essReading").checked=Ve,o("#accessMotion").checked=re(),o("#accessMotion").disabled=
+window.matchMedia("(prefers-reduced-motion: reduce)").matches,Xe()}function kn(){
+w(),je="normal",qe=!1,Ve=!1,ze=!1,c.ambience=!0,B(!0),o("#accessibilityStatus").
 textContent=re()?"Accessibility settings reset. Your device’s reduced-motion pre\
 ference keeps animations paused.":"Accessibility settings reset. Animations are \
 allowed again."}function An(){w();const e=o("#accessibilityDialog");e.open||(la=
-{element:document.activeElement},j(),e.showModal(),o("#accessibilityClose").focus(
+{element:document.activeElement},B(),e.showModal(),o("#accessibilityClose").focus(
 {preventScroll:!0}))}function $t(){const e=o(".hero")?.getBoundingClientRect();e&&
 Number.isFinite(e.height)&&e.height>0&&o("#snow").style.setProperty("--snow-dist\
-ance",`${e.height+40}px`)}function Ze(){const e=c.ambience&&!re();document.body.
+ance",`${e.height+40}px`)}function Xe(){const e=c.ambience&&!re();document.body.
 classList.toggle("pause-animations",re()),o(".hero").classList.toggle("paused",!e),
 o("#snow").classList.toggle("paused",!e),o("#snow").hidden=!e,o("#ambienceButton").
 setAttribute("aria-pressed",String(e)),o("#ambienceText").textContent=e?"Snow on":
 "Still & cosy",o("#ambienceIcon").textContent=e?"❄":"✧"}o("#snow").innerHTML=
 Array.from({length:104},(e,t)=>`<span style="--x:${t*37.17%100}%;--s:${1+t%5}px;\
 --o:${.22+t%6*.1};--d:${8+t%15}s;--delay:-${t%29}s;--drift:${-24+t%61}px"></span\
->`).join(""),document.addEventListener("click",async e=>{Xe&&e.target.closest("#\
+>`).join(""),document.addEventListener("click",async e=>{_e&&e.target.closest("#\
 lessonPanel summary")&&w();const t=e.target.closest("button,a");if(t){if(t.hasAttribute(
 "data-tour-open")){wa(t);return}if(t.closest?.("#tourDialog")){t.hasAttribute("d\
 ata-tour-close")?D.close():t.hasAttribute("data-tour-play")?D.close("calendar"):
-t.hasAttribute("data-tour-back")?tt(xe-1):t.hasAttribute("data-tour-next")&&(xe+
-1===H("[data-tour-step]",D).length?D.close():tt(xe+1));return}if(t.hasAttribute(
+t.hasAttribute("data-tour-back")?et(Ce-1):t.hasAttribute("data-tour-next")&&(Ce+
+1===H("[data-tour-step]",D).length?D.close():et(Ce+1));return}if(t.hasAttribute(
 "data-accessibility")){An();return}if(t.hasAttribute("data-reset-accessibility")){
 kn();return}if(t.hasAttribute("data-close-accessibility")){o("#accessibilityDial\
 og").close();return}if(t.hasAttribute("data-listen-message")){$n(t);return}if(t.
@@ -1256,37 +1258,37 @@ id"].includes(t.dataset.habitValue))return;const s=Y(g,v);if(s.result)return;s.h
 t.dataset.habitValue==="do",I(),o(`[data-habit-index="${a}"][data-habit-value="${t.
 dataset.habitValue}"]`)?.focus({preventScroll:!0});return}if(t.hasAttribute("dat\
 a-check-step")){Zt();return}if(t.hasAttribute("data-next-stage")){v<=2&&c.solved[g]?.
-includes(v)&&Ba();return}if(t.hasAttribute("data-retry-step")){const a=Y(g,v);a.
+includes(v)&&ja();return}if(t.hasAttribute("data-retry-step")){const a=Y(g,v);a.
 result=null,a.response=null,I(),o("[data-decision-title]")?.focus({preventScroll:!0});
 return}if(t.hasAttribute("data-game-hint")){const a=Y(g,v);a.hint=!a.hint,I(),o(
 "[data-game-hint]")?.focus({preventScroll:!0});return}if(t.hasAttribute("data-st\
 age")){const a=Number(t.dataset.stage);Number.isInteger(a)&&a>=0&&a<=2&&a<=T.firstUnsolved(
-c,g)&&(v=a,ve("play"));return}if(t.hasAttribute("data-return-game")){v=T.firstUnsolved(
-c,g),ve("play");return}if(t.hasAttribute("data-replay-day")){for(let a=0;a<3;a++)
-delete V[`${g}-${a}`],Y(g,a,!0);v=0,ve("play");return}if(t.hasAttribute("data-re\
+c,g)&&(v=a,ye("play"));return}if(t.hasAttribute("data-return-game")){v=T.firstUnsolved(
+c,g),ye("play");return}if(t.hasAttribute("data-replay-day")){for(let a=0;a<3;a++)
+delete V[`${g}-${a}`],Y(g,a,!0);v=0,ye("play");return}if(t.hasAttribute("data-re\
 ading-answer")){Va(Number(t.dataset.readingAnswer));return}if(t.dataset.badgeCelebrate){
 const a=G().find(n=>n.id===t.dataset.badgeCelebrate&&n.earned);a&&sa([a],!0);return}
 if(t.dataset.celebrate){(t.dataset.celebrate==="day"&&c.completed.includes(g)||t.
 dataset.celebrate==="reading"&&c.readings.includes(g))&&ht(t.dataset.celebrate,!0);
 return}if(t.dataset.door){X(Number(t.dataset.door));return}if(t.dataset.open){X(
 Number(t.dataset.open),!1);return}if(t.hasAttribute("data-audience")){c.audience=
-t.dataset.audience,_(),N();return}if(t.hasAttribute("data-category")){at=t.dataset.
+t.dataset.audience,_(),N();return}if(t.hasAttribute("data-category")){tt=t.dataset.
 category,H("[data-category]").forEach(a=>{const n=a===t;a.classList.toggle("acti\
 ve",n),a.setAttribute("aria-pressed",n)}),N();return}if(t.hasAttribute("data-clo\
 se")){o("#lessonDialog").close();return}if(t.hasAttribute("data-close-info")){o(
-"#infoDialog").close();return}if(t.dataset.tab){ve(t.dataset.tab);return}if(t.dataset.
+"#infoDialog").close();return}if(t.dataset.tab){ye(t.dataset.tab);return}if(t.dataset.
 lens&&["technical","business","operations"].includes(t.dataset.lens)){q=t.dataset.
 lens,I(),o(`[data-lens="${q}"]`)?.focus({preventScroll:!0});return}if(t.hasAttribute(
 "data-prev")){X(g-1,!1);return}if(t.hasAttribute("data-next")){X(g+1,!1);return}
-if(t.hasAttribute("data-copy-hunt")){await Ye(A[g-1].hunt.code,"Read-only huntin\
+if(t.hasAttribute("data-copy-hunt")){await Fe(A[g-1].hunt.code,"Read-only huntin\
 g example copied. Verify host coverage and tune first.");return}if(t.hasAttribute(
-"data-copy-rule")){await Ye(A[g-1].logic,"Illustrative logic copied. Map fields \
+"data-copy-rule")){await Fe(A[g-1].logic,"Illustrative logic copied. Map fields \
 before use.");return}if(t.hasAttribute("data-download-playbook")){Qa(A.find(a=>a.
-id===g));return}if(t.hasAttribute("data-download-playbook-text")){Ge(new Blob([en(
+id===g));return}if(t.hasAttribute("data-download-playbook-text")){Ye(new Blob([en(
 A[g-1])],{type:"text/plain;charset=utf-8"}),`winterwatch-day-${String(g).padStart(
 2,"0")}-playbook.txt`),$("Plain-text playbook downloaded.");return}if(t.hasAttribute(
-"data-copy-post")){await Ye(Fe(A[g-1]),"Post copied. Ready to paste into your so\
-cial app.");return}if(t.hasAttribute("data-linkedin")){const a=A[g-1];await Ye(Fe(
+"data-copy-post")){await Fe(Ue(A[g-1]),"Post copied. Ready to paste into your so\
+cial app.");return}if(t.hasAttribute("data-linkedin")){const a=A[g-1];await Fe(Ue(
 a),"Lesson post copied. Paste it into your LinkedIn post.")&&window.open(Jt(a),"\
 _blank","noopener,noreferrer");return}if(t.dataset.card==="square"){await mt("sq\
 uare");return}if(t.dataset.card==="status"){await mt("status");return}if(t.hasAttribute(
@@ -1296,22 +1298,22 @@ data-dates")){aa();return}if(t.hasAttribute("data-reporting")){na();return}if(t.
 hasAttribute("data-progress")||t.id==="progressButton"){oa();return}if(t.hasAttribute(
 "data-about")){ln();return}if(t.hasAttribute("data-sources")){cn();return}if(t.hasAttribute(
 "data-download-advent-reminders")){await gn();return}if(t.hasAttribute("data-exp\
-ort-dates")){bn();return}if(t.hasAttribute("data-export-sources")){Ge(new Blob([
+ort-dates")){bn();return}if(t.hasAttribute("data-export-sources")){Ye(new Blob([
 JSON.stringify({sources:S},null,2)],{type:"application/json"}),"winterwatch-sour\
 ce-register.json"),$("Source register downloaded.");return}if(t.hasAttribute("da\
 ta-reset-progress")){rn();return}if(t.hasAttribute("data-cancel-reset")){M==="re\
 set-confirm"&&o("#infoDialog").close();return}if(t.hasAttribute("data-confirm-re\
 set")){if(ce||!o("#infoDialog").open||M!=="reset-confirm")return;await va();const{
-audience:a,country:n,context:s,ambience:i}=c;c={...Ee(),audience:a,country:n,context:s,
-ambience:i},V={},z=null,clearTimeout(de),W=[],Ce=new Set,ie(),N(),Ze(),o("#infoD\
+audience:a,country:n,context:s,ambience:i}=c;c={...De(),audience:a,country:n,context:s,
+ambience:i},V={},z=null,clearTimeout(de),W=[],Se=new Set,ie(),N(),Xe(),o("#infoD\
 ialog").close(),$(E==="unavailable"?"Progress reset in this page; check browser \
 storage to clear the saved record.":"Saved progress cleared. A fresh December aw\
 aits.");return}if(t.dataset.clockAnswer){o("#clockFeedback").textContent=t.dataset.
 clockAnswer==="right"?"✓ Correct: 9 November 2026 at 10:00 CET. Assess and repor\
 t without undue delay; do not wait for the reference limit.":"Try again. Add 72 \
 hours to the awareness time; the forensic report does not start this clock.";return}
-t.id==="ambienceButton"&&(c.ambience=!c.ambience,_(),Ze())}});function ua(e,t=!1){
-const a=Te.find(d=>d.id===e);if(!a)return;const n=a.id,s=o("#lessonDialog").open?
+t.id==="ambienceButton"&&(c.ambience=!c.ambience,_(),Xe())}});function ua(e,t=!1){
+const a=Ae.find(d=>d.id===e);if(!a)return;const n=a.id,s=o("#lessonDialog").open?
 o("#lessonDialog"):o("#infoDialog").open?o("#infoDialog"):document,i=!!o(".count\
 ry-atlas-inline",s)?.open;c.country=n,_(),o("#lessonDialog").open?I():M==="dates"?
 aa():M==="reporting"&&na(),i&&o(".country-atlas-inline",s)?.setAttribute("open",
@@ -1319,38 +1321,38 @@ aa():M==="reporting"&&na(),i&&o(".country-atlas-inline",s)?.setAttribute("open",
 document.addEventListener("change",e=>{if(e.target.id==="santaDayPicker"){const t=Number(
 e.target.value);A.some(a=>a.id===t)&&(y=t,w(),N(),o("#santaDayPicker")?.focus({preventScroll:!0}));
 return}if(e.target.id==="accessTextSize"&&["normal","larger","largest"].includes(
-e.target.value)){qe=e.target.value,j(!0);return}if(e.target.id==="accessMotion"){
-_e=e.target.checked,j(!0);return}if(e.target.id==="accessContrast"){Ve=e.target.
-checked,j(!0);return}if(e.target.id==="accessReading"){ze=e.target.checked,j(!0);
+e.target.value)){je=e.target.value,B(!0);return}if(e.target.id==="accessMotion"){
+ze=e.target.checked,B(!0);return}if(e.target.id==="accessContrast"){qe=e.target.
+checked,B(!0);return}if(e.target.id==="accessReading"){Ve=e.target.checked,B(!0);
 return}e.target.matches("[data-country-select]")&&ua(e.target.value,!0),e.target.
 id==="contextFilter"&&["all","customer","supplier","work","home","finance"].includes(
 e.target.value)&&(c.context=e.target.value,_(),N())}),o("#accessibilityDialog").
-addEventListener("close",()=>{o("#accessibilityDialog").open||(B(la),Z())}),o("#\
+addEventListener("close",()=>{o("#accessibilityDialog").open||(j(la),Z())}),o("#\
 lessonDialog").addEventListener("cancel",w),o("#doorLockDialog").addEventListener(
 "close",()=>{o("#doorLockDialog").open||(w(),xa(),Z(),oe())}),o("#holidayDialog").
-addEventListener("close",()=>{o("#holidayDialog").open||(w(),Oa(),Z())}),o("#wel\
-comeDialog").addEventListener("close",()=>{o("#welcomeDialog").open||(w(),Pa(),Z())}),
+addEventListener("close",()=>{o("#holidayDialog").open||(w(),Pa(),Z())}),o("#wel\
+comeDialog").addEventListener("close",()=>{o("#welcomeDialog").open||(w(),Oa(),Z())}),
 o("#lessonDialog").addEventListener("close",()=>{o("#lessonDialog").open||(w(),/^#day=/.
 test(location.hash)&&history.replaceState(null,"","#calendar"),clearTimeout($a),
-o("#infoDialog").open||B(Qe),Z())}),o("#infoDialog").addEventListener("close",()=>{
-!o("#infoDialog").open&&!o("#lessonDialog").open&&B(et),Z()}),D.addEventListener(
-"close",()=>{D.open||(D.returnValue==="calendar"?Ct():B(xt),Z())});for(const e of[
+o("#infoDialog").open||j(Je),Z())}),o("#infoDialog").addEventListener("close",()=>{
+!o("#infoDialog").open&&!o("#lessonDialog").open&&j(Qe),Z()}),D?.addEventListener(
+"close",()=>{D.open||(D.returnValue==="calendar"?Ct():j(xt),Z())});for(const e of[
 o("#lessonDialog"),o("#infoDialog"),o("#doorLockDialog"),o("#holidayDialog"),o("\
-#welcomeDialog"),o("#accessibilityDialog"),D])e.addEventListener("click",t=>{if(t.
+#welcomeDialog"),o("#accessibilityDialog"),D])e?.addEventListener("click",t=>{if(t.
 target===e){const a=e.getBoundingClientRect();(t.clientX<a.left||t.clientX>a.right||
 t.clientY<a.top||t.clientY>a.bottom)&&e.close()}});document.addEventListener("ke\
 ydown",e=>{if(e.key==="Escape"&&o("#menuToggle").getAttribute("aria-expanded")===
 "true"){ue(!1,!0);return}if(e.target.matches('[role="tab"]')&&["ArrowRight","Arr\
 owLeft","Home","End"].includes(e.key)){e.preventDefault();const t=H('[role="tab"\
 ]');let a=t.indexOf(e.target);a=e.key==="Home"?0:e.key==="End"?t.length-1:(a+(e.
-key==="ArrowRight"?1:-1)+t.length)%t.length;const n=t[a].dataset.tab;ve(n),o(`[r\
+key==="ArrowRight"?1:-1)+t.length)%t.length;const n=t[a].dataset.tab;ye(n),o(`[r\
 ole="tab"][data-tab="${n}"]`).focus()}}),window.addEventListener("storage",e=>{if(!(e.
 key!==Q&&e.key!==null)){try{if(e.storageArea&&e.storageArea!==localStorage)return}catch{
 return}Tt()}}),window.addEventListener("pageshow",Tt),window.addEventListener("h\
 ashchange",()=>{const e=location.hash.match(/^#day=(\d{1,2})$/);e&&X(Number(e[1]),
 !1)}),window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("ch\
-ange",j),window.addEventListener("resize",$t),window.addEventListener("pagehide",
+ange",B),window.addEventListener("resize",$t),window.addEventListener("pagehide",
 w),document.addEventListener("visibilitychange",()=>{document.hidden&&(w(),clearTimeout(
-Ie)),document.hidden||(fe(),ct(),oe())}),j(),N(),ie(),$t(),Ze(),Ht(),oe(),typeof window.
+Re)),document.hidden||(fe(),ct(),oe())}),B(),N(),ie(),$t(),Xe(),Ht(),oe(),typeof window.
 ResizeObserver=="function"&&new window.ResizeObserver($t).observe(o(".hero"));const pa=location.
-hash.match(/^#day=(\d{1,2})$/);pa&&X(Number(pa[1]),!1),qt=!0,He()})();
+hash.match(/^#day=(\d{1,2})$/);pa&&X(Number(pa[1]),!1),qt=!0,Me()})();
