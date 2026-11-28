@@ -8,7 +8,7 @@
   <link rel="icon" type="image/x-icon" sizes="16x16 24x24 32x32 48x48 64x64" href="assets/nestor-family.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/nestor-family-touch.png">
   <meta name="description" content="Winterwatch accessibility features, assessment limits, known barriers, alternatives and feedback.">
-  <link rel="stylesheet" href="styles.css?v=66413d32a6106eae"><link rel="stylesheet" href="accessibility.css?v=e3969c7e815b266d"><link rel="stylesheet" href="chalet.css?v=ff627952185b439b">
+  <link rel="stylesheet" href="styles.css?v=66413d32a6106eae"><link rel="stylesheet" href="accessibility.css?v=7a3387e014aeb6bd"><link rel="stylesheet" href="chalet.css?v=ff627952185b439b">
   <script src="display-settings.js?v=9a93ffec2ccf05fb" defer></script>
 </head>
 <body data-accessibility-statement>
@@ -20,19 +20,19 @@
       <p>aware-by-design aims to make Winterwatch usable by as many people as possible. This statement covers the Advent calendar, lesson and progress panels, and downloadable playbooks.</p>
       <h2>Accessibility target and status</h2>
       <p>Our design target is the relevant web requirements of <a href="https://digital-strategy.ec.europa.eu/en/policies/web-accessibility-directive-standards-and-harmonisation" target="_blank" rel="noopener noreferrer">EN 301 549 v3.2.1, including WCAG 2.1 Level AA</a>. This statement draws on the structure of <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32018D1523" target="_blank" rel="noopener noreferrer">Commission Implementing Decision (EU) 2018/1523</a>, the model used under the EU Web Accessibility Directive for public-sector websites.</p>
-      <p class="statement-status"><strong>Conformance assessment incomplete.</strong> Full conformity has not been established. Internal checks cover source code, semantic markup, authored colour contrast, simulated interactions and layout in Chrome. They do not replace a full browser and assistive-technology assessment.</p>
+      <p class="statement-status"><strong>Conformance assessment incomplete.</strong> Full conformity has not been established. See the known barriers below for alternatives and ways to report an issue.</p>
       <h2>Ways to use the calendar</h2>
       <ul>
-        <li>Accessibility offers Normal, Larger and Largest text, easier reading and high contrast with warm cream and gold text. Your choices carry through to this statement and back to the calendar in the same tab. The chalet grows taller as the doors use fewer columns. On small screens the list follows the chalet, and the fireplace shares a frame with the introduction.</li>
+        <li>Accessibility offers three text sizes, easier reading and high contrast. Your choices apply to the calendar and this statement in the same tab.</li>
         <li>Doors and controls use keyboard-operable HTML buttons. Released lessons stay available. The country map also has a country selector.</li>
         <li>Pause animations and device reduced-motion settings stop decorative movement. The fireplace and NESTOR artwork are static.</li>
         <li>Listen uses a locally installed English device voice where supported. It stops when changing or closing a lesson. Text remains available throughout.</li>
-        <li>Countdowns can be paused and do not announce every tick to screen readers. Reset accessibility restores display defaults without clearing learning progress.</li>
+        <li>Locked doors show their opening time as text. Reset accessibility restores display defaults without clearing learning progress.</li>
       </ul>
       <h2>Known barriers and alternatives</h2>
       <ul>
         <li><strong>PDF playbooks are currently untagged.</strong> Heading structure and reading order may be unavailable to assistive technology. Use the HTML lesson or its plain-text playbook download instead.</li>
-        <li><strong>Manual testing is incomplete.</strong> Automated Chrome tests cover door and text reflow down to 320 CSS pixels. Screen readers, touch devices, browser zoom and other browser engines still need a manual assessment. Please report any barrier you encounter.</li>
+        <li><strong>Manual testing is incomplete.</strong> Screen readers, touch devices, browser zoom and other browsers still need a manual assessment. Please report any barrier you encounter.</li>
         <li><strong>Optional device features vary.</strong> Read-aloud voices and calendar-import images depend on your browser or calendar app. The complete lesson and reminder text remain available.</li>
       </ul>
       <h2>Feedback and accessible formats</h2>
